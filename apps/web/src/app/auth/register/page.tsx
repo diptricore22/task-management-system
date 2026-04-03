@@ -1,17 +1,11 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import type { Metadata } from 'next';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
 import { useRegister } from '@/modules/auth/hooks/useRegister';
 import { FormField } from '@/components/form/FormField';
 import { Alert } from '@/components/common/Alert';
 import { PasswordStrengthMeter } from '@/components/common/PasswordStrength';
-
-export const metadata: Metadata = {
-  title: 'Register',
-  description: 'Create your Task Management System account',
-};
 
 function RegisterForm() {
   const firstNameInputRef = useRef<HTMLInputElement>(null);

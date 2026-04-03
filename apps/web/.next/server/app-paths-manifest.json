@@ -1,9 +1,17 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/admin/reports/page": "app/admin/reports/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
   "/api/[...path]/route": "app/api/[...path]/route.js",
-  "/page": "app/page.js",
-  "/auth/register/page": "app/auth/register/page.js",
-  "/projects/page": "app/projects/page.js",
+  "/auth/invite/[token]/page": "app/auth/invite/[token]/page.js",
   "/auth/login/page": "app/auth/login/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/auth/register/page": "app/auth/register/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/page": "app/page.js",
+  "/projects/[id]/page": "app/projects/[id]/page.js",
+  "/projects/[id]/settings/page": "app/projects/[id]/settings/page.js",
+  "/projects/page": "app/projects/page.js",
+  "/settings/account/page": "app/settings/account/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/tasks/my-tasks/page": "app/tasks/my-tasks/page.js"
 }

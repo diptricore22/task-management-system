@@ -1,13 +1,7 @@
 'use client';
 
-import type { Metadata } from 'next';
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
 import { AppLayout } from '@/components/layouts/AppLayout';
-
-export const metadata: Metadata = {
-  title: 'Dashboard',
-  description: 'Your task management dashboard',
-};
 
 function DashboardContent() {
   return (
