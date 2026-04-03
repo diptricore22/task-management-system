@@ -10,7 +10,7 @@
 | FEAT-002 | Project Management (CRUD) | P0 | ✅ COMPLETE | 10 endpoints, membership scoping, soft-delete, activity logging, 58 tests |
 | FEAT-003 | Task Management (CRUD + Statuses) | P0 | ✅ COMPLETE | 5 endpoints, filtering/sorting/pagination, role-based access, 66 tests |
 | FEAT-004 | Task Assignment & Team Members | P0 | ✅ COMPLETE | 7 endpoints, task assignment, my-tasks view, notifications, member management, 55 tests |
-| FEAT-005 | Dashboard & Activity Feed | P1 | not started | Frontend dashboard, project health cards, activity feed, admin table |
+| FEAT-005 | Dashboard & Activity Feed | P1 | ✅ COMPLETE | 4 endpoints, personal & admin dashboards, activity feed, health indicators, 34 tests |
 | FEAT-006 | Comments & Task Activity Log | P1 | not started | Comments CRUD, 15-min edit window, activity feed, role-based access |
 | FRONTEND-006 | Frontend Comments & Task Activity | P1 | not started | Complete comments UI with merged activity feed, inline editing, role-aware actions |
 | FEAT-007 | Labels & Filtering | P1 | not started | Complete label management with enhanced task filtering and advanced query support |
@@ -28,19 +28,30 @@
 ## Progress Overview
 ```
 P0 Features: 4 / 4 complete (100%)
-P1 Features: 0 / 12 complete (0%)
+P1 Features: 1 / 12 complete (8%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [=========================   ] 50%
+Overall:     [==========================>  ] 53%
 ```
 
 ## Current Sprint Focus
-- **Active:** All P0 features complete (FEAT-001, FEAT-002, FEAT-003, FEAT-004)
-- **Next:** P1 Features - FEAT-005 (Dashboard & Activity Feed), Frontend implementation
+- **Active:** FEAT-005 Dashboard & Activity Feed (P1) just completed
+- **Next:** Continue with P1 features - FEAT-006 Comments & Activity Log or Frontend implementation
 
 ## Blockers
 _None_
 
 ## Recent Changes
+- **2026-04-03:** FEAT-005 Dashboard & Activity Feed completed
+  - 4 endpoints implemented: GET /api/dashboard/summary, /projects, /activity, /admin/overview
+  - Personal dashboard: task summary (overdue, due-today, in-progress counts)
+  - Project cards: status breakdown by count, % complete, health tracking
+  - Activity feed: paginated events across user's projects with actor/action/timestamp
+  - Admin overview: all projects with health indicators (red/yellow/green)
+  - Zero N+1 queries: all data via single aggregation queries
+  - Permission scoping: personal endpoints user-scoped, admin endpoint admin-only
+  - 34 comprehensive tests passing (DASH-U001..U008, DASH-I001..I007)
+  - P1 features now 8% complete
+
 - **2026-04-03:** FEAT-004 Task Assignment & Team Members completed
   - 7 endpoints implemented (member management, task assignment, notifications)
   - Member removal with automatic task unassignment (open tasks only)

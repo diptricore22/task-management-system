@@ -32,6 +32,19 @@
 ## [Unreleased]
 
 ### Added
+- **FEAT-005: Dashboard & Activity Feed** - Personal and admin dashboards with efficient aggregation queries
+  - 4 REST endpoints: GET /api/dashboard/summary, /projects, /activity, /admin/overview
+  - Personal task summary: overdue count, due today count, in progress count with empty state indicator
+  - Project status cards: task counts by status, % complete, project metadata for all user projects
+  - Activity feed: recent events across user's projects with actor, action, task, project context, pagination (max 100)
+  - Admin project health overview: all projects with health indicators (red/yellow/green based on blocked/overdue counts)
+  - Health indicator logic: red (blocked > 2 or overdue > 5), yellow (overdue 1-5), green (otherwise)
+  - Zero N+1 queries: all data fetched via single queries with Prisma includes and aggregations
+  - Permission scoping: personal endpoints show only user's projects/tasks, admin endpoint unrestricted
+  - Date/time calculations: relative time formatting ("2h ago", "3d ago"), overdue logic with today boundary
+  - Pagination support: 20 per page default, 100 maximum, with total and page count
+  - Comprehensive test coverage: 34 tests covering all user stories and integration scenarios (DASH-U001..U008, DASH-I001..I007)
+
 - **FEAT-004: Task Assignment & Team Members** - Complete member management and task assignment system with notifications
   - 7 REST endpoints: GET/POST/PATCH/DELETE /api/projects/:id/members, GET /api/users/me/tasks, GET/PATCH /api/notifications
   - Admin member management: add users with roles (ADMIN, MEMBER, VIEWER), update roles, remove members

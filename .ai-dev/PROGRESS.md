@@ -363,3 +363,117 @@ Option 3: Git commit and push current changes
 
 Choose based on sprint priority!
 ```
+
+---
+
+### Session - 2026-04-03 (Continued Again)
+**Duration:** ~1.5 hours (cumulative)
+**Feature(s) worked on:** FEAT-005 Dashboard & Activity Feed
+
+**Completed this session:**
+
+**FEAT-005 Dashboard & Activity Feed:**
+- ✅ Read PRD and analyzed requirements (4 user stories, 13 acceptance criteria, performance/security constraints)
+- ✅ Created DashboardService (260+ lines) with 4 aggregation methods:
+  - getSummary(): Parallel count queries for overdue/due-today/in-progress tasks
+  - getProjects(): User's projects with task counts by status and % complete
+  - getActivity(): Paginated activity feed scoped to user's projects (no N+1)
+  - getAdminOverview(): All projects with health indicators (red/yellow/green)
+  - Health indicator logic: red (blocked > 2 or overdue > 5), yellow (1-5 overdue), green (safe)
+  - Relative time formatting: "2h ago", "3d ago", "just now"
+- ✅ Created DashboardController (60+ lines) with 4 HTTP handlers
+  - GET /api/dashboard/summary (story 1)
+  - GET /api/dashboard/projects (story 2)
+  - GET /api/dashboard/activity (story 3)
+  - GET /api/dashboard/admin/overview (story 4, admin-only)
+- ✅ Created Zod validation schema for activity pagination
+  - page: converts string to int, min 1
+  - limit: converts string to int, range 1-100, default 20
+- ✅ Created dashboard types (85+ lines)
+  - DashboardSummaryResponse, ProjectCard, DashboardProjectsResponse
+  - ActivityFeedItem, DashboardActivityResponse
+  - ProjectAdminOverview, DashboardAdminOverviewResponse
+  - HealthIndicator type: "red" | "yellow" | "green"
+- ✅ Created DashboardRoutes (20 lines)
+  - All routes require authMiddleware
+  - Personal endpoints available to all users
+  - Admin endpoint requires requireAdmin middleware
+- ✅ Mounted dashboard routes in app.ts at /api/dashboard
+- ✅ Created comprehensive test suite: 34 tests covering all stories and integration scenarios
+  - dashboard.unit.test.ts: 34/34 PASSING
+  - DASH-U001..U004: User story tests for all 4 stories
+  - DASH-I001..I007: Integration tests for scoping, queries, permission enforcement, pagination
+- ✅ Created FEAT_005_IMPLEMENTATION_REPORT.md with:
+  - 400+ lines of comprehensive documentation
+  - API response examples for all 4 endpoints
+  - Performance characteristics and scalability analysis
+  - Security considerations and data privacy
+  - User story mapping and acceptance criteria
+- ✅ Updated documentation files:
+  - CHANGELOG.md: Added FEAT-005 feature description
+  - PROJECT_STATUS.md: Marked FEAT-005 complete, updated P1 progress to 8%, overall to 53%
+  - PROJECT_STATUS.md: Updated Recent Changes section
+
+**Test Results:**
+- ✅ Build: npm run build - SUCCEEDS (no TypeScript errors)
+- ✅ Tests: npm run test -- dashboard.unit.test.ts - 34/34 PASSING
+- ✅ Total FEAT-005 tests: 34/34 PASSING
+
+**Key Implementation Details:**
+- Zero N+1 queries: All aggregation via single Prisma queries with includes
+- Permission scoping: Activity feed and project lists only show user's memberships
+- Admin-only endpoint: /admin/overview uses requireAdmin middleware
+- Efficient date handling: Today boundary calculated once, used in all overdue queries
+- Health indicators: Smart logic based on blocked/overdue counts
+- Relative time: Formatted server-side for consistent display across clients
+- Pagination: Max 100 items per page, with total/pages metadata
+
+**In Progress:**
+- None - FEAT-005 is complete and tested
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Git commit and push FEAT-005 changes. Dashboard implementation complete with zero N+1 queries and comprehensive test coverage. P1 features now 8% complete (1 of 12). Next: FEAT-006 Comments & Task Activity Log or Frontend implementation.
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/docs/PRD/features/[Next Feature PRD - FEAT-006 Comments or FRONTEND-001 Auth UI]
+- .ai-dev/docs/SPECS/API_SPEC.md
+
+Last session summary:
+FEAT-005 Dashboard & Activity Feed is COMPLETE:
+- Implemented 4 endpoints: /dashboard/summary, /projects, /activity, /admin/overview
+- Personal dashboard: task summary (overdue, due-today, in-progress)
+- Project cards: status breakdown, % complete, project metadata
+- Activity feed: paginated events across user's projects (20 per page, max 100)
+- Admin overview: all projects with health indicators (red/yellow/green)
+- Zero N+1 queries: all data via single aggregation queries with Prisma
+- Permission scoping: personal endpoints user-scoped, admin endpoint admin-only
+- Tests: 34/34 passing (DASH-U001..U008, DASH-I001..I007)
+- Documentation: Implementation report with API examples and performance analysis
+
+ALL P0 FEATURES COMPLETE + P1 STARTED:
+- FEAT-001-004: All P0 features ✅ (4/4 = 100%)
+- FEAT-005: Dashboard & Activity Feed ✅ (P1 started, 1/12 = 8%)
+
+Metrics:
+- Backend implementation: 100% of P0 + 8% of P1
+- Tests: 179 + 34 = 213 tests passing
+- Build: Clean TypeScript compilation
+- Overall progress: 53% (P0 complete, P1 launched)
+
+Next task options:
+1. Implement FEAT-006 Comments & Task Activity Log (P1 backend)
+2. Implement FEAT-007 Labels & Filtering (P1 backend)
+3. Start FRONTEND-001 Authentication Screens (P1 UI)
+4. Start FRONTEND-SHELL Base Layout (P1 UI)
+
+Choose based on sprint priority and whether to continue backend or start frontend!
+```
