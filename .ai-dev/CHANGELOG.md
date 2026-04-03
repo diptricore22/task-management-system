@@ -73,6 +73,46 @@
   - Role-based rendering: Admin table only shown to users with admin role
   - Real-time dashboard updates on navigation/refetch
 
+- **FEAT-006: Comments & Task Activity Log (Frontend)** - Task collaboration with comment CRUD and immutable activity tracking
+  - 1 TypeScript types file: comments.types.ts with CommentItem, ActivityLogItem, MergedFeedItem (union type), PaginationInfo, TaskActivityFeedResponse interfaces
+  - 1 validation schema file: comments.schema.ts with createCommentSchema, updateCommentSchema, taskActivityQuerySchema Zod validators
+  - 4 React hooks for comment operations:
+    - `useTaskComments` - Fetches merged feed of comments and activity logs with pagination
+    - `useCreateComment` - Creates new comment with validation and form state management
+    - `useUpdateComment` - Edits comment within 15-minute window with edit tracking
+    - `useDeleteComment` - Deletes comment with confirmation handling
+  - 5 React components for comments UI:
+    - `CommentInput` - Comment form with character counter, Ctrl+Enter submit shortcut, loading state
+    - `CommentItem` - Single comment display with edit (within 15-min window), delete (author/admin only), relative timestamp
+    - `ActivityLogItem` - System activity item with icon, action description, relative timestamp (immutable)
+    - `MergedFeed` - Chronological feed combining comments and activity with "Load More" pagination
+    - `CommentSection` - Full container orchestrating feed display, comment input, and state management
+  - Updated TaskDetailPanel with tabbed interface:
+    - 2 tabs: "Details" (existing task form), "Comments" (merged comments + activity)
+    - Tab navigation with border-bottom active indicator
+    - Responsive panel layout with proper sizing for comment display
+    - Auto-focus on comment input for better UX
+  - Comments feature integration:
+    - GET /api/tasks/:id/comments for fetching merged feed with pagination
+    - POST /api/tasks/:id/comments for creating new comments
+    - PATCH /api/comments/:id for editing comments (with 15-min window validation)
+    - DELETE /api/comments/:id for deleting comments
+  - Permissions & authentication:
+    - Role-based actions: only authors or admins can delete comments
+    - Edit window: authors can edit within 15 minutes, others see "(edited)" label
+    - Relative timestamps: using date-fns for human-readable "2h ago" format
+  - UI/UX features:
+    - Optimistic updates with refetch on action completion
+    - Error display with auto-dismiss after 5 seconds
+    - Loading states with spinners during submission
+    - Empty states: "No comments or activity yet"
+    - Skeleton loaders during initial data fetch
+    - Character counter (with warning at 4000 chars, disabled at 5000 max)
+    - User avatars with initials fallback
+  - Dark mode styling throughout all components
+  - Keyboard shortcuts: Ctrl+Enter / Cmd+Enter to submit comment
+  - Mobile-responsive design for comment section within side panel
+
 - **FEAT-008: Due Dates, Reminders & Notifications** - User-controlled notification preferences and scheduled email reminders
   - 2 REST endpoints: GET/PATCH /api/users/me/notification-preferences for per-user notification setting management
   - Notification preferences: 4 independent toggles (email_due_tomorrow, email_overdue, email_assigned, email_commented)

@@ -979,3 +979,89 @@ Next task:
    - Features: Comment CRUD, 15-min edit window, merged activity feed, role-aware actions
    - Components: CommentForm, CommentList, CommentItem, ActivityLogItem, MergedFeed
 ```
+
+---
+
+### Session - 2026-04-03 | FEAT-006 Comments & Task Activity Log Frontend
+**Duration:** ~2 hours
+**Feature(s) worked on:** FEAT-006 Comments & Task Activity Log (Frontend Implementation)
+
+**Completed this session:**
+- ✅ Created comments types file (comments.types.ts)
+  - CommentItem interface with author, body, creation/edit timestamps
+  - ActivityLogItem interface with actor, action description, relative timestamp
+  - MergedFeedItem union type for chronological feed mixing comments and activity
+  - FeedResponse with pagination info (page, limit, total, pages)
+- ✅ Created comments validation schema (comments.schema.ts)
+  - createCommentSchema: validates body (1-5000 chars)
+  - updateCommentSchema: validates body for edits (1-5000 chars)
+  - taskActivityQuerySchema: validates pagination params
+  - Zod validators for form data type safety
+- ✅ Implemented 4 React hooks for comment operations
+  - useTaskComments: Fetches merged feed with "load more" pagination (GET /api/tasks/:id/comments)
+  - useCreateComment: Creates comment with form state, validation, error handling (POST)
+  - useUpdateComment: Edits comment with 15-minute edit window check (PATCH)
+  - useDeleteComment: Deletes comment with confirmation (DELETE)
+- ✅ Created 5 UI components for comments interface
+  - CommentInput: Textarea with character counter, Ctrl+Enter submit, loading state, error display
+  - CommentItem: Single comment with edit/delete actions (15-min window), relative timestamp, "(edited)" label
+  - ActivityLogItem: System activity display with icon, action description, immutable (no actions)
+  - MergedFeed: Chronological feed of comments and activity items with "Load More" pagination
+  - CommentSection: Full container orchestrating feed display, input, and state management
+- ✅ Updated TaskDetailPanel with tab interface
+  - Added activeTab state management (details | comments)
+  - Created tab buttons with border-bottom active indicator styling
+  - Integrated CommentSection component for comments tab
+  - Kept existing task form/details for details tab
+  - Improved UI with better styling, icons (X close, proper spacing)
+- ✅ Fixed API integration issues
+  - Corrected URLSearchParams usage for query parameters
+  - Fixed API response type handling (direct CommentItem, not wrapped)
+  - Added proper ApiError imports and error handling across all hooks
+  - Used proper async/await patterns with api client
+- ✅ Verified npm build
+  - npm run build succeeded with no TypeScript errors
+  - All 10 source files compile successfully
+  - Next.js optimization completed without warnings
+- ✅ Updated documentation
+  - Added FEAT-006 Frontend entry to CHANGELOG.md with comprehensive feature list
+  - Updated PROJECT_STATUS.md: marked FRONTEND-006 as ✅ COMPLETE
+  - Updated progress metrics: P1 features 77% (10/13), Overall 79%
+
+**In Progress:**
+- None - FEAT-006 complete
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Create git commit for FEAT-006, then begin FEAT-007: Labels, Priorities & Filtering (Frontend). See user's original feature request or PROJECT_STATUS.md for requirements.
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/PROJECT_STATUS.md
+
+Last session summary:
+FEAT-006 Comments & Task Activity Log Frontend completed:
+- Created 1 types file, 1 schema file, 4 hooks, 5 components (10 files total)
+- Enhanced TaskDetailPanel with tabbed interface ("Details" and "Comments" tabs)
+- Implemented merged chronological feed of comments and activity logs
+- Added comment creation, editing (15-min window), and deletion with proper permissions
+- Fixed API integration issues with URLSearchParams and error handling
+- Verified npm build success with no TypeScript errors
+- Updated all documentation (CHANGELOG, PROJECT_STATUS)
+- Progress updated: 77% P1 features complete, 79% overall
+
+Next task:
+1. Create git commit for FEAT-006 implementation
+2. Begin FEAT-007: Labels, Priorities & Filtering (Frontend)
+   - Label management UI with create/edit/delete
+   - Multi-select filtering with AND/OR logic
+   - Label chips on task cards
+   - Filter persistence in URL state
+```

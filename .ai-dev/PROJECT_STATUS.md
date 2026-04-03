@@ -12,7 +12,7 @@
 | FEAT-004 | Task Assignment & Team Members | P0 | ✅ COMPLETE | 7 endpoints, task assignment, my-tasks view, notifications, member management, 55 tests |
 | FEAT-005 | Dashboard & Activity Feed | P1 | ✅ COMPLETE | Backend + Frontend complete: 4 endpoints, dashboard hooks/components, activity feed, health indicators |
 | FEAT-006 | Comments & Task Activity Log | P1 | ✅ COMPLETE | Comments CRUD with 15-min edit window, activity logging, 62 tests |
-| FRONTEND-006 | Frontend Comments & Task Activity | P1 | not started | Complete comments UI with merged activity feed, inline editing, role-aware actions |
+| FRONTEND-006 | Frontend Comments & Task Activity | P1 | ✅ COMPLETE | Complete comments UI with merged activity feed, inline editing, role-aware actions, tabbed panel |
 | FEAT-007 | Labels & Filtering | P1 | ✅ COMPLETE | 7 endpoints, advanced AND/OR filtering, 4 sort options, 116 tests |
 | FEAT-008 | Due Dates, Reminders & Notifications | P1 | ✅ COMPLETE | 2 endpoints, notification preferences, scheduler job, email service, 132 tests |
 | FEAT-009 | Frontend Base Layout Shell | P1 | ✅ COMPLETE | Auth context, 4 hooks, ProtectedRoute, 2 layouts, Header, Sidebar, 4 error/loading components, 9 page templates |
@@ -28,20 +28,34 @@
 ## Progress Overview
 ```
 P0 Features: 4 / 4 complete (100%)
-P1 Features: 9 / 13 complete (69%)
+P1 Features: 10 / 13 complete (77%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [============================================>] 75%
+Overall:     [================================================>] 79%
 ```
 
 ## Current Sprint Focus
-- **Completed:** FEAT-005 Dashboard & Activity Feed (Frontend) - Full implementation with 11 files
-- **Next:** Continue with FEAT-006 Comments Frontend or complete remaining FEAT-003/004 implementations
+- **Completed:** FEAT-006 Comments & Task Activity Log (Frontend) - Full implementation with 10 files (types, schemas, 4 hooks, 5 components, 1 updated component)
+- **Next:** Continue with remaining frontend features (FRONTEND-003, FRONTEND-004, FRONTEND-005) or begin FEAT-007/008 frontend implementations
 
 ## Blockers
 _None_
 
 ## Recent Changes
-- **2026-04-03:** FEAT-009 Frontend Base Layout Shell completed
+- **2026-04-03:** FEAT-006 Comments & Task Activity Log (Frontend) completed
+  - 1 types file (comments.types.ts): CommentItem, ActivityLogItem, MergedFeedItem union type, FeedResponse
+  - 1 schema file (comments.schema.ts): Zod validators for create/update with character limits
+  - 4 hooks: useTaskComments (merged feed with pagination), useCreateComment, useUpdateComment (15-min window), useDeleteComment
+  - 5 components: CommentInput (with Ctrl+Enter shortcut), CommentItem (inline edit/delete), ActivityLogItem (immutable), MergedFeed (pagination), CommentSection (container)
+  - Updated TaskDetailPanel: Added tabbed interface with "Details" and "Comments" tabs
+  - Tab pattern: Border-bottom active indicator, smooth switching, responsive design
+  - Permissions: edit window limited to 15 minutes, delete for authors/admins only
+  - Features: relative timestamps, character counter, skeleton loaders, error handling, dark mode
+  - API integration: GET /api/tasks/:id/comments, POST/PATCH/DELETE comments endpoints
+  - 10 files created/modified total
+  - P1 features now 77% complete (10/13)
+  - Overall progress: 79%
+
+- **2026-04-03:** FEAT-005 Dashboard & Activity Feed (Frontend) completed
   - Global auth context with session management, token refresh (13 minute interval), localStorage persistence
   - 4 auth hooks: useAuth (access state), useLogin (form), useRegister (form), useLogout (cleanup)
   - ProtectedRoute wrapper with auth checks and role-based access control (admin, member, viewer)
