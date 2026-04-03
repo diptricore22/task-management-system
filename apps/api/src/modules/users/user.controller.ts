@@ -3,6 +3,7 @@
 
 import { Request, Response } from 'express';
 import { asyncHandler } from '@/middlewares/error.middleware';
+import { prisma } from '@/lib/prisma';
 import AuthService from '../auth/auth.service';
 import { updateProfileSchema } from '../auth/auth.validation';
 
@@ -51,23 +52,90 @@ export class UserController {
 
   // GET /api/users/me/tasks
   static getMyTasks = asyncHandler(async (req: Request, res: Response) => {
-    // const userId = req.user!.id; // From auth middleware
-    // const page = parseInt(req.query.page as string) || 1;
-    // const limit = parseInt(req.query.limit as string) || 20;
+    const userId = req.user!.id;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
 
-    // TODO: Get tasks assigned to current user
-    // const result = await TaskService.getTasksByUser(userId, { page, limit });
+    // Get tasks assigned to current user with pagination
+    const pageNum = Math.max(1, page);
+    const limitNum = Math.min(Math.max(1, limit), 100);
+    const skip = (pageNum - 1) * limitNum;
+
+    const [tasks, total] = await Promise.all([
+      prisma.task.findMany({
+        where: {
+          assignee_id: userId,
+          deleted_at: null,
+        },
+        include: {
+          project: {
+            select: {
+              id: true,
+              name: true,
+              color: true,
+            },
+          },
+        },
+        skip,
+        take: limitNum,
+        orderBy: [
+          { due_date: { sort: 'asc', nulls: 'last' } },
+          { created_at: 'desc' },
+        ],
+      }),
+      prisma.task.count({
+        where: {
+          assignee_id: userId,
+          deleted_at: null,
+        },
+      }),
+    ]);
+
+    // Group tasks by project
+    const groupedByProject: { [key: string]: any } = {};
+    tasks.forEach((task) => {
+      const projId = task.project_id;
+      if (!groupedByProject[projId]) {
+        groupedByProject[projId] = {
+          project_id: task.project.id,
+          project_name: task.project.name,
+          project_color: task.project.color,
+          tasks: [],
+        };
+      }
+      groupedByProject[projId].tasks.push({
+        id: task.id,
+        title: task.title,
+        status: task.status,
+        priority: task.priority,
+        due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null,
+        created_at: task.created_at.toISOString(),
+      });
+    });
 
     res.json({
       success: true,
       data: {
-        tasks: [],
+        tasks: tasks.map((task) => ({
+          id: task.id,
+          title: task.title,
+          status: task.status,
+          priority: task.priority,
+          due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null,
+          project: {
+            id: task.project.id,
+            name: task.project.name,
+            color: task.project.color,
+          },
+          created_at: task.created_at.toISOString(),
+        })),
+        grouped_by_project: Object.values(groupedByProject),
         pagination: {
-          page: 1,
-          limit: 20,
-          total: 0,
-          totalPages: 0
-        }
+          page: pageNum,
+          limit: limitNum,
+          total,
+          totalPages: Math.ceil(total / limitNum),
+        },
       },
     });
   });

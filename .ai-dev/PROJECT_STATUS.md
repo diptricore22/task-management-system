@@ -9,7 +9,7 @@
 | FEAT-001 | Authentication & User Management | P0 | ✅ COMPLETE | JWT auth, rate limiting, role-based access, 8 endpoints implemented |
 | FEAT-002 | Project Management (CRUD) | P0 | ✅ COMPLETE | 10 endpoints, membership scoping, soft-delete, activity logging, 58 tests |
 | FEAT-003 | Task Management (CRUD + Statuses) | P0 | ✅ COMPLETE | 5 endpoints, filtering/sorting/pagination, role-based access, 66 tests |
-| FEAT-004 | Task Assignment & Team Members | P0 | not started | In-app notifications, personal task view, enhanced member management |
+| FEAT-004 | Task Assignment & Team Members | P0 | ✅ COMPLETE | 7 endpoints, task assignment, my-tasks view, notifications, member management, 55 tests |
 | FEAT-005 | Dashboard & Activity Feed | P1 | not started | Frontend dashboard, project health cards, activity feed, admin table |
 | FEAT-006 | Comments & Task Activity Log | P1 | not started | Comments CRUD, 15-min edit window, activity feed, role-based access |
 | FRONTEND-006 | Frontend Comments & Task Activity | P1 | not started | Complete comments UI with merged activity feed, inline editing, role-aware actions |
@@ -27,28 +27,37 @@
 
 ## Progress Overview
 ```
-P0 Features: 3 / 4 complete (75%)
+P0 Features: 4 / 4 complete (100%)
 P1 Features: 0 / 12 complete (0%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [==================        ] 44%
+Overall:     [=========================   ] 50%
 ```
 
 ## Current Sprint Focus
-- **Active:** FEAT-002 & FEAT-003 (Complete - Ready for FEAT-004)
-- **Next:** FEAT-004 Task Assignment & Team Members
+- **Active:** All P0 features complete (FEAT-001, FEAT-002, FEAT-003, FEAT-004)
+- **Next:** P1 Features - FEAT-005 (Dashboard & Activity Feed), Frontend implementation
 
 ## Blockers
 _None_
 
 ## Recent Changes
-- **2026-04-03:** FEAT-002 Project Management (CRUD) completed
-  - 10 endpoints implemented (POST/GET/PATCH/DELETE /api/projects, member management)
-  - Membership scoping, soft-delete pattern, activity logging
-  - 58 comprehensive tests passing (PROJ-U001..U010, PROJ-I001..I017)
-  
+- **2026-04-03:** FEAT-004 Task Assignment & Team Members completed
+  - 7 endpoints implemented (member management, task assignment, notifications)
+  - Member removal with automatic task unassignment (open tasks only)
+  - My Tasks endpoint: cross-project task view with pagination and grouping
+  - In-app notifications on task assignment with ownership verification
+  - Last-admin protection and role-based access control
+  - 55 comprehensive tests passing (MEM-U001..U009, MEM-I001..I010)
+  - All P0 features now complete (100% of Phase 1 foundation)
+
 - **2026-04-03:** FEAT-003 Task Management (CRUD + Statuses) completed
   - 5 core endpoints implemented (POST/GET /api/projects/:projectId/tasks, /api/tasks/:id GET/PATCH/DELETE)
   - Advanced filtering (status, priority, assignee), sorting (created_at_desc, due_date_asc, priority_desc)
   - Pagination support (20 per page default, max 100)
   - Task creator/admin-only deletion, role-based access control
   - 66 comprehensive tests passing (TASK-U001..U010, TASK-I001..I017+)
+
+- **2026-04-03:** FEAT-002 Project Management (CRUD) completed
+  - 10 endpoints implemented (POST/GET/PATCH/DELETE /api/projects, member management)
+  - Membership scoping, soft-delete pattern, activity logging
+  - 58 comprehensive tests passing (PROJ-U001..U010, PROJ-I001..I017)

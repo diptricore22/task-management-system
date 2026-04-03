@@ -5,6 +5,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { AppError } from '@/middlewares/error.middleware';
+import { NotificationsService } from '@/modules/notifications/notifications.service';
 import type {
   CreateTaskRequest,
   UpdateTaskRequest,
@@ -126,6 +127,27 @@ export class TasksService {
         payload: { title: task.title, priority: task.priority },
       },
     });
+
+    // Create notification if task is assigned (Story 4 AC1 - notification on assignment)
+    if (task.assignee_id) {
+      const assignee = await prisma.user.findFirst({
+        where: { id: task.assignee_id, deleted_at: null },
+      });
+
+      if (assignee) {
+        await NotificationsService.create(
+          task.assignee_id,
+          'task_assigned',
+          {
+            title: `Task assigned: ${task.title}`,
+            message: `You have been assigned to "${task.title}"`,
+            task_id: task.id,
+            project_id: projectId,
+          },
+          task.id
+        );
+      }
+    }
 
     return this.formatTaskDetailResponse(task);
   }
@@ -402,6 +424,31 @@ export class TasksService {
         payload: updateData,
       },
     });
+
+    // Create notification if assignee changed and new assignee exists (Story 4 AC1)
+    if (data.assignee_id !== undefined && data.assignee_id !== null && data.assignee_id !== task.assignee_id) {
+      const newAssignee = await prisma.user.findFirst({
+        where: { id: data.assignee_id, deleted_at: null },
+      });
+
+      const project = await prisma.project.findFirst({
+        where: { id: task.project_id, deleted_at: null },
+      });
+
+      if (newAssignee && project) {
+        await NotificationsService.create(
+          data.assignee_id,
+          'task_assigned',
+          {
+            title: `Task assigned: ${updated.title}`,
+            message: `You have been assigned to "${updated.title}" in ${project.name}`,
+            task_id: taskId,
+            project_id: task.project_id,
+          },
+          taskId
+        );
+      }
+    }
 
     return this.formatTaskDetailResponse(updated);
   }

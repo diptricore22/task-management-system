@@ -32,6 +32,19 @@
 ## [Unreleased]
 
 ### Added
+- **FEAT-004: Task Assignment & Team Members** - Complete member management and task assignment system with notifications
+  - 7 REST endpoints: GET/POST/PATCH/DELETE /api/projects/:id/members, GET /api/users/me/tasks, GET/PATCH /api/notifications
+  - Admin member management: add users with roles (ADMIN, MEMBER, VIEWER), update roles, remove members
+  - Member removal with automatic task unassignment: open tasks (TODO, IN_PROGRESS, IN_REVIEW, BLOCKED) set assignee_id to NULL
+  - Task assignment validation: users can only be assigned to tasks in projects they're members of
+  - My Tasks endpoint: cross-project task list sorted by due_date ASC (nulls last), paginated, grouped by project
+  - In-app notifications on task assignment: automatic notification creation when task assigned to user
+  - Notification management: list, mark as read (single/all), with unread count and pagination
+  - Last-admin protection: prevents removal or demotion of project's final admin
+  - Soft-delete pattern maintained across all operations (project_members, notifications, tasks)
+  - Activity logging for all member management operations
+  - Comprehensive test coverage: 55 tests covering all user stories and business rules (MEM-U001..U009, MEM-I001..I010)
+
 - **FEAT-002: Project Management (CRUD)** - Complete project management system with membership scoping
   - 10 REST endpoints: POST/GET/PATCH/DELETE /api/projects, GET/POST/PATCH/DELETE /api/projects/:id/members
   - Project CRUD with name, description, and color properties

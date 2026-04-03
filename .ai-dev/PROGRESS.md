@@ -251,3 +251,115 @@ Start FRONTEND-001 Authentication Screens - build login/register/invite UI pages
 
 Choose based on sprint priority!
 ```
+
+---
+
+### Session - 2026-04-03 (Continued)
+**Duration:** ~2 hours (cumulative)
+**Feature(s) worked on:** FEAT-004 Task Assignment & Team Members
+
+**Completed this session:**
+
+**FEAT-004 Task Assignment & Team Members:**
+- ✅ Read specification and analyzed requirements (4 user stories, 13 acceptance criteria)
+- ✅ Updated ProjectsService.removeMember() to unassign open tasks (Story 2 AC2)
+  - Unassigns tasks with statuses: TODO, IN_PROGRESS, IN_REVIEW, BLOCKED
+  - Preserves completed (DONE) tasks
+  - Uses updateMany for efficient database operation
+- ✅ Updated TasksService to create notifications on task assignment
+  - Added NotificationsService import
+  - create() triggers notification when assignee set
+  - update() triggers notification when assignee changes
+  - Includes task title, project name, assignee info in payload
+- ✅ Created NotificationsController (56 lines) with 3 methods:
+  - list(): Paginated notifications with unread count
+  - markAsRead(): Mark single notification as read
+  - markAllAsRead(): Mark all unread as read
+- ✅ Created NotificationsRoutes (18 lines) with 3 endpoints:
+  - GET /api/notifications
+  - PATCH /api/notifications/:id/read
+  - PATCH /api/notifications/read-all
+- ✅ Updated NotificationsService with new methods:
+  - getById(): Fetch single notification with ownership verification
+  - markAllAsRead(): Mark all unread for user as read
+  - Fixed TypeScript payload type issue (cast to any)
+- ✅ Implemented UserController.getMyTasks() endpoint (87 lines)
+  - Retrieves all tasks assigned to current user
+  - Cross-project task list with pagination (default 20, max 100)
+  - Sorted by due_date ASC (nulls last), then created_at DESC
+  - Includes project metadata (id, name, color)
+  - Groups tasks by project in response
+- ✅ Mounted notification routes in app.ts at /api/notifications
+- ✅ Created comprehensive test suite: 55 tests covering all stories and rules
+  - members.unit.test.ts: 36 tests (MEM-U001..U009, MEM-I001..I005)
+  - notifications.unit.test.ts: 19 tests (MEM-I006..I010)
+  - All tests passing
+- ✅ Created implementation documentation:
+  - FEAT_004_IMPLEMENTATION.md: Detailed mapping of code to requirements
+  - FEAT_004_IMPLEMENTATION_REPORT.md: Executive summary and checklist
+  - TESTING_GUIDE_FEAT_004.md: cURL examples and test procedures
+- ✅ Verified TypeScript build successful (all type errors resolved)
+- ✅ All unit tests passing (55/55 FEAT-004 tests)
+- ✅ Updated CHANGELOG.md with FEAT-004 completion details
+- ✅ Updated PROJECT_STATUS.md:
+  - Marked FEAT-004 as ✅ COMPLETE
+  - Updated P0 progress: 4/4 complete (100%)
+  - Overall progress: 50% (all P0 features done)
+  - Updated "Current Sprint Focus" to note all P0 complete
+  - Added FEAT-004 to recent changes
+
+**Test Results:**
+- ✅ Build: npm run build - SUCCEEDS (no TypeScript errors)
+- ✅ Tests: npm run test -- members.unit.test.ts - 36/36 PASSING
+- ✅ Tests: npm run test -- notifications.unit.test.ts - 19/19 PASSING
+- ✅ Total FEAT-004 tests: 55/55 PASSING
+
+**In Progress:**
+- None - FEAT-004 is complete and ready for production
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Git commit and push changes for FEAT-004. All P0 features are now complete - all 4 foundation features ready for production. Next phase begins with P1 features (FEAT-005 Dashboard/Activity Feed) or frontend implementation (FRONTEND-001 Authentication Screens).
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/docs/PRD/features/[Next Feature PRD - FEAT-005 or FRONTEND-001]
+- .ai-dev/docs/SPECS/API_SPEC.md
+
+Last session summary:
+FEAT-004 Task Assignment & Team Members is COMPLETE:
+- Implemented 7 endpoints: member CRUD, my-tasks, notifications
+- Features: task assignment with validation, member removal with task unassignment, in-app notifications
+- My Tasks: cross-project view, pagination, grouping by project
+- Notifications: list with unread count, mark read (single/all), ownership verification
+- Files created: NotificationsController, NotificationsRoutes
+- Files modified: ProjectsService (removeMember), TasksService (notifications), UserController, NotificationsService, app.ts
+- Tests: 55/55 passing (MEM-U001..U009, MEM-I001..I010)
+- Documentation: Implementation details, report, testing guide
+
+ALL P0 FEATURES NOW COMPLETE (100%):
+- FEAT-001: Authentication & User Management ✅
+- FEAT-002: Project Management (CRUD) ✅
+- FEAT-003: Task Management (CRUD + Statuses) ✅
+- FEAT-004: Task Assignment & Team Members ✅
+
+Metrics:
+- Backend implementation: 100% of P0 features
+- Tests: 179 tests passing across all features
+- Build: Clean TypeScript compilation
+- Overall progress: 50% (all foundation features complete)
+
+Next task:
+Option 1: Implement FEAT-005 Dashboard & Activity Feed (API + backend)
+Option 2: Start FRONTEND-001 Authentication Screens (UI for login/register/invite)
+Option 3: Git commit and push current changes
+
+Choose based on sprint priority!
+```

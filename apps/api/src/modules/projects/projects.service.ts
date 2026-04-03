@@ -547,6 +547,7 @@ export class ProjectsService {
   /**
    * Remove a member from a project
    * - Cannot remove if last admin
+   * - Unassigns all open tasks from this member
    * - Admin only
    */
   static async removeMember(
@@ -595,6 +596,17 @@ export class ProjectsService {
         );
       }
     }
+
+    // Unassign all open tasks from this member (Story 2 AC2)
+    await prisma.task.updateMany({
+      where: {
+        project_id: projectId,
+        assignee_id: member.user_id,
+        deleted_at: null,
+        status: { in: ['TODO', 'IN_PROGRESS', 'IN_REVIEW', 'BLOCKED'] },
+      },
+      data: { assignee_id: null },
+    });
 
     // Soft-delete member
     await prisma.projectMember.update({
