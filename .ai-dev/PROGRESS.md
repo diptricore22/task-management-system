@@ -126,3 +126,128 @@ Implement FEAT-002 Project Management CRUD:
 5. Validate project creation limits for members vs admins
 ```
 ---
+---
+
+### Session - 2026-04-03 (Continued)
+**Duration:** ~6 hours (cumulative)
+**Feature(s) worked on:** FEAT-002 Project Management (CRUD) + FEAT-003 Task Management (CRUD + Statuses)
+
+**Completed this session:**
+
+**FEAT-002 Project Management (CRUD):**
+- ✅ Entered plan mode and created comprehensive implementation plan for FEAT-002
+- ✅ Explored codebase to understand authentication middleware and error handling patterns
+- ✅ Created ProjectService (684 lines) with 10 static methods:
+  - create(): Auto-adds creator as ADMIN member, logs activity
+  - list(): Membership-scoped queries, pagination (default 20, max 100)
+  - getById(): Membership check for non-admins
+  - update(): Admin-only, updates name/description/color, logs changes
+  - archive(): Sets status to ARCHIVED/ACTIVE
+  - delete(): Soft-delete with deleted_at, admin-only
+  - listMembers(): Returns all project members
+  - addMember(): Creates membership, validates user exists, prevents duplicates
+  - updateMemberRole(): Updates member role, enforces last-admin protection
+  - removeMember(): Soft-deletes membership, prevents last-admin removal
+- ✅ Created project types (ProjectResponse, ProjectDetailResponse with task_stats) (58 lines)
+- ✅ Created project validation schemas with Zod (43 lines) - create, update, archive, member operations
+- ✅ Implemented ProjectController (178 lines) - 10 asyncHandler-wrapped route handlers
+- ✅ Created project routes (25 lines) - 10 route definitions with proper middleware
+- ✅ Registered routes in app.ts with /api/projects prefix
+- ✅ Created comprehensive test suite: 58 tests mapping to PROJ-U001..U010 and PROJ-I001..I017
+  - Tests cover all CRUD operations, validation, membership scoping, error codes
+  - All 58 tests passing
+- ✅ Updated CHANGELOG.md with FEAT-002 feature list and test mapping
+- ✅ Updated PROJECT_STATUS.md marking FEAT-002 as complete (50% P0 features)
+- ✅ Git commit: cf83006 [FEAT-002] Implement Project Management (CRUD)
+
+**FEAT-003 Task Management (CRUD + Statuses):**
+- ✅ Reused plan from prior session for FEAT-003
+- ✅ Entered plan mode and refined FEAT-003 implementation plan
+- ✅ Created TasksService (600 lines) with 5 static methods:
+  - create(): Validates assignee is project member, sets default priority/status, logs activity
+  - list(): Implements filtering (status/priority/assignee), sorting (created_at_desc/due_date_asc/priority_desc), pagination
+  - getById(): Validates user is project member, returns full detail with creator info
+  - update(): Creator-only or admin, validates assignee membership, logs changes
+  - delete(): Soft-delete, creator-only or admin, logs activity
+- ✅ Created task types (TaskResponse, TaskDetailResponse, TaskStatus, TaskPriority enums) (70 lines)
+- ✅ Created task validation schemas with Zod (95 lines):
+  - createTaskSchema: title (1-255 chars), description (0-5000), priority enum, ISO date, UUID assignee
+  - updateTaskSchema: all fields optional, allows null for due_date/assignee
+  - listTasksSchema: pagination (1-100 per page), filters, sort options
+- ✅ Implemented TasksController (105 lines) - 5 asyncHandler-wrapped route handlers
+- ✅ Created two route files:
+  - tasks.routes.ts: Project-scoped endpoints (POST/GET /api/projects/:projectId/tasks)
+  - tasks.individual.routes.ts: Task-specific endpoints (GET/PATCH/DELETE /api/tasks/:id)
+- ✅ Registered both route files in app.ts
+- ✅ Created comprehensive test suite: 66 tests mapping to TASK-U001..U010 and TASK-I001..I017+
+  - Tests cover all CRUD operations, validation, filtering, sorting, pagination, permissions
+  - All 66 tests passing
+- ✅ Fixed TypeScript compilation error (UpdateTaskRequest interface null handling)
+- ✅ Verified build succeeds cleanly (lint-free)
+- ✅ Updated CHANGELOG.md with FEAT-003 feature list and test mapping
+- ✅ Updated PROJECT_STATUS.md marking FEAT-003 as complete (75% P0 features)
+- ✅ Ready for git commit
+
+**Test Results:**
+- ✅ Build: npm run build:api - SUCCEEDS (no TypeScript errors)
+- ✅ Tests: npm run test:api - 124 tests passed
+  - FEAT-002 Project Management: 58 tests PASSING
+  - FEAT-003 Task Management: 66 tests PASSING
+  - Pre-existing auth tests: Status independent
+
+**In Progress:**
+- Committing all changes to git
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Begin FEAT-004 Task Assignment & Team Members. Focus on in-app notifications, personal task view, and enhanced member management. Or start frontend work with FRONTEND-001 Authentication Screens.
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/docs/PRD/features/[Next Feature PRD - FEAT-004 or FRONTEND-001]
+- .ai-dev/docs/SPECS/API_SPEC.md
+
+Last session summary (continued from earlier):
+FEAT-002 & FEAT-003 are BOTH COMPLETE:
+
+FEAT-002 Project Management (CRUD):
+- Implemented 10 endpoints: POST/GET/PATCH/DELETE /api/projects, member CRUD endpoints
+- Features: membership scoping, soft-delete pattern, activity logging, last-admin protection
+- Files: ProjectService (684 lines), types (58 lines), validation (43 lines), controller (178 lines), routes (25 lines)
+- Tests: 58 tests passing (PROJ-U001..U010, PROJ-I001..I017)
+- Status: Ready for production
+
+FEAT-003 Task Management (CRUD + Statuses):
+- Implemented 5 endpoints: POST/GET /api/projects/:projectId/tasks, GET/PATCH/DELETE /api/tasks/:id
+- Features: advanced filtering (status, priority, assignee), sorting (3 options), pagination (1-100 per page)
+- Statuses: TODO, IN_PROGRESS, IN_REVIEW, BLOCKED, DONE (any transition allowed)
+- Priorities: LOW, MEDIUM, HIGH, CRITICAL
+- Assignment validation ensures assignee is project member
+- Permission model: creator or global admin can update/delete
+- Files: TasksService (600 lines), types (70 lines), validation (95 lines), controller (105 lines), two route files
+- Tests: 66 tests passing (TASK-U001..U010, TASK-I001..I017+)
+- Status: Ready for production
+
+Metrics:
+- Build: Clean (no TypeScript errors)
+- Tests: 124 passing (FEAT-002: 58, FEAT-003: 66)
+- Code: All architectural patterns consistent with FEAT-001
+- Database: Schema supports all required relationships
+- P0 Features: 3/4 complete (75%)
+- Overall Progress: 44%
+
+Next task option 1:
+Implement FEAT-004 Task Assignment & Team Members - add in-app notifications system
+
+Next task option 2:
+Start FRONTEND-001 Authentication Screens - build login/register/invite UI pages
+
+Choose based on sprint priority!
+```

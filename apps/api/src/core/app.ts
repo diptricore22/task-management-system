@@ -14,6 +14,8 @@ import { errorHandler } from '@/middlewares/error.middleware';
 import authRoutes from '@/modules/auth/auth.routes';
 import userRoutes from '@/modules/users/user.routes';
 import projectRoutes from '@/modules/projects/projects.routes';
+import projectTaskRoutes from '@/modules/tasks/tasks.routes';
+import taskRoutes from '@/modules/tasks/tasks.individual.routes';
 // ... other route imports
 
 export function createApp(): express.Application {
@@ -107,7 +109,8 @@ export function createApp(): express.Application {
   app.use('/api/auth', authRoutes);
   app.use('/api/users', userRoutes);
   app.use('/api/projects', projectRoutes);
-  // app.use('/api/tasks', taskRoutes);
+  app.use('/api/projects/:projectId/tasks', projectTaskRoutes);
+  app.use('/api/tasks', taskRoutes);
   // app.use('/api/assignments', assignmentRoutes);
   // app.use('/api/dashboard', dashboardRoutes);
   // app.use('/api/comments', commentRoutes);

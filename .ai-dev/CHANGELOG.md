@@ -32,6 +32,34 @@
 ## [Unreleased]
 
 ### Added
+- **FEAT-002: Project Management (CRUD)** - Complete project management system with membership scoping
+  - 10 REST endpoints: POST/GET/PATCH/DELETE /api/projects, GET/POST/PATCH/DELETE /api/projects/:id/members
+  - Project CRUD with name, description, and color properties
+  - Soft-delete pattern with deleted_at timestamp (never hard-deleted)
+  - Membership scoping: admins see all projects, non-admins see only projects they're members of
+  - Member management with role-based access (ADMIN, MEMBER, VIEWER)
+  - Last-admin protection preventing removal of final project admin
+  - Project archival status (ACTIVE/ARCHIVED separate from soft-delete)
+  - Task stats in project responses (counts by status: todo, in_progress, in_review, blocked, done)
+  - Activity logging on all CRUD operations (project_created, project_updated, project_archived, project_deleted, member_added, member_removed, member_role_updated)
+  - Comprehensive test coverage: 58 tests mapping to PROJ-U001..U010 and PROJ-I001..I017
+
+- **FEAT-003: Task Management (CRUD + Statuses)** - Complete task management with filtering, sorting, and pagination
+  - 5 core REST endpoints: POST/GET /api/projects/:projectId/tasks, GET/PATCH/DELETE /api/tasks/:id
+  - Task CRUD with title, description, status, priority, due_date, and assignee properties
+  - Status workflow with 5 states: TODO, IN_PROGRESS, IN_REVIEW, BLOCKED, DONE (any transition allowed)
+  - Priority levels: LOW, MEDIUM, HIGH, CRITICAL (default: MEDIUM)
+  - Due date support (optional, ISO date format)
+  - Task assignment with validation (assignee must be project member)
+  - Soft-delete pattern with deleted_at timestamp (never hard-deleted)
+  - Permission model: task creator or global admin can update/delete, all project members can view
+  - List endpoint with advanced filtering: by status, priority, assignee_id
+  - Sorting options: created_at_desc (default), due_date_asc, priority_desc
+  - Pagination with configurable page/limit (min 1, max 100 per page, default 20)
+  - Activity logging on all CRUD operations (task_created, task_updated, task_deleted)
+  - Comprehensive test coverage: 66 tests mapping to TASK-U001..U010 and TASK-I001..I017+
+
+---
 
 ## [0.1.0] — 2026-04-03
 

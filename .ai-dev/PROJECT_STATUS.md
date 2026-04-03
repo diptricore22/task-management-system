@@ -7,8 +7,8 @@
 | Feature ID | Feature Name | Priority | Status | Notes |
 |---|---|---|---|---|
 | FEAT-001 | Authentication & User Management | P0 | ✅ COMPLETE | JWT auth, rate limiting, role-based access, 8 endpoints implemented |
-| FEAT-002 | Project Management (CRUD) | P0 | not started | Complete project CRUD with membership management, role-based access |
-| FEAT-003 | Task Management (CRUD + Statuses) | P0 | not started | Complete task CRUD with status workflow, filtering, assignments |
+| FEAT-002 | Project Management (CRUD) | P0 | ✅ COMPLETE | 10 endpoints, membership scoping, soft-delete, activity logging, 58 tests |
+| FEAT-003 | Task Management (CRUD + Statuses) | P0 | ✅ COMPLETE | 5 endpoints, filtering/sorting/pagination, role-based access, 66 tests |
 | FEAT-004 | Task Assignment & Team Members | P0 | not started | In-app notifications, personal task view, enhanced member management |
 | FEAT-005 | Dashboard & Activity Feed | P1 | not started | Frontend dashboard, project health cards, activity feed, admin table |
 | FEAT-006 | Comments & Task Activity Log | P1 | not started | Comments CRUD, 15-min edit window, activity feed, role-based access |
@@ -27,21 +27,28 @@
 
 ## Progress Overview
 ```
-P0 Features: 1 / 4 complete (25%)
+P0 Features: 3 / 4 complete (75%)
 P1 Features: 0 / 12 complete (0%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [==========                ] 16%
+Overall:     [==================        ] 44%
 ```
 
 ## Current Sprint Focus
-- **Active:** FEAT-001 (Complete - Ready for FEAT-002)
-- **Next:** FEAT-002 Project Management Implementation
+- **Active:** FEAT-002 & FEAT-003 (Complete - Ready for FEAT-004)
+- **Next:** FEAT-004 Task Assignment & Team Members
 
 ## Blockers
 _None_
 
 ## Recent Changes
-- **2026-04-03:** FEAT-001 Authentication & User Management completed
-  - Database schema finalized and migrated
-  - All 8 auth endpoints implemented and tested
-  - Seed data created with test accounts
+- **2026-04-03:** FEAT-002 Project Management (CRUD) completed
+  - 10 endpoints implemented (POST/GET/PATCH/DELETE /api/projects, member management)
+  - Membership scoping, soft-delete pattern, activity logging
+  - 58 comprehensive tests passing (PROJ-U001..U010, PROJ-I001..I017)
+  
+- **2026-04-03:** FEAT-003 Task Management (CRUD + Statuses) completed
+  - 5 core endpoints implemented (POST/GET /api/projects/:projectId/tasks, /api/tasks/:id GET/PATCH/DELETE)
+  - Advanced filtering (status, priority, assignee), sorting (created_at_desc, due_date_asc, priority_desc)
+  - Pagination support (20 per page default, max 100)
+  - Task creator/admin-only deletion, role-based access control
+  - 66 comprehensive tests passing (TASK-U001..U010, TASK-I001..I017+)
