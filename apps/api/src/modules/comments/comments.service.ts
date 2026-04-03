@@ -5,6 +5,9 @@
 
 import { prisma } from '@/lib/prisma';
 import { AppError } from '@/middlewares/error.middleware';
+import { NotificationsService } from '@/modules/notifications/notifications.service';
+import { NotificationPreferencesService } from '@/modules/notifications/notification-preferences.service';
+import { EmailService } from '@/modules/notifications/email.service';
 import type {
   CreateCommentRequest,
   UpdateCommentRequest,
@@ -77,6 +80,45 @@ export class CommentsService {
         },
       },
     });
+
+    // Send notification to task assignee if there is one (Story 1 AC2)
+    if (task.assignee_id && task.assignee_id !== userId) {
+      const assignee = await prisma.user.findFirst({
+        where: { id: task.assignee_id, deleted_at: null },
+      });
+
+      if (assignee) {
+        // Create in-app notification
+        await NotificationsService.create(
+          task.assignee_id,
+          'task_commented',
+          {
+            title: `New comment: "${task.title}"`,
+            message: `${comment.author.name} commented on "${task.title}"`,
+            task_id: taskId,
+            project_id: task.project_id,
+          },
+          taskId
+        );
+
+        // Send email if enabled (Story 4 AC1)
+        const emailEnabled = await NotificationPreferencesService.isEmailNotificationEnabled(
+          task.assignee_id,
+          'commented'
+        );
+
+        if (emailEnabled && assignee.email) {
+          await EmailService.sendTaskCommentedEmail(
+            assignee.email,
+            assignee.name,
+            task.title,
+            task.project.name,
+            comment.author.name,
+            taskId
+          );
+        }
+      }
+    }
 
     return this.formatComment(comment);
   }

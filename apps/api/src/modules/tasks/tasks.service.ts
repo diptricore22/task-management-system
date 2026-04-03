@@ -6,6 +6,8 @@
 import { prisma } from '@/lib/prisma';
 import { AppError } from '@/middlewares/error.middleware';
 import { NotificationsService } from '@/modules/notifications/notifications.service';
+import { NotificationPreferencesService } from '@/modules/notifications/notification-preferences.service';
+import { EmailService } from '@/modules/notifications/email.service';
 import type {
   CreateTaskRequest,
   UpdateTaskRequest,
@@ -156,6 +158,23 @@ export class TasksService {
           },
           task.id
         );
+
+        // Send email if enabled
+        const emailEnabled = await NotificationPreferencesService.isEmailNotificationEnabled(
+          task.assignee_id,
+          'assigned'
+        );
+
+        if (emailEnabled && assignee.email) {
+          await EmailService.sendTaskAssignedEmail(
+            assignee.email,
+            assignee.name,
+            task.title,
+            project.name,
+            userInDb.name,
+            task.id
+          );
+        }
       }
     }
 
@@ -574,6 +593,23 @@ export class TasksService {
           },
           taskId
         );
+
+        // Send email if enabled
+        const emailEnabled = await NotificationPreferencesService.isEmailNotificationEnabled(
+          data.assignee_id,
+          'assigned'
+        );
+
+        if (emailEnabled && newAssignee.email) {
+          await EmailService.sendTaskAssignedEmail(
+            newAssignee.email,
+            newAssignee.name,
+            updated.title,
+            project.name,
+            actor?.name || 'A team member',
+            taskId
+          );
+        }
       }
     }
 

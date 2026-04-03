@@ -6,6 +6,21 @@
 import { logger } from '@/lib/logger';
 import { config } from '@/config/env';
 
+// Initialize Resend client if API key is available
+let resendClient: any = null;
+let resendAvailable = false;
+
+if (config.email.resendApiKey) {
+  try {
+    const { Resend } = require('resend');
+    resendClient = new Resend(config.email.resendApiKey);
+    resendAvailable = true;
+    logger.info('✅ Resend email provider initialized');
+  } catch (error) {
+    logger.warn('⚠️  Resend library not available. Install with: npm install resend');
+  }
+}
+
 export class EmailService {
   /**
    * Send "due tomorrow" reminder email
@@ -37,19 +52,30 @@ export class EmailService {
         'View Task'
       );
 
-      // TODO: Integrate with email provider (Resend, SendGrid, Nodemailer, etc.)
-      // For now, log the email that would be sent
-      logger.info(`[EMAIL] To: ${toEmail}, Subject: ${subject}`);
-      logger.debug(`[EMAIL] Content preview: ${htmlContent.substring(0, 200)}...`);
+      // Send via email provider if configured, otherwise log
+      if (resendAvailable && resendClient) {
+        try {
+          const response = await resendClient.emails.send({
+            from: config.email.from,
+            to: toEmail,
+            subject: subject,
+            html: htmlContent,
+          });
 
-      // Example implementation with Resend:
-      // const response = await resend.emails.send({
-      //   from: "notifications@tasksystem.app",
-      //   to: toEmail,
-      //   subject: subject,
-      //   html: htmlContent,
-      // });
-      // if (!response.data?.id) throw new Error("Failed to send email");
+          if (!response.data?.id) {
+            throw new Error(`Failed to send email: ${response.error?.message || 'Unknown error'}`);
+          }
+
+          logger.info(`[EMAIL SENT] To: ${toEmail}, Subject: ${subject}, MessageId: ${response.data.id}`);
+        } catch (error) {
+          logger.error(`Failed to send due tomorrow email via Resend to ${toEmail}:`, error);
+          throw error;
+        }
+      } else {
+        // Fallback: log the email that would be sent
+        logger.info(`[EMAIL] To: ${toEmail}, Subject: ${subject}`);
+        logger.debug(`[EMAIL] Content preview: ${htmlContent.substring(0, 200)}...`);
+      }
     } catch (error) {
       logger.error(`Failed to send due tomorrow email to ${toEmail}:`, error);
       throw error;
@@ -86,17 +112,30 @@ export class EmailService {
         'View Overdue Task'
       );
 
-      logger.info(`[EMAIL] To: ${toEmail}, Subject: ${subject}`);
-      logger.debug(`[EMAIL] Content preview: ${htmlContent.substring(0, 200)}...`);
+      // Send via email provider if configured, otherwise log
+      if (resendAvailable && resendClient) {
+        try {
+          const response = await resendClient.emails.send({
+            from: config.email.from,
+            to: toEmail,
+            subject: subject,
+            html: htmlContent,
+          });
 
-      // TODO: Send via email provider
-      // const response = await resend.emails.send({
-      //   from: "notifications@tasksystem.app",
-      //   to: toEmail,
-      //   subject: subject,
-      //   html: htmlContent,
-      // });
-      // if (!response.data?.id) throw new Error("Failed to send email");
+          if (!response.data?.id) {
+            throw new Error(`Failed to send email: ${response.error?.message || 'Unknown error'}`);
+          }
+
+          logger.info(`[EMAIL SENT] To: ${toEmail}, Subject: ${subject}, MessageId: ${response.data.id}`);
+        } catch (error) {
+          logger.error(`Failed to send overdue email via Resend to ${toEmail}:`, error);
+          throw error;
+        }
+      } else {
+        // Fallback: log the email that would be sent
+        logger.info(`[EMAIL] To: ${toEmail}, Subject: ${subject}`);
+        logger.debug(`[EMAIL] Content preview: ${htmlContent.substring(0, 200)}...`);
+      }
     } catch (error) {
       logger.error(`Failed to send overdue email to ${toEmail}:`, error);
       throw error;
@@ -126,10 +165,30 @@ export class EmailService {
         'View Task'
       );
 
-      logger.info(`[EMAIL] To: ${toEmail}, Subject: ${subject}`);
-      logger.debug(`[EMAIL] Content preview: ${htmlContent.substring(0, 200)}...`);
+      // Send via email provider if configured, otherwise log
+      if (resendAvailable && resendClient) {
+        try {
+          const response = await resendClient.emails.send({
+            from: config.email.from,
+            to: toEmail,
+            subject: subject,
+            html: htmlContent,
+          });
 
-      // TODO: Send via email provider
+          if (!response.data?.id) {
+            throw new Error(`Failed to send email: ${response.error?.message || 'Unknown error'}`);
+          }
+
+          logger.info(`[EMAIL SENT] To: ${toEmail}, Subject: ${subject}, MessageId: ${response.data.id}`);
+        } catch (error) {
+          logger.error(`Failed to send task assigned email via Resend to ${toEmail}:`, error);
+          throw error;
+        }
+      } else {
+        // Fallback: log the email that would be sent
+        logger.info(`[EMAIL] To: ${toEmail}, Subject: ${subject}`);
+        logger.debug(`[EMAIL] Content preview: ${htmlContent.substring(0, 200)}...`);
+      }
     } catch (error) {
       logger.error(`Failed to send task assigned email to ${toEmail}:`, error);
       throw error;
@@ -159,10 +218,30 @@ export class EmailService {
         'View Comment'
       );
 
-      logger.info(`[EMAIL] To: ${toEmail}, Subject: ${subject}`);
-      logger.debug(`[EMAIL] Content preview: ${htmlContent.substring(0, 200)}...`);
+      // Send via email provider if configured, otherwise log
+      if (resendAvailable && resendClient) {
+        try {
+          const response = await resendClient.emails.send({
+            from: config.email.from,
+            to: toEmail,
+            subject: subject,
+            html: htmlContent,
+          });
 
-      // TODO: Send via email provider
+          if (!response.data?.id) {
+            throw new Error(`Failed to send email: ${response.error?.message || 'Unknown error'}`);
+          }
+
+          logger.info(`[EMAIL SENT] To: ${toEmail}, Subject: ${subject}, MessageId: ${response.data.id}`);
+        } catch (error) {
+          logger.error(`Failed to send task commented email via Resend to ${toEmail}:`, error);
+          throw error;
+        }
+      } else {
+        // Fallback: log the email that would be sent
+        logger.info(`[EMAIL] To: ${toEmail}, Subject: ${subject}`);
+        logger.debug(`[EMAIL] Content preview: ${htmlContent.substring(0, 200)}...`);
+      }
     } catch (error) {
       logger.error(`Failed to send task commented email to ${toEmail}:`, error);
       throw error;

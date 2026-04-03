@@ -46,6 +46,100 @@ Next task:
 
 ---
 
+### Session - 2026-04-03 (Session 4)
+**Duration:** ~2 hours
+**Feature(s) worked on:** FEAT-009 Frontend Base Layout Shell
+
+**Completed this session:**
+- ✅ Created auth infrastructure (auth.context.tsx):
+  - Global AuthContext with AuthProvider wrapper for entire app
+  - Session initialization on app startup via GET /api/users/me
+  - Automatic token refresh every 13 minutes (before 15-min access token expiry)
+  - Session persistence in localStorage with sessionManager utility
+  - Auth actions: login, register, logout, refreshToken with error handling
+- ✅ Created 4 auth hooks:
+  - useAuth.ts - simple hook to access AuthContext with user/loading/error state
+  - useLogin.ts - login form state management with form submission handler
+  - useRegister.ts - registration form with password confirmation validation
+  - useLogout.ts - logout with cleanup and redirect to login
+- ✅ Created session utilities (session.ts):
+  - Persist/retrieve user from localStorage for session recovery
+  - Clear session on logout
+  - Calculate token refresh interval (13 minutes)
+- ✅ Updated root layout.tsx:
+  - Wrapped entire app with AuthProvider component
+  - Maintains existing metadata, globals.css, and layout structure
+- ✅ Created ProtectedRoute wrapper component (auth/components/ProtectedRoute.tsx):
+  - Checks authentication status and redirects unauthenticated users to /auth/login
+  - Role-based access control: accepts single role or array of roles (admin, member, viewer)
+  - Shows loading spinner during auth check
+  - Displays 403 error with redirect option for insufficient permissions
+- ✅ Created layout components:
+  - AppLayout.tsx - main layout with responsive sidebar + header, state for mobile toggle
+  - AuthLayout.tsx - minimal centered layout for login/register with branding, gradient background
+  - Header.tsx - top navigation with user avatar, dropdown menu, notifications, mobile menu toggle
+  - Sidebar.tsx - role-aware navigation sidebar with sections (Main, Workspace, Admin), active route highlighting, user profile footer
+- ✅ Created error handling & loading components:
+  - ErrorBoundary.tsx - React error boundary class component with retry functionality
+  - LoadingSpinner.tsx - animated spinner with pulsing center dot for auth checks
+  - SkeletonLoader.tsx - placeholder skeletons (card, list, table, inline variants)
+- ✅ Integrated all pages with proper layout wrappers:
+  - /auth/login - LoginForm with AuthLayout, useLogin hook, form validation
+  - /auth/register - RegisterForm with AuthLayout, useRegister hook, password match validation
+  - /dashboard - DashboardContent with ProtectedRoute + AppLayout
+  - /projects - ProjectsContent with ProtectedRoute + AppLayout
+  - /settings - SettingsContent with tabbed navigation (Profile/Account), ProtectedRoute + AppLayout
+  - /settings/account - AccountContent with tabbed navigation, ProtectedRoute + AppLayout
+  - /admin/reports - ReportsContent with ProtectedRoute requiredRole="admin" + AppLayout
+  - /admin/users - UsersContent with ProtectedRoute requiredRole="admin" + AppLayout
+  - /tasks/my-tasks - MyTasksContent with ProtectedRoute + AppLayout
+- ✅ TypeScript compilation successful (no errors)
+- ✅ Updated CHANGELOG.md with FEAT-009 feature description
+- ✅ Updated PROJECT_STATUS.md - marked FEAT-009 complete, P1 progress 46% (6/13), overall 71%
+- ✅ Updated PROGRESS.md with this session entry
+
+**In Progress:**
+- None - all tasks complete, ready to commit
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Commit FEAT-009 changes to git with descriptive commit message. Then either:
+> 1. Continue with FRONTEND-001 Frontend Authentication (build out full auth forms with validation), or
+> 2. Start FRONTEND-002 Frontend Project Management (implement project CRUD UI)
+> Recommend FRONTEND-001 first since auth is foundational.
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/docs/ARCHITECTURE.md (frontend section)
+
+Last session summary:
+FEAT-009 Frontend Base Layout Shell completed:
+- Global auth context with session management and token refresh
+- 4 auth hooks (useAuth, useLogin, useRegister, useLogout)
+- ProtectedRoute component with role-based access control
+- Layout components (AppLayout, AuthLayout, Header, Sidebar)
+- Error handling (ErrorBoundary, LoadingSpinner, SkeletonLoader)
+- 9 page templates integrated with proper layout wrappers
+- TypeScript clean, tests pass (web app has no test script yet)
+- FEAT-009 marked COMPLETE, P1 progress 46%, overall 71%
+
+Next task:
+Start FRONTEND-001 Frontend Authentication Screens & Flows:
+- Build full auth forms (login, register) with form validation using Zod
+- Implement password strength indicators and confirmation
+- Add terms of service acceptance checkbox for registration
+- Implement auth error handling and success redirects
+- Test authentication flow end-to-end
+```
+---
+
 ### Session - 2026-04-03 (Session 3)
 **Duration:** ~3 hours
 **Feature(s) worked on:** FEAT-007 Labels, Priorities & Filtering

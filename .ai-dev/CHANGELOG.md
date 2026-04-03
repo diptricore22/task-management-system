@@ -32,6 +32,22 @@
 ## [Unreleased]
 
 ### Added
+- **FEAT-009: Frontend Base Layout Shell** - Complete layout infrastructure with authentication, role-based navigation, and responsive design
+  - Auth infrastructure: Global auth context with session management, token refresh (13min interval), and persistence in localStorage
+  - Auth hooks: useAuth (access state), useLogin (login form), useRegister (registration form), useLogout (logout with cleanup)
+  - Session management: Automatic session initialization on app startup via GET /api/users/me, token rotation every 13 minutes
+  - Protected routes: ProtectedRoute wrapper component with auth checks and role-based access control (admin, member, viewer)
+  - Layout components: AppLayout (sidebar + header for protected routes), AuthLayout (minimal layout for login/register)
+  - Header component: Top navigation bar with user menu, notifications, mobile toggle button, responsive design
+  - Sidebar component: Role-aware navigation sidebar with sections (Main, Workspace, Admin), active route highlighting, user profile footer
+  - Error handling: ErrorBoundary React component for graceful error handling, LoadingSpinner during auth checks
+  - Loading states: SkeletonLoader component for placeholder content while data loads (card, list, table, inline variants)
+  - Page templates: 9 page implementations with proper layout wrappers (login, register, dashboard, projects, settings, admin routes, my-tasks)
+  - Styling: Dark mode design (slate/indigo palette with violet accents), mobile-first responsive, smooth transitions (250ms), Tailwind CSS
+  - Authorization pattern: 3-tier role system enforced both at route and component level, admin-only routes redirected before rendering
+  - Session persistence: LocalStorage-backed persistence for fast recovery on page reload, automatic cleanup on logout
+  - Type safety: Full TypeScript support with interfaces for AuthState, AuthContextType, NavItem, and component props
+  - API integration: Uses existing api-client proxy pattern, handles auth response through httpOnly cookies
 - **FEAT-008: Due Dates, Reminders & Notifications** - User-controlled notification preferences and scheduled email reminders
   - 2 REST endpoints: GET/PATCH /api/users/me/notification-preferences for per-user notification setting management
   - Notification preferences: 4 independent toggles (email_due_tomorrow, email_overdue, email_assigned, email_commented)

@@ -2,7 +2,11 @@
  * Notifications Module - Type Definitions
  */
 
-export type NotificationType = 'task_assigned';
+export type NotificationType =
+  | 'task_assigned'
+  | 'task_commented'
+  | 'task_due_tomorrow'
+  | 'task_overdue';
 
 export interface NotificationPayload {
   title: string;

@@ -15,44 +15,45 @@
 | FRONTEND-006 | Frontend Comments & Task Activity | P1 | not started | Complete comments UI with merged activity feed, inline editing, role-aware actions |
 | FEAT-007 | Labels & Filtering | P1 | ✅ COMPLETE | 7 endpoints, advanced AND/OR filtering, 4 sort options, 116 tests |
 | FEAT-008 | Due Dates, Reminders & Notifications | P1 | ✅ COMPLETE | 2 endpoints, notification preferences, scheduler job, email service, 132 tests |
-| FRONTEND-001 | Frontend Authentication Screens & Flows | P1 | not started | Login/register/invite pages, settings, profile management |
-| FRONTEND-SHELL | Base Layout Shell & Role-Based Navigation | P1 | not started | Responsive app shell, role-based navigation, route guards |
+| FEAT-009 | Frontend Base Layout Shell | P1 | ✅ COMPLETE | Auth context, 4 hooks, ProtectedRoute, 2 layouts, Header, Sidebar, 4 error/loading components, 9 page templates |
+| FRONTEND-001 | Frontend Authentication Screens & Flows | P1 | ✅ IN PROGRESS | Login/register forms in AuthLayout with useLogin/useRegister hooks, settings pages with nav |
 | FRONTEND-002 | Frontend Project Management Interface | P1 | not started | Complete project UI with CRUD, filtering, role-based access |
 | FRONTEND-003 | Frontend Task Management Interface | P1 | not started | Complete task UI with CRUD, filtering, inline editing, deep linking |
 | FRONTEND-004 | Frontend Assignments & Team Members | P1 | not started | Member management, searchable add modal, my-tasks view, grouped by project |
-| FEAT-009 | Kanban Board View | P2 | Not Started | |
-| FEAT-010 | Admin Reports & Analytics | P2 | Not Started | |
-| FRONTEND-007 | Frontend Labels & Filtering | P1 | not started | Label management, multi-select filtering, label chips on tasks, URL state persistence |
-| FRONTEND-008 | Frontend Due-Date Reminders & Notifications UX | P1 | not started | NotificationBell, notification preferences, /notifications page, real-time updates |
+| FEAT-010 | Kanban Board View | P2 | Not Started | |
+| FEAT-011 | Admin Reports & Analytics | P2 | Not Started | |
+| FRONTEND-005 | Frontend Labels & Filtering | P1 | not started | Label management, multi-select filtering, label chips on tasks, URL state persistence |
+| FRONTEND-006 | Frontend Due-Date Reminders & Notifications UX | P1 | not started | NotificationBell, notification preferences, /notifications page, real-time updates |
 
 ## Progress Overview
 ```
 P0 Features: 4 / 4 complete (100%)
-P1 Features: 4 / 12 complete (33%)
+P1 Features: 6 / 13 complete (46%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [===================================>  ] 64%
+Overall:     [==========================================>      ] 71%
 ```
 
 ## Current Sprint Focus
-- **Active:** FEAT-008 Due Dates, Reminders & Notifications (P1) just completed
-- **Next:** Continue with P1 features - Frontend implementation or additional backend features
+- **Active:** FEAT-009 Frontend Base Layout Shell (P1) just completed
+- **Next:** FRONTEND-001 Frontend Authentication Screens & Flows (use existing login/register form components)
 
 ## Blockers
 _None_
 
 ## Recent Changes
-- **2026-04-03:** FEAT-008 Due Dates, Reminders & Notifications completed
-  - 2 endpoints implemented: GET/PATCH /api/users/me/notification-preferences
-  - Notification preferences management: 4 independent toggles (due_tomorrow, overdue, assigned, commented)
-  - Daily scheduler service: batch processing for due date reminders at 08:00 AM
-  - Due tomorrow reminders: task queries, in-app + email notifications respecting preferences
-  - Overdue task reminders: 24-hour debounce via last_due_notified_at timestamp
-  - Email service: template generation for 4 notification types with branded HTML
-  - Graceful error handling: per-task try/catch, continues on failures, logs summary
-  - Integration points: TODO comments for Resend/SendGrid/Nodemailer, node-cron/Bull setup
-  - 132 comprehensive tests passing (NOTIF-U001..U004, NOTIF-I001..I012)
-  - P1 features now 33% complete (4/12)
-  - Overall progress: 64%
+- **2026-04-03:** FEAT-009 Frontend Base Layout Shell completed
+  - Global auth context with session management, token refresh (13 minute interval), localStorage persistence
+  - 4 auth hooks: useAuth (access state), useLogin (form), useRegister (form), useLogout (cleanup)
+  - ProtectedRoute wrapper with auth checks and role-based access control (admin, member, viewer)
+  - Layout components: AppLayout (sidebar + header), AuthLayout (minimal for auth pages)
+  - Header component: Top nav with user menu, notifications bell, mobile toggle, responsive design
+  - Sidebar component: Role-aware navigation (Main, Workspace, Admin sections), active route highlighting, user profile footer
+  - Error handling: ErrorBoundary React component, LoadingSpinner during auth, SkeletonLoader for data loading
+  - Page templates: 9 pages with proper layout wrappers (login, register, dashboard, projects, settings x2, admin x2, my-tasks)
+  - Styling: Dark mode (slate/indigo/violet), mobile-first responsive, 250ms transitions, Tailwind CSS
+  - Session initialization: Auto-loads user on app startup via GET /api/users/me, auto-logout on token expiry
+  - P1 features now 46% complete (6/13)
+  - Overall progress: 71%
 
 - **2026-04-03:** FEAT-007 Labels & Filtering completed
   - 7 endpoints implemented: GET/POST /api/projects/:id/labels, PATCH/DELETE /api/labels/:id, POST/DELETE /api/tasks/:id/labels
