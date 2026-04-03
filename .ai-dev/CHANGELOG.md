@@ -48,6 +48,31 @@
   - Session persistence: LocalStorage-backed persistence for fast recovery on page reload, automatic cleanup on logout
   - Type safety: Full TypeScript support with interfaces for AuthState, AuthContextType, NavItem, and component props
   - API integration: Uses existing api-client proxy pattern, handles auth response through httpOnly cookies
+
+- **FEAT-005: Dashboard & Activity Feed (Frontend)** - Complete dashboard with personal task summary, project health cards, and real-time activity feed
+  - 1 TypeScript types file: DashboardSummary, ProjectHealthCard, ActivityFeedItem, ActivityFeedResponse, ProjectAdminOverview interfaces
+  - 4 React hooks for dashboard data:
+    - `useDashboardSummary` - Fetches personal task stats (overdue, due today, in progress counts)
+    - `useDashboardProjects` - Fetches project health cards with completion % and task breakdowns
+    - `useDashboardActivity` - Fetches activity feed with "load more" pagination
+    - `useDashboardAdminOverview` - Fetches admin-only project health table (conditional on role)
+  - 5 React components for dashboard UI:
+    - `StatCard` - Reusable stat card with color variants (blue/green/yellow/red) and dark mode support
+    - `DashboardProjectCard` - Simplified project card showing completion %, task counts, color indicator, and clickable navigation
+    - `ActivityFeedItem` - Single activity item with avatar, actor name, action description, relative timestamps (date-fns)
+    - `ActivityFeed` - Activity list container with "Load More" button and empty state handling
+    - `ProjectHealthTable` - Admin-only table with sortable columns, health indicators (🔴/🟡/🟢), project navigation
+  - Dashboard page implementation at `/dashboard` route with parallel data fetching
+  - Responsive layout: Admin table → Stats row → Two-column grid (7/12 projects, 5/12 activity) on desktop, stacked on mobile
+  - Backend API integration: GET /api/dashboard/summary, /projects, /activity, /admin/overview (all fully implemented)
+  - Dark mode styling with Tailwind CSS across all components
+  - Loading states with skeleton loaders during initial fetch
+  - Empty states: "No projects yet", "No recent activity", "All caught up! 🎉" for zero overdue tasks
+  - Health indicators: Red (3+ blocked tasks), Yellow (moderate issues), Green (healthy project)
+  - Activity feed with append-style pagination for seamless browsing
+  - Role-based rendering: Admin table only shown to users with admin role
+  - Real-time dashboard updates on navigation/refetch
+
 - **FEAT-008: Due Dates, Reminders & Notifications** - User-controlled notification preferences and scheduled email reminders
   - 2 REST endpoints: GET/PATCH /api/users/me/notification-preferences for per-user notification setting management
   - Notification preferences: 4 independent toggles (email_due_tomorrow, email_overdue, email_assigned, email_commented)

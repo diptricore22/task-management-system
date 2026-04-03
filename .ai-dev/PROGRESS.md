@@ -905,3 +905,77 @@ Implement FEAT-004 Phase 2-5 according to plan in `.claude/plans/concurrent-napp
 - Phase 4: 3 route files (update project settings page, new routes)
 - Phase 5: FEAT-003 integration files
 ```
+
+---
+
+### Session - 2026-04-03 | FEAT-005 Dashboard & Activity Feed Frontend
+**Duration:** ~2 hours
+**Feature(s) worked on:** FEAT-005 Dashboard & Activity Feed (Frontend Implementation)
+
+**Completed this session:**
+- ✅ Created dashboard types file (dashboard.types.ts)
+  - DashboardSummary interface (overdue, due_today, in_progress counts)
+  - ProjectHealthCard interface with task breakdowns and completion %
+  - ActivityFeedItem interface with actor, action, task/project links
+  - ActivityFeedResponse interface with pagination
+  - ProjectAdminOverview interface with health indicators
+- ✅ Implemented 4 React hooks for dashboard data
+  - useDashboardSummary: Fetch personal task statistics (GET /api/dashboard/summary)
+  - useDashboardProjects: Fetch user's project health cards (GET /api/dashboard/projects)
+  - useDashboardActivity: Fetch activity feed with "load more" pagination (GET /api/dashboard/activity)
+  - useDashboardAdminOverview: Admin-only project overview with role check (GET /api/dashboard/admin/overview)
+- ✅ Created 5 UI components for dashboard
+  - StatCard: Reusable stat card with color variants (blue/green/yellow/red), icon, subtitle
+  - DashboardProjectCard: Simplified project card with completion %, task breakdown, clickable navigation
+  - ActivityFeedItem: Single activity item with avatar, relative timestamp (date-fns), clickable links
+  - ActivityFeed: Activity list container with "Load More" button and empty state
+  - ProjectHealthTable: Admin-only sortable table with health indicators (🔴 red, 🟡 yellow, 🟢 green)
+- ✅ Updated dashboard page (apps/web/src/app/dashboard/page.tsx)
+  - Replaced placeholder with real components
+  - Implemented responsive layout: Admin table → Stats row → Two-column grid (Projects 7/12 + Activity 5/12)
+  - Parallel data fetching with 4 separate hooks for independent loading states
+  - Special handling for "All caught up! 🎉" when overdue_empty is true
+  - Mobile-first responsive design (desktop 2-col, mobile stacked)
+- ✅ Fixed build errors
+  - Fixed ActivityFeedItemProps typo (space in interface name)
+  - Fixed useDashboardProjects typo (space in import name)
+  - npm run build succeeded with all TypeScript checks passing
+- ✅ Updated documentation
+  - Added FEAT-005 entry to CHANGELOG.md with all 11 files created
+  - Updated PROJECT_STATUS.md: marked FEAT-005 as ✅ COMPLETE
+  - Updated progress metrics: P1 features 69% (9/13), Overall 75%
+
+**In Progress:**
+- None - FEAT-005 complete
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Create git commit for FEAT-005, then implement FEAT-006: Comments & Task Activity Log (Frontend). See user's original feature request for FEAT-006 requirements.
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/PROJECT_STATUS.md
+
+Last session summary:
+FEAT-005 Dashboard & Activity Feed Frontend completed:
+- Created 1 types file, 4 hooks, 5 components (11 files total)
+- Updated dashboard page with responsive layout and parallel data fetching
+- Implemented "load more" pagination for activity feed
+- Created admin-only health table with sortable columns
+- Fixed 2 build errors and verified npm build success
+- Updated all documentation (CHANGELOG, PROJECT_STATUS, PROGRESS)
+
+Next task:
+1. Create git commit for FEAT-005 implementation
+2. Begin FEAT-006: Comments & Task Activity Log Frontend
+   - Route: /projects/[id]/tasks/[taskId] (enhance with comments tab)
+   - Features: Comment CRUD, 15-min edit window, merged activity feed, role-aware actions
+   - Components: CommentForm, CommentList, CommentItem, ActivityLogItem, MergedFeed
+```

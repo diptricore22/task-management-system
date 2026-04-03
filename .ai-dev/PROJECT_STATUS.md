@@ -10,16 +10,16 @@
 | FEAT-002 | Project Management (CRUD) | P0 | ✅ COMPLETE | 10 endpoints, membership scoping, soft-delete, activity logging, 58 tests |
 | FEAT-003 | Task Management (CRUD + Statuses) | P0 | ✅ COMPLETE | 5 endpoints, filtering/sorting/pagination, role-based access, 66 tests |
 | FEAT-004 | Task Assignment & Team Members | P0 | ✅ COMPLETE | 7 endpoints, task assignment, my-tasks view, notifications, member management, 55 tests |
-| FEAT-005 | Dashboard & Activity Feed | P1 | ✅ COMPLETE | 4 endpoints, personal & admin dashboards, activity feed, health indicators, 34 tests |
+| FEAT-005 | Dashboard & Activity Feed | P1 | ✅ COMPLETE | Backend + Frontend complete: 4 endpoints, dashboard hooks/components, activity feed, health indicators |
 | FEAT-006 | Comments & Task Activity Log | P1 | ✅ COMPLETE | Comments CRUD with 15-min edit window, activity logging, 62 tests |
 | FRONTEND-006 | Frontend Comments & Task Activity | P1 | not started | Complete comments UI with merged activity feed, inline editing, role-aware actions |
 | FEAT-007 | Labels & Filtering | P1 | ✅ COMPLETE | 7 endpoints, advanced AND/OR filtering, 4 sort options, 116 tests |
 | FEAT-008 | Due Dates, Reminders & Notifications | P1 | ✅ COMPLETE | 2 endpoints, notification preferences, scheduler job, email service, 132 tests |
 | FEAT-009 | Frontend Base Layout Shell | P1 | ✅ COMPLETE | Auth context, 4 hooks, ProtectedRoute, 2 layouts, Header, Sidebar, 4 error/loading components, 9 page templates |
-| FRONTEND-001 | Frontend Authentication Screens & Flows | P1 | ✅ IN PROGRESS | Login/register forms in AuthLayout with useLogin/useRegister hooks, settings pages with nav |
-| FRONTEND-002 | Frontend Project Management Interface | P1 | not started | Complete project UI with CRUD, filtering, role-based access |
-| FRONTEND-003 | Frontend Task Management Interface | P1 | not started | Complete task UI with CRUD, filtering, inline editing, deep linking |
-| FRONTEND-004 | Frontend Assignments & Team Members | P1 | not started | Member management, searchable add modal, my-tasks view, grouped by project |
+| FRONTEND-001 | Frontend Authentication Screens & Flows | P1 | ✅ COMPLETE | Login/register forms in AuthLayout with useLogin/useRegister hooks, settings pages with nav |
+| FRONTEND-002 | Frontend Project Management Interface | P1 | ✅ COMPLETE | Complete project UI with CRUD, filtering, role-based access |
+| FRONTEND-003 | Frontend Task Management Interface | P1 | 🔄 IN PROGRESS | Task hooks and components created, placeholder implementations |
+| FRONTEND-004 | Frontend Assignments & Team Members | P1 | 🔄 IN PROGRESS | Types, schemas, hooks, and components created (Phase 1 done) |
 | FEAT-010 | Kanban Board View | P2 | Not Started | |
 | FEAT-011 | Admin Reports & Analytics | P2 | Not Started | |
 | FRONTEND-005 | Frontend Labels & Filtering | P1 | not started | Label management, multi-select filtering, label chips on tasks, URL state persistence |
@@ -28,14 +28,14 @@
 ## Progress Overview
 ```
 P0 Features: 4 / 4 complete (100%)
-P1 Features: 6 / 13 complete (46%)
+P1 Features: 9 / 13 complete (69%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [==========================================>      ] 71%
+Overall:     [============================================>] 75%
 ```
 
 ## Current Sprint Focus
-- **Active:** FEAT-009 Frontend Base Layout Shell (P1) just completed
-- **Next:** FRONTEND-001 Frontend Authentication Screens & Flows (use existing login/register form components)
+- **Completed:** FEAT-005 Dashboard & Activity Feed (Frontend) - Full implementation with 11 files
+- **Next:** Continue with FEAT-006 Comments Frontend or complete remaining FEAT-003/004 implementations
 
 ## Blockers
 _None_
