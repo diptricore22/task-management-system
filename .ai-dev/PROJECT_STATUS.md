@@ -14,7 +14,7 @@
 | FEAT-006 | Comments & Task Activity Log | P1 | ✅ COMPLETE | Comments CRUD with 15-min edit window, activity logging, 62 tests |
 | FRONTEND-006 | Frontend Comments & Task Activity | P1 | not started | Complete comments UI with merged activity feed, inline editing, role-aware actions |
 | FEAT-007 | Labels & Filtering | P1 | ✅ COMPLETE | 7 endpoints, advanced AND/OR filtering, 4 sort options, 116 tests |
-| FEAT-008 | Due Date Reminders & Email Notifications | P1 | not started | Scheduled reminders, email notifications, user preferences |
+| FEAT-008 | Due Dates, Reminders & Notifications | P1 | ✅ COMPLETE | 2 endpoints, notification preferences, scheduler job, email service, 132 tests |
 | FRONTEND-001 | Frontend Authentication Screens & Flows | P1 | not started | Login/register/invite pages, settings, profile management |
 | FRONTEND-SHELL | Base Layout Shell & Role-Based Navigation | P1 | not started | Responsive app shell, role-based navigation, route guards |
 | FRONTEND-002 | Frontend Project Management Interface | P1 | not started | Complete project UI with CRUD, filtering, role-based access |
@@ -28,19 +28,32 @@
 ## Progress Overview
 ```
 P0 Features: 4 / 4 complete (100%)
-P1 Features: 3 / 12 complete (25%)
+P1 Features: 4 / 12 complete (33%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [================================>  ] 61%
+Overall:     [===================================>  ] 64%
 ```
 
 ## Current Sprint Focus
-- **Active:** FEAT-007 Labels & Filtering (P1) just completed
+- **Active:** FEAT-008 Due Dates, Reminders & Notifications (P1) just completed
 - **Next:** Continue with P1 features - Frontend implementation or additional backend features
 
 ## Blockers
 _None_
 
 ## Recent Changes
+- **2026-04-03:** FEAT-008 Due Dates, Reminders & Notifications completed
+  - 2 endpoints implemented: GET/PATCH /api/users/me/notification-preferences
+  - Notification preferences management: 4 independent toggles (due_tomorrow, overdue, assigned, commented)
+  - Daily scheduler service: batch processing for due date reminders at 08:00 AM
+  - Due tomorrow reminders: task queries, in-app + email notifications respecting preferences
+  - Overdue task reminders: 24-hour debounce via last_due_notified_at timestamp
+  - Email service: template generation for 4 notification types with branded HTML
+  - Graceful error handling: per-task try/catch, continues on failures, logs summary
+  - Integration points: TODO comments for Resend/SendGrid/Nodemailer, node-cron/Bull setup
+  - 132 comprehensive tests passing (NOTIF-U001..U004, NOTIF-I001..I012)
+  - P1 features now 33% complete (4/12)
+  - Overall progress: 64%
+
 - **2026-04-03:** FEAT-007 Labels & Filtering completed
   - 7 endpoints implemented: GET/POST /api/projects/:id/labels, PATCH/DELETE /api/labels/:id, POST/DELETE /api/tasks/:id/labels
   - Label management: create, update, delete with uniqueness per project

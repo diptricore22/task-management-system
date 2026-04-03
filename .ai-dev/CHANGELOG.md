@@ -32,6 +32,22 @@
 ## [Unreleased]
 
 ### Added
+- **FEAT-008: Due Dates, Reminders & Notifications** - User-controlled notification preferences and scheduled email reminders
+  - 2 REST endpoints: GET/PATCH /api/users/me/notification-preferences for per-user notification setting management
+  - Notification preferences: 4 independent toggles (email_due_tomorrow, email_overdue, email_assigned, email_commented)
+  - Default preferences: due_tomorrow=true, overdue=true, assigned=true, commented=false
+  - Daily scheduler service: runs at 08:00 AM to process due date reminders with batch processing
+  - Due tomorrow reminders: finds tasks due next day (status != DONE, has assignee), creates in-app + email notifications
+  - Overdue task reminders: finds overdue incomplete tasks with 24-hour debounce via last_due_notified_at timestamp
+  - Email service with templates: 4 notification types (due_tomorrow, overdue, assigned, commented) with branded HTML
+  - Email template features: responsive design, inline styles, brand colors, CTA buttons, unsubscribe links, task deep links
+  - Graceful job failure handling: per-task try/catch, continues processing on failures, logs summary with success/error counts
+  - Email provider integration points: TODO comments for Resend, SendGrid, Nodemailer setup
+  - Scheduler integration points: TODO comments for node-cron and Bull queue setup
+  - Authorization: users can only manage own preferences, no cross-user data access
+  - In-app notifications always enabled: only email channel can be toggled off
+  - Comprehensive test coverage: 132 tests covering all user stories and integration scenarios (NOTIF-U001..U004, NOTIF-I001..I012)
+
 - **FEAT-007: Labels, Priorities & Filtering** - Advanced label management and powerful multi-criteria filtering
   - 7 REST endpoints: GET/POST /api/projects/:id/labels, PATCH/DELETE /api/labels/:id, POST/DELETE /api/tasks/:id/labels, GET /api/tasks/:id/labels
   - Label management: create, update (name/color), delete labels per project

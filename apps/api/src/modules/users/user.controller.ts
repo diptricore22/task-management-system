@@ -6,6 +6,8 @@ import { asyncHandler } from '@/middlewares/error.middleware';
 import { prisma } from '@/lib/prisma';
 import AuthService from '../auth/auth.service';
 import { updateProfileSchema } from '../auth/auth.validation';
+import { NotificationPreferencesService } from '../notifications/notification-preferences.service';
+import { updateNotificationPreferencesSchema } from '../notifications/notification-preferences.validation';
 
 export class UserController {
   // GET /api/users/me
@@ -137,6 +139,32 @@ export class UserController {
           totalPages: Math.ceil(total / limitNum),
         },
       },
+    });
+  });
+
+  // GET /api/users/me/notification-preferences
+  static getNotificationPreferences = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+
+    const preferences = await NotificationPreferencesService.getPreferences(userId);
+
+    res.json({
+      success: true,
+      data: preferences,
+    });
+  });
+
+  // PATCH /api/users/me/notification-preferences
+  static updateNotificationPreferences = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = updateNotificationPreferencesSchema.parse(req.body);
+    const userId = req.user!.id;
+
+    const preferences = await NotificationPreferencesService.updatePreferences(userId, validatedData);
+
+    res.json({
+      success: true,
+      message: 'Notification preferences updated successfully',
+      data: preferences,
     });
   });
 }

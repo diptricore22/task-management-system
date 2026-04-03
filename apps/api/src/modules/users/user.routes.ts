@@ -12,6 +12,8 @@ router.use(authMiddleware);
 
 router.get('/me', UserController.getCurrentUser);
 router.patch('/me', UserController.updateProfile);
-router.get('/me/tasks', UserController.getMyTasks); // Future implementation
+router.get('/me/tasks', UserController.getMyTasks);
+router.get('/me/notification-preferences', UserController.getNotificationPreferences);
+router.patch('/me/notification-preferences', UserController.updateNotificationPreferences);
 
 export default router;
