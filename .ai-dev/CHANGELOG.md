@@ -32,6 +32,21 @@
 ## [Unreleased]
 
 ### Added
+- **FEAT-007: Labels, Priorities & Filtering** - Advanced label management and powerful multi-criteria filtering
+  - 7 REST endpoints: GET/POST /api/projects/:id/labels, PATCH/DELETE /api/labels/:id, POST/DELETE /api/tasks/:id/labels, GET /api/tasks/:id/labels
+  - Label management: create, update (name/color), delete labels per project
+  - Label uniqueness per project: prevents duplicate names within same project
+  - Task labeling: add/remove labels with many-to-many support
+  - Advanced filtering: status (OR logic), priority (OR), labels (OR), assignee, due date range (all fields AND together)
+  - 4 sort options: created_at_desc (default), due_date_asc (nulls last), priority_desc (CRITICAL>HIGH>MEDIUM>LOW), title_asc
+  - Filter query params: ?status=TODO,IN_PROGRESS&labels=l1,l2&sort=due_date_asc&page=1&limit=20
+  - Pagination: 20 default, 100 max, with page/limit params
+  - Hex color validation: #RRGGBB format, case-insensitive normalization
+  - Cascading label deletion: removes from all tasks when label deleted
+  - Permission scoping: admin-only label management, member+ can assign labels
+  - URL-safe filter persistence: query params enable shareable filter links
+  - Comprehensive test coverage: 116 tests covering all user stories and edge cases (LABEL-U001..U004, LABEL-I001..I016)
+
 - **FEAT-006: Comments & Task Activity Log** - Task collaboration with comment CRUD and immutable activity tracking
   - 4 REST endpoints: GET/POST /api/tasks/:id/comments, PATCH/DELETE /api/comments/:id
   - Comment posting: members can post comments on tasks in their projects with author metadata

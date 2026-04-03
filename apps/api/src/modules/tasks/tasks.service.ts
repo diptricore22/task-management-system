@@ -165,7 +165,8 @@ export class TasksService {
   /**
    * List tasks with filtering, sorting, and pagination
    * - Validate user is project member
-   * - Apply filters and sorting
+   * - Apply filters (status, priority, labels, assignee, due date range)
+   * - Supports AND/OR logic: OR within field, AND across fields
    * - Return paginated results
    */
   static async list(
@@ -213,11 +214,46 @@ export class TasksService {
       }
     }
 
-    // Build where clause with filters
+    // Build where clause with advanced filters
     const where: any = { project_id: projectId, deleted_at: null };
-    if (filters.status) where.status = filters.status;
-    if (filters.priority) where.priority = filters.priority;
-    if (filters.assignee_id) where.assignee_id = filters.assignee_id;
+
+    // Status filter: OR logic if multiple statuses provided
+    if (filters.statuses && filters.statuses.length > 0) {
+      where.status = { in: filters.statuses };
+    }
+
+    // Priority filter: OR logic if multiple priorities provided
+    if (filters.priorities && filters.priorities.length > 0) {
+      where.priority = { in: filters.priorities };
+    }
+
+    // Assignee filter: exact match
+    if (filters.assigneeId) {
+      where.assignee_id = filters.assigneeId;
+    }
+
+    // Due date range filter
+    if (filters.dueDateFrom || filters.dueDateTo) {
+      where.due_date = {};
+      if (filters.dueDateFrom) {
+        where.due_date.gte = new Date(filters.dueDateFrom);
+      }
+      if (filters.dueDateTo) {
+        const endOfDay = new Date(filters.dueDateTo);
+        endOfDay.setHours(23, 59, 59, 999);
+        where.due_date.lte = endOfDay;
+      }
+    }
+
+    // Label filter: if labels provided, use many-to-many join
+    let labelFilter: any = undefined;
+    if (filters.labelIds && filters.labelIds.length > 0) {
+      labelFilter = {
+        some: {
+          label_id: { in: filters.labelIds },
+        },
+      };
+    }
 
     // Build orderBy based on sort parameter
     const orderBy: any = {};
@@ -225,6 +261,8 @@ export class TasksService {
       orderBy.due_date = 'asc';
     } else if (sort === 'priority_desc') {
       orderBy.priority = 'desc';
+    } else if (sort === 'title_asc') {
+      orderBy.title = 'asc';
     } else {
       orderBy.created_at = 'desc'; // default
     }
@@ -234,24 +272,31 @@ export class TasksService {
     const limitNum = Math.min(Math.max(1, limit), 100);
     const skip = (pageNum - 1) * limitNum;
 
-    // Fetch tasks and count
-    const [tasks, total] = await Promise.all([
-      prisma.task.findMany({
-        where,
-        include: {
-          assignee: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
+    // Fetch tasks and count with label filtering via many-to-many
+    let tasksQuery: any = {
+      where,
+      include: {
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
           },
         },
-        skip,
-        take: limitNum,
-        orderBy,
-      }),
-      prisma.task.count({ where }),
+      },
+      skip,
+      take: limitNum,
+      orderBy,
+    };
+
+    // Apply label filter if provided
+    if (labelFilter) {
+      tasksQuery.where.labels = labelFilter;
+    }
+
+    const [tasks, total] = await Promise.all([
+      prisma.task.findMany(tasksQuery),
+      prisma.task.count({ where: tasksQuery.where }),
     ]);
 
     const taskResponses = tasks.map((t) => this.formatTaskResponse(t));
