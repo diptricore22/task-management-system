@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '../types';
+import { Task } from '../types/tasks.types';
 
 interface TaskStatusSelectProps {
   value: Task['status'];
@@ -9,9 +9,9 @@ interface TaskStatusSelectProps {
 
 export function TaskStatusSelect({ value, onChange, disabled }: TaskStatusSelectProps) {
   const statusOptions: Array<{ value: Task['status']; label: string }> = [
-    { value: 'todo', label: 'To Do' },
-    { value: 'in_progress', label: 'In Progress' },
-    { value: 'completed', label: 'Completed' },
+    { value: 'TODO', label: 'To Do' },
+    { value: 'IN_PROGRESS', label: 'In Progress' },
+    { value: 'DONE', label: 'Done' },
   ];
 
   return (

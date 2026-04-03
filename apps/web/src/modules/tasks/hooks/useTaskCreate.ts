@@ -58,8 +58,8 @@ export function useTaskCreate(): UseTaskCreateReturn {
 
   const validateField = useCallback((field: keyof CreateTaskFormData, value: unknown): boolean => {
     try {
-      const schema = createTaskSchema.pick({ [field]: true });
-      schema.parse({ [field]: value });
+      // Cast to any to work around TypeScript strict pick checking
+      (createTaskSchema as any).pick({ [field]: true }).parse({ [field]: value });
 
       switch (field) {
         case 'title':

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Task } from '../types';
+import { Task } from '../types/tasks.types';
 import { TaskStatusSelect } from './TaskStatusSelect';
 import { TaskPrioritySelect } from './TaskPrioritySelect';
 
@@ -15,8 +15,8 @@ export function TaskForm({ task, onSubmit, onCancel, loading }: TaskFormProps) {
     task || {
       title: '',
       description: '',
-      status: 'todo',
-      priority: 'medium',
+      status: 'TODO',
+      priority: 'MEDIUM',
     }
   );
 
@@ -48,13 +48,13 @@ export function TaskForm({ task, onSubmit, onCancel, loading }: TaskFormProps) {
       </div>
 
       <TaskStatusSelect
-        value={formData.status || 'todo'}
+        value={formData.status || 'TODO'}
         onChange={(status) => setFormData({ ...formData, status })}
         disabled={loading}
       />
 
       <TaskPrioritySelect
-        value={formData.priority || 'medium'}
+        value={formData.priority || 'MEDIUM'}
         onChange={(priority) => setFormData({ ...formData, priority })}
         disabled={loading}
       />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '../types';
+import { Task } from '../types/tasks.types';
 
 interface TaskPrioritySelectProps {
   value: Task['priority'];
@@ -9,9 +9,9 @@ interface TaskPrioritySelectProps {
 
 export function TaskPrioritySelect({ value, onChange, disabled }: TaskPrioritySelectProps) {
   const priorityOptions: Array<{ value: Task['priority']; label: string }> = [
-    { value: 'low', label: 'Low' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'high', label: 'High' },
+    { value: 'LOW', label: 'Low' },
+    { value: 'MEDIUM', label: 'Medium' },
+    { value: 'HIGH', label: 'High' },
   ];
 
   return (

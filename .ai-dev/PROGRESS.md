@@ -814,3 +814,94 @@ Reference files:
 
 Start by completing the 2 remaining hooks (useTaskDelete, useTaskUpdate) then move to UI components. All implementations should follow the Projects module pattern exactly.
 ```
+
+---
+
+### Session - 2026-04-03 | FEAT-004 Task Assignment & Team Members Frontend (Phase 1)
+**Duration:** ~3 hours
+**Feature(s) worked on:** FEAT-004 Task Assignment & Team Members (Frontend Phase 1)
+
+**Completed this session:**
+- ✅ Created assignments types file (assignments.types.ts)
+  - ProjectMember, ProjectMembersListResponse interfaces
+  - UserSearchResult interface with isAlreadyMember flag
+  - MyTask, MyTasksListResponse interfaces with completion tracking
+  - MemberRole type definition (admin/member/viewer)
+  - Request/Response types (AddMemberRequest, UpdateMemberRoleRequest)
+- ✅ Created assignments validation schemas (assignments.schema.ts)
+  - memberRoleSchema enum validation
+  - addMemberSchema with userId and role
+  - updateRoleSchema with role field
+  - searchUsersSchema with query and projectId
+- ✅ Created notifications types file (notifications.types.ts)
+  - NotificationType enum (6 types: task_assigned, task_updated, etc.)
+  - Notification interface with full metadata
+  - NotificationsResponse with pagination and unready count
+  - ReadNotificationRequest interface
+- ✅ Implemented 8 React hooks for member and task management
+  - useProjectMembers: Fetch members with pagination
+  - useAddMember: Form state, validation, API call
+  - useRemoveMember: Delete member with error handling
+  - useUpdateMemberRole: Change member roles
+  - useMyTasks: Fetch user's assigned tasks with completion tracking
+  - useAssigneeSelect: User search with debouncing, selection tracking
+  - useNotifications: Fetch notifications with polling support (configurable interval)
+  - useMarkNotificationRead: Mark individual notifications as read
+- ✅ Created 8 UI components for member and task management
+  - AddMemberModal: User search dropdown, role selection, form validation
+  - MemberListTable: Paginated table with avatar, role badges, action buttons
+  - RemoveMemberModal: Confirmation dialog with warning
+  - MemberRoleModal: Role update with change preview
+  - AssigneeSelect: Dropdown with user search and selection display
+  - MyTasksList: Grouped view (pending/done) with summary cards
+  - ProjectMembersPage: Main page with header, add button, modals orchestration
+  - NotificationBell: Icon with unread badge, dropdown menu, mark-as-read button
+- ✅ Created 2 new routes
+  - /projects/[id]/settings/members: Project member management
+  - /tasks/my-tasks: Personal task dashboard
+- ✅ Fixed multiple TypeScript errors
+  - Fixed useProfileUpdate cleanup function return type
+  - Fixed useRegister validateField using full form validation instead of pick()
+  - Fixed CreateProjectModal handleSubmitAndClose parameter type mismatch
+  - Fixed ProjectDetailPage role comparison (ADMIN vs admin)
+  - Fixed TaskForm default status/priority values (uppercase enum)
+  - Fixed TaskStatusSelect/TaskPrioritySelect enum values (all lowercase to uppercase)
+  - Fixed task component imports (relative path to absolute)
+  - Fixed useTaskCreate validateField with `as any` cast
+- ✅ Built and verified entire project
+  - npm run build succeeded with all TypeScript checks passing
+  - No compilation errors or warnings (except module type webpack warning)
+
+**In Progress:**
+- None - Phase 1 complete with Phase 2-5 pending
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Begin FEAT-004 Phase 2: Create remaining task hooks and components. See `/home/tricore121/.claude/plans/concurrent-napping-jellyfish.md` for detailed plan with Phase 2-5 structure.
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/docs/PRD/features/FEAT_004_assignments.md
+
+Last session summary:
+FEAT-004 Task Assignment & Team Members Frontend Phase 1 completed:
+- Created types, schemas, and 8 hooks for assignments/notifications
+- Implemented 8 UI components (modals, tables, lists, bell icon)  
+- Created 2 new routes (/projects/[id]/settings/members, /tasks/my-tasks)
+- Fixed 12+ TypeScript errors across multiple modules
+- npm build successful - all code compiles
+
+Next task:
+Implement FEAT-004 Phase 2-5 according to plan in `.claude/plans/concurrent-napping-jellyfish.md`:
+- Phase 2: 8 hooks for task assignment, role updates, and remaining notifications (7 hooks total)
+- Phase 3: 8 UI components for task management and role management (TaskAssignmentModal, etc.)
+- Phase 4: 3 route files (update project settings page, new routes)
+- Phase 5: FEAT-003 integration files
+```

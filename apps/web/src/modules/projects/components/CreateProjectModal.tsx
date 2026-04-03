@@ -36,12 +36,9 @@ export function CreateProjectModal({
     validateField,
   } = useProjectCreate();
 
-  const handleSubmitAndClose = async (
-    e: React.FormEvent
-  ) => {
-    e.preventDefault();
+  const handleSubmitAndClose = async () => {
     try {
-      await handleCreate(e);
+      await handleCreate();
       onSuccess?.();
       onClose();
     } catch {

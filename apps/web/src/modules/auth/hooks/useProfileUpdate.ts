@@ -153,14 +153,10 @@ export function useProfileUpdate(initialUser: User | null): UseProfileUpdateRetu
       setOriginalLastName(updatedUser.lastName || '');
       setOriginalEmail(updatedUser.email || '');
 
-      setSuccess('Profile updated successfully');
-
-      // Auto-hide success message after 5 seconds
       const timer = setTimeout(() => {
         setSuccess(null);
       }, 5000);
 
-      return () => clearTimeout(timer);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);

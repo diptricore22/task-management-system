@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Task } from '../types';
+import { Task } from '../types/tasks.types';
 import { TaskForm } from './TaskForm';
 
 interface TaskDetailPanelProps {
@@ -49,7 +49,7 @@ export function TaskDetailPanel({ task, onClose, onUpdate, onDelete }: TaskDetai
                 <strong>Priority:</strong> {task.priority}
               </div>
               <div>
-                <strong>Created:</strong> {task.createdAt}
+                <strong>Created:</strong> {task.created_at}
               </div>
             </div>
             <div className="panel-actions">

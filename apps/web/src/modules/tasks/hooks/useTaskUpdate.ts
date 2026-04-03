@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Task } from '../types';
+import { Task } from '../types/tasks.types';
 
 interface UseTaskUpdateOptions {
   onSuccess?: (task: Task) => void;

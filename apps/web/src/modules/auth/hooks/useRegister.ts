@@ -74,24 +74,25 @@ export function useRegister(): UseRegisterReturn {
 
   const validateField = useCallback((field: string): boolean => {
     try {
+      // Validate the entire form to get field-specific errors
       if (field === 'firstName') {
-        registerSchema.pick({ firstName: true }).parse({ firstName });
+        registerSchema.parse({ firstName, lastName, email, password, confirmPassword });
         setFirstNameError(null);
         return true;
       } else if (field === 'lastName') {
-        registerSchema.pick({ lastName: true }).parse({ lastName });
+        registerSchema.parse({ firstName, lastName, email, password, confirmPassword });
         setLastNameError(null);
         return true;
       } else if (field === 'email') {
-        registerSchema.pick({ email: true }).parse({ email });
+        registerSchema.parse({ firstName, lastName, email, password, confirmPassword });
         setEmailError(null);
         return true;
       } else if (field === 'password') {
-        registerSchema.pick({ password: true }).parse({ password });
+        registerSchema.parse({ firstName, lastName, email, password, confirmPassword });
         setPasswordError(null);
         return true;
       } else if (field === 'confirmPassword') {
-        registerSchema.pick({ confirmPassword: true }).parse({ confirmPassword });
+        registerSchema.parse({ firstName, lastName, email, password, confirmPassword });
         if (password !== confirmPassword) {
           setConfirmPasswordError('Passwords do not match');
           return false;
@@ -101,7 +102,7 @@ export function useRegister(): UseRegisterReturn {
       }
     } catch (err) {
       if (err instanceof ZodError) {
-        const fieldError = err.errors[0]?.message;
+        const fieldError = err.errors.find(e => e.path[0] === field)?.message;
         if (field === 'firstName') {
           setFirstNameError(fieldError || null);
         } else if (field === 'lastName') {
@@ -117,8 +118,7 @@ export function useRegister(): UseRegisterReturn {
       return false;
     }
     return true;
-  }, [password]);
-
+  }, [password, firstName, lastName, email, confirmPassword]);
   const handleRegister = useCallback(async (e?: React.FormEvent) => {
     if (e) {
       e.preventDefault();
