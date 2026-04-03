@@ -2,6 +2,7 @@
 
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
 import { AppLayout } from '@/components/layouts/AppLayout';
+import { ProfileForm } from '@/modules/account/components/ProfileForm';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -45,12 +46,7 @@ function SettingsContent() {
       <SettingsNav />
 
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-          Profile Settings
-        </h2>
-        <p className="text-slate-500 dark:text-slate-400 text-center py-8">
-          Profile form component will be implemented here
-        </p>
+        <ProfileForm />
       </div>
     </div>
   );

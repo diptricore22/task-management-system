@@ -1,27 +1,20 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import type { Metadata } from 'next';
+import { useParams } from 'next/navigation';
 import { AuthLayout } from '@/components/layouts/AuthLayout';
-import { useRegister } from '@/modules/auth/hooks/useRegister';
+import { useInviteAccept } from '@/modules/auth/hooks/useInviteAccept';
 import { FormField } from '@/components/form/FormField';
 import { Alert } from '@/components/common/Alert';
 import { PasswordStrengthMeter } from '@/components/common/PasswordStrength';
 
-export const metadata: Metadata = {
-  title: 'Register',
-  description: 'Create your Task Management System account',
-};
-
-function RegisterForm() {
+function InviteAcceptForm({ token }: { token: string }) {
   const firstNameInputRef = useRef<HTMLInputElement>(null);
   const {
     firstName,
     lastName,
-    email,
     password,
     confirmPassword,
-    agreeTerms,
     loading,
     error,
     passwordMatch,
@@ -29,18 +22,15 @@ function RegisterForm() {
     isFormValid,
     firstNameError,
     lastNameError,
-    emailError,
     passwordError,
     confirmPasswordError,
     setFirstName,
     setLastName,
-    setEmail,
     setPassword,
     setConfirmPassword,
-    setAgreeTerms,
-    handleRegister,
+    handleAcceptInvite,
     validateField,
-  } = useRegister();
+  } = useInviteAccept();
 
   // Auto-focus first name field on mount
   useEffect(() => {
@@ -50,7 +40,7 @@ function RegisterForm() {
   }, []);
 
   return (
-    <form onSubmit={handleRegister} className="space-y-4">
+    <form onSubmit={(e) => handleAcceptInvite(token, e)} className="space-y-4">
       {/* Alert for errors */}
       <Alert
         type="error"
@@ -99,25 +89,6 @@ function RegisterForm() {
           required
         />
       </div>
-
-      {/* Email Field */}
-      <FormField
-        label="Email Address"
-        id="email"
-        type="email"
-        value={email}
-        onChange={(value) => {
-          setEmail(value);
-          // Clear error when user starts typing
-          if (emailError) {
-            validateField('email');
-          }
-        }}
-        onBlur={() => validateField('email')}
-        error={emailError}
-        placeholder="you@example.com"
-        required
-      />
 
       {/* Password Field with Strength Meter */}
       <div>
@@ -168,49 +139,46 @@ function RegisterForm() {
         required
       />
 
-      {/* Terms of Service */}
-      <div className="flex items-start gap-3 p-3 bg-slate-700/50 rounded-lg border border-slate-600">
-        <input
-          type="checkbox"
-          id="agreeTerms"
-          checked={agreeTerms}
-          onChange={(e) => setAgreeTerms(e.target.checked)}
-          className="mt-1 w-4 h-4 rounded border-slate-500 text-violet-500 focus:ring-violet-500 cursor-pointer"
-          required
-          aria-label="I agree to the Terms of Service"
-        />
-        <label htmlFor="agreeTerms" className="text-sm text-slate-300 cursor-pointer">
-          I agree to the{' '}
-          <a href="/terms" className="text-violet-400 hover:text-violet-300 font-medium">
-            Terms of Service
-          </a>
-        </label>
-      </div>
-
       {/* Submit Button */}
       <button
         type="submit"
         disabled={loading || !isFormValid}
         className="w-full px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition duration-200"
       >
-        {loading ? 'Creating account...' : 'Create Account'}
+        {loading ? 'Completing registration...' : 'Complete Registration'}
       </button>
-
-      {/* Sign In Link */}
-      <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
-        <span>Already have an account?</span>
-        <a href="/auth/login" className="text-violet-400 hover:text-violet-300 font-medium">
-          Sign In
-        </a>
-      </div>
     </form>
   );
 }
 
-export default function RegisterPage() {
+export default function InvitePage() {
+  const params = useParams();
+  const token = params.token as string;
+
+  if (!token) {
+    return (
+      <AuthLayout title="Invalid Invite" subtitle="The invite link is missing">
+        <div className="text-center">
+          <p className="text-slate-400 mb-6">
+            This invite link appears to be invalid or expired.
+          </p>
+          <a
+            href="/auth/login"
+            className="text-violet-400 hover:text-violet-300 font-medium"
+          >
+            Return to Login
+          </a>
+        </div>
+      </AuthLayout>
+    );
+  }
+
   return (
-    <AuthLayout title="Create Account" subtitle="Join TaskPro today">
-      <RegisterForm />
+    <AuthLayout
+      title="Complete Your Registration"
+      subtitle="Set your password to activate your account"
+    >
+      <InviteAcceptForm token={token} />
     </AuthLayout>
   );
 }
