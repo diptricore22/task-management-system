@@ -11,7 +11,7 @@
 | FEAT-003 | Task Management (CRUD + Statuses) | P0 | ✅ COMPLETE | 5 endpoints, filtering/sorting/pagination, role-based access, 66 tests |
 | FEAT-004 | Task Assignment & Team Members | P0 | ✅ COMPLETE | 7 endpoints, task assignment, my-tasks view, notifications, member management, 55 tests |
 | FEAT-005 | Dashboard & Activity Feed | P1 | ✅ COMPLETE | 4 endpoints, personal & admin dashboards, activity feed, health indicators, 34 tests |
-| FEAT-006 | Comments & Task Activity Log | P1 | not started | Comments CRUD, 15-min edit window, activity feed, role-based access |
+| FEAT-006 | Comments & Task Activity Log | P1 | ✅ COMPLETE | Comments CRUD with 15-min edit window, activity logging, 62 tests |
 | FRONTEND-006 | Frontend Comments & Task Activity | P1 | not started | Complete comments UI with merged activity feed, inline editing, role-aware actions |
 | FEAT-007 | Labels & Filtering | P1 | not started | Complete label management with enhanced task filtering and advanced query support |
 | FEAT-008 | Due Date Reminders & Email Notifications | P1 | not started | Scheduled reminders, email notifications, user preferences |
@@ -28,19 +28,30 @@
 ## Progress Overview
 ```
 P0 Features: 4 / 4 complete (100%)
-P1 Features: 1 / 12 complete (8%)
+P1 Features: 2 / 12 complete (17%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [==========================>  ] 53%
+Overall:     [==============================>  ] 58%
 ```
 
 ## Current Sprint Focus
-- **Active:** FEAT-005 Dashboard & Activity Feed (P1) just completed
-- **Next:** Continue with P1 features - FEAT-006 Comments & Activity Log or Frontend implementation
+- **Active:** FEAT-006 Comments & Task Activity Log (P1) just completed
+- **Next:** Continue with P1 features - Frontend implementation or additional backend features
 
 ## Blockers
 _None_
 
 ## Recent Changes
+- **2026-04-03:** FEAT-006 Comments & Task Activity Log completed
+  - 4 endpoints implemented: GET/POST /api/tasks/:id/comments, PATCH/DELETE /api/comments/:id
+  - Comment CRUD with 15-minute edit window enforcement (server-side)
+  - Activity logging: task_created, status_changed, priority_changed, assignee_changed, due_date_changed
+  - Chronological feed: merged comments + activity logs with pagination (20 default, 100 max)
+  - Soft-delete pattern: deleted_at timestamp for GDPR compliance
+  - Permission scoping: comments scoped to project members, fine-grained authorization
+  - Immutable activity logs: system-generated, no edit/delete operations
+  - 62 comprehensive tests passing (COM-U001..U004, COM-I001..I012)
+  - P1 features now 17% complete (2/12)
+
 - **2026-04-03:** FEAT-005 Dashboard & Activity Feed completed
   - 4 endpoints implemented: GET /api/dashboard/summary, /projects, /activity, /admin/overview
   - Personal dashboard: task summary (overdue, due-today, in-progress counts)

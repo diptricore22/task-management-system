@@ -119,12 +119,22 @@ export class TasksService {
     });
 
     // Log activity
+    const creator = await prisma.user.findFirst({
+      where: { id: userId, deleted_at: null },
+      select: { name: true },
+    });
+
     await prisma.activityLog.create({
       data: {
         project_id: projectId,
+        task_id: task.id,
         actor_id: userId,
         action: 'task_created',
-        payload: { title: task.title, priority: task.priority },
+        payload: {
+          actor_name: creator?.name || 'Unknown',
+          title: task.title,
+          priority: task.priority
+        },
       },
     });
 
@@ -415,15 +425,87 @@ export class TasksService {
       },
     });
 
-    // Log activity
-    await prisma.activityLog.create({
-      data: {
-        project_id: task.project_id,
-        actor_id: userId,
-        action: 'task_updated',
-        payload: updateData,
-      },
+    // Get actor name for activity log
+    const actor = await prisma.user.findFirst({
+      where: { id: userId, deleted_at: null },
+      select: { name: true },
     });
+
+    // Log specific field changes as separate activity entries
+    if (data.status !== undefined && data.status !== task.status) {
+      await prisma.activityLog.create({
+        data: {
+          project_id: task.project_id,
+          task_id: taskId,
+          actor_id: userId,
+          action: 'status_changed',
+          payload: {
+            actor_name: actor?.name || 'Unknown',
+            field: 'status',
+            from_value: task.status,
+            to_value: data.status,
+          },
+        },
+      });
+    }
+
+    if (data.priority !== undefined && data.priority !== task.priority) {
+      await prisma.activityLog.create({
+        data: {
+          project_id: task.project_id,
+          task_id: taskId,
+          actor_id: userId,
+          action: 'priority_changed',
+          payload: {
+            actor_name: actor?.name || 'Unknown',
+            field: 'priority',
+            from_value: task.priority,
+            to_value: data.priority,
+          },
+        },
+      });
+    }
+
+    if (data.assignee_id !== undefined && data.assignee_id !== task.assignee_id) {
+      const newAssigneeName = data.assignee_id ? (await prisma.user.findFirst({
+        where: { id: data.assignee_id, deleted_at: null },
+        select: { name: true },
+      }))?.name || 'Unknown' : 'Unassigned';
+
+      await prisma.activityLog.create({
+        data: {
+          project_id: task.project_id,
+          task_id: taskId,
+          actor_id: userId,
+          action: 'assignee_changed',
+          payload: {
+            actor_name: actor?.name || 'Unknown',
+            field: 'assignee',
+            from_value: task.assignee_id,
+            to_value: data.assignee_id,
+            to_value_name: newAssigneeName,
+          },
+        },
+      });
+    }
+
+    if (data.due_date !== undefined && data.due_date !== task.due_date?.toISOString().split('T')[0]) {
+      const dueDateStr = data.due_date ? new Date(data.due_date).toISOString().split('T')[0] : 'No due date';
+      await prisma.activityLog.create({
+        data: {
+          project_id: task.project_id,
+          task_id: taskId,
+          actor_id: userId,
+          action: 'due_date_changed',
+          payload: {
+            actor_name: actor?.name || 'Unknown',
+            field: 'due_date',
+            from_value: task.due_date ? task.due_date.toISOString().split('T')[0] : 'No due date',
+            to_value: dueDateStr,
+          },
+        },
+      });
+    }
 
     // Create notification if assignee changed and new assignee exists (Story 4 AC1)
     if (data.assignee_id !== undefined && data.assignee_id !== null && data.assignee_id !== task.assignee_id) {

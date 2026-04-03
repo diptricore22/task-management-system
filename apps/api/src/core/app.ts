@@ -18,6 +18,7 @@ import projectTaskRoutes from '@/modules/tasks/tasks.routes';
 import taskRoutes from '@/modules/tasks/tasks.individual.routes';
 import notificationRoutes from '@/modules/notifications/notifications.routes';
 import dashboardRoutes from '@/modules/dashboard/dashboard.routes';
+import commentsRoutes from '@/modules/comments/comments.routes';
 // ... other route imports
 
 export function createApp(): express.Application {
@@ -115,8 +116,8 @@ export function createApp(): express.Application {
   app.use('/api/tasks', taskRoutes);
   app.use('/api/notifications', notificationRoutes);
   app.use('/api/dashboard', dashboardRoutes);
+  app.use('/api/comments', commentsRoutes);
   // app.use('/api/assignments', assignmentRoutes);
-  // app.use('/api/comments', commentRoutes);
   // app.use('/api/labels', labelRoutes);
   // app.use('/api/kanban', kanbanRoutes);
   // app.use('/api/reports', reportRoutes);

@@ -32,6 +32,20 @@
 ## [Unreleased]
 
 ### Added
+- **FEAT-006: Comments & Task Activity Log** - Task collaboration with comment CRUD and immutable activity tracking
+  - 4 REST endpoints: GET/POST /api/tasks/:id/comments, PATCH/DELETE /api/comments/:id
+  - Comment posting: members can post comments on tasks in their projects with author metadata
+  - Comment editing with 15-minute window: server-side enforcement, sets edited_at timestamp, shows "(edited)" label when modified
+  - Comment deletion: author can delete own comment anytime, admin can delete any comment, soft-delete pattern (deleted_at)
+  - Task activity logging: system-generated immutable log tracking status_changed, priority_changed, assignee_changed, due_date_changed, task_created
+  - Chronological activity feed: merged comments + activity logs sorted by created_at, with pagination (default 20, max 100)
+  - Fine-grained field tracking: each activity log includes before/after values (from_value, to_value) for audit trail
+  - Relative time formatting: "2h ago", "3d ago", with "(edited)" marker for edited comments
+  - Human-readable action descriptions: "Alice changed status from TODO to IN_PROGRESS", "Bob changed assignee to Diana"
+  - Permission scoping: comments scoped to project members, activity logs visible to all project members
+  - Immutable activity logs: no edit/delete operations, system-generated only, permanent audit trail
+  - Comprehensive test coverage: 62 tests covering all user stories and integration scenarios (COM-U001..U004, COM-I001..I012)
+
 - **FEAT-005: Dashboard & Activity Feed** - Personal and admin dashboards with efficient aggregation queries
   - 4 REST endpoints: GET /api/dashboard/summary, /projects, /activity, /admin/overview
   - Personal task summary: overdue count, due today count, in progress count with empty state indicator

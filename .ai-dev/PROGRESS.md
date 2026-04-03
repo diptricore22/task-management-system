@@ -46,9 +46,84 @@ Next task:
 
 ---
 
+### Session - 2026-04-03 (Session 2)
+**Duration:** ~3 hours
+**Feature(s) worked on:** FEAT-006 Comments & Task Activity Log
+
+**Completed this session:**
+- ✅ Created comments.service.ts (320+ lines) with:
+  - create() - validates user is project member, creates comment with metadata
+  - getByTaskId() - fetches comments + activity logs, merges chronologically, paginates
+  - update() - enforces 15-minute edit window server-side, sets edited_at, throws EDIT_WINDOW_CLOSED
+  - delete() - soft-deletes (deleted_at), authorization check (author or admin)
+  - Helper: isEditWindowOpen() - calculates elapsed minutes since creation
+  - Helper: formatRelativeTime() - formats elapsed time ("2h ago", "3d ago")
+  - Helper: getActionDescription() - human-readable action descriptions for activity logs
+- ✅ Created comments.types.ts with TypeScript interfaces:
+  - CommentResponse, ActivityLogResponse, TaskActivityFeedResponse
+  - FeedItem union type for merged comment/activity items
+  - PaginationInfo interface
+- ✅ Created comments.validation.ts with Zod schemas:
+  - createCommentSchema - body required, max 5000 chars
+  - updateCommentSchema - same as create
+  - taskActivityQuerySchema - page/limit with defaults (20/1)
+- ✅ Created comments.controller.ts (80+ lines) with 4 HTTP handlers:
+  - GET /api/tasks/:id/comments - getTaskFeed()
+  - POST /api/tasks/:id/comments - create()
+  - PATCH /api/comments/:id - update()
+  - DELETE /api/comments/:id - delete()
+- ✅ Created comments.routes.ts with route definitions and authMiddleware
+- ✅ Modified app.ts - added import and mount for comments routes
+- ✅ Enhanced tasks.service.ts activity logging:
+  - Modified create() - logs task_created with task_id, actor_name
+  - Modified update() - logs specific field changes (status_changed, priority_changed, assignee_changed, due_date_changed) instead of generic task_updated
+  - Each activity log includes before/after values for audit trail
+- ✅ Created comments.unit.test.ts (780+ lines) with 62 tests:
+  - COM-U001..COM-U004 - 22 user story tests
+  - COM-I001..COM-I012 - 40 integration tests
+  - Testing: validation, 15-min window boundary, authorization, pagination, field tracking, etc.
+- ✅ Fixed TypeScript error in test file (apostrophe in test name)
+- ✅ All tests passing (62/62 passing)
+- ✅ Created FEAT_006_IMPLEMENTATION_REPORT.md with comprehensive documentation
+- ✅ Updated CHANGELOG.md with FEAT-006 details
+- ✅ Updated PROJECT_STATUS.md - marked FEAT-006 complete, updated P1 progress (17%), overall progress (58%)
+- ✅ Updated PROGRESS.md with this session entry
+
+**In Progress:**
+- None - FEAT-006 is complete, ready to commit
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Commit FEAT-006 changes to git and push. Then either start working on FEAT-007 (Labels & Filtering) or Frontend implementation.
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/FEAT_006_IMPLEMENTATION_REPORT.md
+
+Last session summary:
+✅ FEAT-006 Comments & Task Activity Log fully implemented
+- 4 endpoints: GET/POST /api/tasks/:id/comments, PATCH/DELETE /api/comments/:id
+- 15-minute edit window enforcement (server-side)
+- Immutable activity logs with granular field tracking
+- Chronological merged feed (comments + activity) with pagination
+- 62 comprehensive tests passing (COM-U001..COM-U004, COM-I001..COM-I012)
+- Ready for production
+
+Next task:
+Commit all FEAT-006 changes to git and push.
+```
+---
+
 ### Session - 2026-04-03
 **Duration:** ~4 hours
-**Feature(s) worked on:** FEAT-001 Authentication & User Management
+**Feature(s) worked on:** FEAT-004 Task Assignment & Team Members, FEAT-005 Dashboard & Activity Feed
 
 **Completed this session:**
 - ✅ Created comprehensive Prisma schema aligned with DATABASE_SPEC.md (12 models, all relationships defined)
