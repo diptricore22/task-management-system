@@ -25,7 +25,7 @@ function PageContent() {
     clearError,
   } = useProjectList();
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="w-full">

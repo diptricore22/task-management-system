@@ -63,44 +63,25 @@ export function useInviteAccept(): UseInviteAcceptReturn {
 
   const validateField = useCallback((field: string): boolean => {
     try {
-      if (field === 'firstName') {
-        inviteAcceptSchema.pick({ firstName: true }).parse({ firstName });
-        setFirstNameError(null);
-        return true;
-      } else if (field === 'lastName') {
-        inviteAcceptSchema.pick({ lastName: true }).parse({ lastName });
-        setLastNameError(null);
-        return true;
-      } else if (field === 'password') {
-        inviteAcceptSchema.pick({ password: true }).parse({ password });
-        setPasswordError(null);
-        return true;
-      } else if (field === 'confirmPassword') {
-        inviteAcceptSchema.pick({ confirmPassword: true }).parse({ confirmPassword });
-        if (password !== confirmPassword) {
-          setConfirmPasswordError('Passwords do not match');
-          return false;
-        }
-        setConfirmPasswordError(null);
-        return true;
-      }
-    } catch (err) {
-      if (err instanceof ZodError) {
-        const fieldError = err.errors[0]?.message;
-        if (field === 'firstName') {
-          setFirstNameError(fieldError || null);
-        } else if (field === 'lastName') {
-          setLastNameError(fieldError || null);
-        } else if (field === 'password') {
-          setPasswordError(fieldError || null);
-        } else if (field === 'confirmPassword') {
-          setConfirmPasswordError(fieldError || null);
-        }
+      // Just validate the entire form object to avoid ZodEffects pick() issues
+      inviteAcceptSchema.parse({ firstName, lastName, password, confirmPassword });
+      setFirstNameError(null);
+      setLastNameError(null);
+      setPasswordError(null);
+      setConfirmPasswordError(null);
+      return true;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        error.errors.forEach((err) => {
+          if (err.path[0] === 'firstName') setFirstNameError(err.message);
+          if (err.path[0] === 'lastName') setLastNameError(err.message);
+          if (err.path[0] === 'password') setPasswordError(err.message);
+          if (err.path[0] === 'confirmPassword') setConfirmPasswordError(err.message);
+        });
       }
       return false;
     }
-    return true;
-  }, [password]);
+  }, [firstName, lastName, password, confirmPassword]);
 
   const handleAcceptInvite = useCallback(async (token: string, e?: React.FormEvent) => {
     if (e) {

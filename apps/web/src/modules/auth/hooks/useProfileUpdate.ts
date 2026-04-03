@@ -49,7 +49,7 @@ export function useProfileUpdate(initialUser: User | null): UseProfileUpdateRetu
   // Initialize form with user data
   useEffect(() => {
     if (initialUser || auth.user) {
-      const user = initialUser || auth.user;
+      const user = (initialUser || auth.user)!;
       setFirstName(user.firstName || '');
       setLastName(user.lastName || '');
       setEmail(user.email || '');

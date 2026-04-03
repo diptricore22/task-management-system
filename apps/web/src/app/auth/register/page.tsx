@@ -71,7 +71,7 @@ function RegisterForm() {
             }
           }}
           onBlur={() => validateField('firstName')}
-          error={firstNameError}
+          error={firstNameError ?? undefined}
           placeholder="John"
           required
         />
@@ -88,7 +88,7 @@ function RegisterForm() {
             }
           }}
           onBlur={() => validateField('lastName')}
-          error={lastNameError}
+          error={lastNameError ?? undefined}
           placeholder="Doe"
           required
         />
@@ -108,7 +108,7 @@ function RegisterForm() {
           }
         }}
         onBlur={() => validateField('email')}
-        error={emailError}
+        error={emailError ?? undefined}
         placeholder="you@example.com"
         required
       />
@@ -128,7 +128,7 @@ function RegisterForm() {
             }
           }}
           onBlur={() => validateField('password')}
-          error={passwordError}
+          error={passwordError ?? undefined}
           placeholder="••••••••"
           required
         />
@@ -157,7 +157,7 @@ function RegisterForm() {
           }
         }}
         onBlur={() => validateField('confirmPassword')}
-        error={confirmPasswordError}
+        error={confirmPasswordError ?? undefined}
         placeholder="••••••••"
         required
       />

@@ -63,7 +63,7 @@ function LoginForm() {
           }
         }}
         onBlur={() => validateField('email')}
-        error={emailError}
+        error={emailError ?? undefined}
         placeholder="you@example.com"
         required
         autoComplete="email"
@@ -84,7 +84,7 @@ function LoginForm() {
           }
         }}
         onBlur={() => validateField('password')}
-        error={passwordError}
+        error={passwordError ?? undefined}
         placeholder="••••••••"
         required
         autoComplete="current-password"

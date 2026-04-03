@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
 import { AppLayout } from '@/components/layouts/AppLayout';
 import { ProjectDetailPage } from '@/modules/projects/components/ProjectDetailPage';
+import { TaskList } from '@/modules/tasks/components/TaskList';
 import { useProject } from '@/modules/projects/hooks/useProject';
 
 function PageContent() {
@@ -32,15 +33,10 @@ function PageContent() {
       {/* Tab Content */}
       <div className="space-y-6">
         {activeTab === 'tasks' && (
-          <div>
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              Tasks
-            </h3>
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-8 text-center text-slate-600 dark:text-slate-400">
-              <p>📋 Task list will be implemented in FEAT-003</p>
-              <p className="text-sm mt-2">Project has {project?.task_stats.total || 0} total tasks</p>
-            </div>
-          </div>
+          <TaskList
+            projectId={projectId}
+            projectMembers={project?.members.map((m) => ({ id: m.id, name: m.name })) || []}
+          />
         )}
 
         {activeTab === 'overview' && (

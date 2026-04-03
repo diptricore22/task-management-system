@@ -72,7 +72,7 @@ export function ProfileForm() {
               value={firstName}
               onChange={setFirstName}
               onBlur={() => validateField('firstName')}
-              error={firstNameError}
+              error={firstNameError ?? undefined}
               placeholder="John"
             />
             <FormField
@@ -82,7 +82,7 @@ export function ProfileForm() {
               value={lastName}
               onChange={setLastName}
               onBlur={() => validateField('lastName')}
-              error={lastNameError}
+              error={lastNameError ?? undefined}
               placeholder="Doe"
             />
           </div>
@@ -95,7 +95,7 @@ export function ProfileForm() {
             value={email}
             onChange={setEmail}
             onBlur={() => validateField('email')}
-            error={emailError}
+            error={emailError ?? undefined}
             placeholder="you@example.com"
           />
 

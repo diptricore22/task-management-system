@@ -67,7 +67,7 @@ function InviteAcceptForm({ token }: { token: string }) {
             }
           }}
           onBlur={() => validateField('firstName')}
-          error={firstNameError}
+          error={firstNameError ?? undefined}
           placeholder="John"
           required
         />
@@ -84,7 +84,7 @@ function InviteAcceptForm({ token }: { token: string }) {
             }
           }}
           onBlur={() => validateField('lastName')}
-          error={lastNameError}
+          error={lastNameError ?? undefined}
           placeholder="Doe"
           required
         />
@@ -105,7 +105,7 @@ function InviteAcceptForm({ token }: { token: string }) {
             }
           }}
           onBlur={() => validateField('password')}
-          error={passwordError}
+          error={passwordError ?? undefined}
           placeholder="••••••••"
           required
         />
@@ -134,7 +134,7 @@ function InviteAcceptForm({ token }: { token: string }) {
           }
         }}
         onBlur={() => validateField('confirmPassword')}
-        error={confirmPasswordError}
+        error={confirmPasswordError ?? undefined}
         placeholder="••••••••"
         required
       />
