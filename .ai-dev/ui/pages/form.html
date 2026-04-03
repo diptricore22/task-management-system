@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create / Edit — App Name</title>
+  <meta name="description" content="Form page template" />
+  <style>
+    :root {
+      --color-primary:        hsl(220, 90%, 56%);
+      --color-primary-dark:   hsl(220, 85%, 46%);
+      --color-primary-light:  hsl(220, 90%, 96%);
+      --color-danger:         hsl(0, 78%, 55%);
+      --color-gray-100: hsl(220, 15%, 94%);
+      --color-gray-200: hsl(220, 15%, 88%);
+      --color-gray-500: hsl(220, 10%, 44%);
+      --color-gray-800: hsl(220, 14%, 16%);
+      --color-text:     var(--color-gray-800);
+      --color-text-muted: var(--color-gray-500);
+      --color-border:   var(--color-gray-200);
+      --color-bg:       hsl(220, 20%, 97%);
+      --color-surface:  #ffffff;
+      --font-sans: 'Inter', 'Segoe UI', sans-serif;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text); }
+    .layout {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .breadcrumb a { color: var(--color-primary); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb__sep { color: var(--color-border); }
+
+    h1.page-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+    p.page-subtitle { font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 2rem; }
+
+    .form-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-section {
+      padding: 1.75rem 2rem;
+    }
+    .form-section + .form-section {
+      border-top: 1px solid var(--color-border);
+    }
+
+    .form-section__title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .form-section__desc {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    .form-grid--full { grid-template-columns: 1fr; }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.375rem; }
+    .form-group--full { grid-column: 1 / -1; }
+
+    .form-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .form-hint {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+
+    .form-input, .form-select, .form-textarea {
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 0.5625rem 0.875rem;
+      font-size: 0.9375rem;
+      font-family: var(--font-sans);
+      color: var(--color-text);
+      background: var(--color-surface);
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+    .form-textarea { resize: vertical; min-height: 100px; }
+    .form-select { appearance: none; cursor: pointer; }
+    .form-input--error { border-color: var(--color-danger); }
+
+    .form-error { font-size: 0.8125rem; color: var(--color-danger); }
+
+    .form-actions {
+      padding: 1.25rem 2rem;
+      background: var(--color-bg);
+      border-top: 1px solid var(--color-border);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5625rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: background 0.15s;
+    }
+    .btn-primary { background: var(--color-primary); color: #fff; border: none; }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+    .btn-secondary { background: transparent; border-color: var(--color-border); }
+    .btn-secondary:hover { background: var(--color-gray-100); }
+
+    @media (max-width: 640px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-section { padding: 1.25rem 1rem; }
+      .form-actions { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout">
+
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/dashboard" id="breadcrumb-home">Dashboard</a>
+      <span class="breadcrumb__sep">›</span>
+      <a href="/items" id="breadcrumb-list">Items</a>
+      <span class="breadcrumb__sep">›</span>
+      <span aria-current="page">Create New Item</span>
+    </nav>
+
+    <!-- PAGE TITLE -->
+    <h1 class="page-title">Create New Item</h1>
+    <p class="page-subtitle">Fill in the details below to add a new item.</p>
+
+    <!-- FORM CARD -->
+    <form id="form-item" novalidate>
+      <div class="form-card">
+
+        <!-- SECTION 1: Basic Info -->
+        <div class="form-section">
+          <h2 class="form-section__title">Basic Information</h2>
+          <p class="form-section__desc">Enter the core details for this item.</p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="input-name">Name <span aria-hidden="true">*</span></label>
+              <input class="form-input" type="text" id="input-name" name="name" placeholder="Item name" required />
+              <p class="form-error" id="error-name" style="display:none;">Name is required.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="select-category">Category <span aria-hidden="true">*</span></label>
+              <select class="form-select" id="select-category" name="category" required>
+                <option value="">— Select category —</option>
+                <option value="type-a">Type A</option>
+                <option value="type-b">Type B</option>
+                <option value="type-c">Type C</option>
+              </select>
+            </div>
+
+            <div class="form-group form-group--full">
+              <label class="form-label" for="textarea-description">Description</label>
+              <textarea class="form-textarea" id="textarea-description" name="description" placeholder="Optional description..."></textarea>
+              <p class="form-hint">Max 500 characters.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Additional Details -->
+        <div class="form-section">
+          <h2 class="form-section__title">Additional Details</h2>
+          <p class="form-section__desc">Optional fields for extra configuration.</p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="input-field-a">Field A</label>
+              <input class="form-input" type="text" id="input-field-a" name="fieldA" placeholder="Value" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="input-field-b">Field B</label>
+              <input class="form-input" type="number" id="input-field-b" name="fieldB" placeholder="0" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM ACTIONS -->
+        <div class="form-actions">
+          <a href="/items" class="btn btn-secondary" id="btn-cancel">Cancel</a>
+          <button type="submit" class="btn btn-primary" id="btn-save">Save Item</button>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+
+</body>
+</html>

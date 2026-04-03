@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Team Task Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        /* Sidebar - Same as dashboard */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 240px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .nav {
+            flex: 1;
+            padding: 1rem 0.5rem;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.15s;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover {
+            background: #334155;
+            color: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 0.875rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #cbd5e1;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .filter-btn:hover {
+            border-color: #8b5cf6;
+            color: #f1f5f9;
+        }
+
+        .filter-btn.active {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+            color: white;
+        }
+
+        /* Content */
+        .content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #cbd5e1;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .view-btn:hover {
+            border-color: #8b5cf6;
+        }
+
+        .view-btn.active {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+            color: white;
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--project-color);
+        }
+
+        .project-card:hover {
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-header {
+            margin-bottom: 1rem;
+        }
+
+        .project-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-desc {
+            font-size: 0.875rem;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+            color: #94a3b8;
+        }
+
+        .project-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #0f172a;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%);
+            transition: width 0.3s;
+        }
+
+        .project-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid #334155;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        .project-members {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .member-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #1e293b;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+            margin-left: -8px;
+        }
+
+        .member-avatar:first-child {
+            margin-left: 0;
+        }
+
+        .member-more {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-left: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .badge-archived {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-desc {
+            font-size: 0.9375rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">TM</div>
+            <div class="logo-text">TaskFlow</div>
+        </div>
+
+        <nav class="nav">
+            <a href="dashboard.html" class="nav-item">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item active">
+                <span>📁</span>
+                <span>Projects</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>✓</span>
+                <span>My Tasks</span>
+            </a>
+            <a href="kanban-board.html" class="nav-item">
+                <span>📋</span>
+                <span>Kanban Board</span>
+            </a>
+            <a href="reports.html" class="nav-item">
+                <span>📈</span>
+                <span>Reports</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <header class="header">
+            <div class="header-top">
+                <h1 class="page-title">Projects</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="toggleState()">Toggle State</button>
+                    <button class="btn btn-primary">
+                        <span>+</span>
+                        New Project
+                    </button>
+                </div>
+            </div>
+
+            <div class="filters">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search projects...">
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn active">All</button>
+                    <button class="filter-btn">Active</button>
+                    <button class="filter-btn">Archived</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="view-toggle">
+                <button class="view-btn active">Grid View</button>
+                <button class="view-btn">List View</button>
+            </div>
+
+            <!-- Projects Grid (Populated State) -->
+            <div class="projects-grid" id="projectsContainer">
+                <div class="project-card" style="--project-color: #8b5cf6;" onclick="window.location.href='project-detail.html'">
+                    <div class="project-header">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div class="project-name">Website Redesign</div>
+                            <span class="badge badge-active">Active</span>
+                        </div>
+                        <div class="project-desc">Modernize company website with new branding, improved UX/UI, and enhanced performance</div>
+                    </div>
+                    <div class="project-meta">
+                        <div class="project-meta-item">
+                            <span>📅</span>
+                            <span>Due Mar 15, 2026</span>
+                        </div>
+                        <div class="project-meta-item">
+                            <span>👤</span>
+                            <span>5 members</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 62%;"></div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">15</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">62%</div>
+                            <div class="stat-label">Progress</div>
+                        </div>
+                    </div>
+                    <div class="project-members">
+                        <div class="member-avatar">JD</div>
+                        <div class="member-avatar">SM</div>
+                        <div class="member-avatar">AK</div>
+                        <div class="member-avatar">RW</div>
+                        <span class="member-more">+1</span>
+                    </div>
+                </div>
+
+                <div class="project-card" style="--project-color: #22c55e;">
+                    <div class="project-header">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div class="project-name">Mobile App v2.0</div>
+                            <span class="badge badge-active">Active</span>
+                        </div>
+                        <div class="project-desc">Major update with new features, performance improvements, and redesigned interface</div>
+                    </div>
+                    <div class="project-meta">
+                        <div class="project-meta-item">
+                            <span>📅</span>
+                            <span>Due Apr 20, 2026</span>
+                        </div>
+                        <div class="project-meta-item">
+                            <span>👤</span>
+                            <span>7 members</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 45%;"></div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <div class="stat-value">38</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">17</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">45%</div>
+                            <div class="stat-label">Progress</div>
+                        </div>
+                    </div>
+                    <div class="project-members">
+                        <div class="member-avatar">TL</div>
+                        <div class="member-avatar">MC</div>
+                        <div class="member-avatar">KP</div>
+                        <span class="member-more">+4</span>
+                    </div>
+                </div>
+
+                <div class="project-card" style="--project-color: #3b82f6;">
+                    <div class="project-header">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div class="project-name">API Integration</div>
+                            <span class="badge badge-active">Active</span>
+                        </div>
+                        <div class="project-desc">Integrate third-party services and build internal API endpoints for system connectivity</div>
+                    </div>
+                    <div class="project-meta">
+                        <div class="project-meta-item">
+                            <span>📅</span>
+                            <span>Due Feb 28, 2026</span>
+                        </div>
+                        <div class="project-meta-item">
+                            <span>👤</span>
+                            <span>3 members</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%;"></div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <div class="stat-value">15</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">80%</div>
+                            <div class="stat-label">Progress</div>
+                        </div>
+                    </div>
+                    <div class="project-members">
+                        <div class="member-avatar">JD</div>
+                        <div class="member-avatar">BR</div>
+                        <div class="member-avatar">LS</div>
+                    </div>
+                </div>
+
+                <div class="project-card" style="--project-color: #f59e0b;">
+                    <div class="project-header">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div class="project-name">Security Audit</div>
+                            <span class="badge badge-active">Active</span>
+                        </div>
+                        <div class="project-desc">Comprehensive security review and implementation of best practices across all systems</div>
+                    </div>
+                    <div class="project-meta">
+                        <div class="project-meta-item">
+                            <span>📅</span>
+                            <span>Due Mar 30, 2026</span>
+                        </div>
+                        <div class="project-meta-item">
+                            <span>👤</span>
+                            <span>4 members</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 30%;"></div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <div class="stat-value">22</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">30%</div>
+                            <div class="stat-label">Progress</div>
+                        </div>
+                    </div>
+                    <div class="project-members">
+                        <div class="member-avatar">RS</div>
+                        <div class="member-avatar">NK</div>
+                        <div class="member-avatar">PL</div>
+                        <span class="member-more">+1</span>
+                    </div>
+                </div>
+
+                <div class="project-card" style="--project-color: #ec4899;">
+                    <div class="project-header">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div class="project-name">Customer Portal</div>
+                            <span class="badge badge-active">Active</span>
+                        </div>
+                        <div class="project-desc">Build self-service portal for customers to manage accounts and access resources</div>
+                    </div>
+                    <div class="project-meta">
+                        <div class="project-meta-item">
+                            <span>📅</span>
+                            <span>Due May 15, 2026</span>
+                        </div>
+                        <div class="project-meta-item">
+                            <span>👤</span>
+                            <span>6 members</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 15%;"></div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <div class="stat-value">31</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">15%</div>
+                            <div class="stat-label">Progress</div>
+                        </div>
+                    </div>
+                    <div class="project-members">
+                        <div class="member-avatar">EM</div>
+                        <div class="member-avatar">CJ</div>
+                        <div class="member-avatar">DK</div>
+                        <span class="member-more">+3</span>
+                    </div>
+                </div>
+
+                <div class="project-card" style="--project-color: #64748b;">
+                    <div class="project-header">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div class="project-name">Legacy System Migration</div>
+                            <span class="badge badge-archived">Archived</span>
+                        </div>
+                        <div class="project-desc">Migrate data and functionality from legacy systems to new platform (Completed)</div>
+                    </div>
+                    <div class="project-meta">
+                        <div class="project-meta-item">
+                            <span>📅</span>
+                            <span>Completed Jan 15, 2026</span>
+                        </div>
+                        <div class="project-meta-item">
+                            <span>👤</span>
+                            <span>8 members</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <div class="project-stats">
+                        <div class="stat">
+                            <div class="stat-value">45</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">45</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">Progress</div>
+                        </div>
+                    </div>
+                    <div class="project-members">
+                        <div class="member-avatar">JD</div>
+                        <div class="member-avatar">SM</div>
+                        <div class="member-avatar">TL</div>
+                        <span class="member-more">+5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentState = 'populated';
+
+        function toggleState() {
+            const states = ['populated', 'empty'];
+            const currentIndex = states.indexOf(currentState);
+            const nextIndex = (currentIndex + 1) % states.length;
+            currentState = states[nextIndex];
+
+            if (currentState === 'empty') {
+                showEmptyState();
+            } else {
+                location.reload();
+            }
+        }
+
+        function showEmptyState() {
+            document.getElementById('projectsContainer').innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-state-icon">📁</div>
+                    <div class="empty-state-title">No projects found</div>
+                    <div class="empty-state-desc">Get started by creating your first project to organize and track your team's work</div>
+                    <button class="btn btn-primary">
+                        <span>+</span>
+                        Create Your First Project
+                    </button>
+                </div>
+            `;
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // View toggle functionality
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

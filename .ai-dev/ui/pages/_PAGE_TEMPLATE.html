@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Title — App Name</title>
+  <meta name="description" content="Page description for SEO" />
+  <!--
+  ========================================================
+  PAGE TEMPLATE — Use this as the base for any new page.
+  ========================================================
+  HOW TO USE:
+  - Copy this file to a meaningful name, e.g., `dashboard.html`
+  - Update the title, description, and page-specific content
+  - When giving to AI: "Reference ui/pages/this-file.html for layout"
+  - CSS variables are defined in ui/UI_GUIDELINES.md
+  ========================================================
+  -->
+  <style>
+    /* === DESIGN TOKENS (copy from UI_GUIDELINES.md) === */
+    :root {
+      --color-primary:        hsl(220, 90%, 56%);
+      --color-primary-dark:   hsl(220, 85%, 46%);
+      --color-primary-light:  hsl(220, 90%, 96%);
+      --color-success:        hsl(145, 65%, 42%);
+      --color-warning:        hsl(38, 92%, 50%);
+      --color-danger:         hsl(0, 78%, 55%);
+      --color-gray-50:  hsl(220, 20%, 98%);
+      --color-gray-100: hsl(220, 15%, 94%);
+      --color-gray-200: hsl(220, 15%, 88%);
+      --color-gray-300: hsl(220, 12%, 76%);
+      --color-gray-500: hsl(220, 10%, 44%);
+      --color-gray-700: hsl(220, 12%, 24%);
+      --color-gray-800: hsl(220, 14%, 16%);
+      --color-text:          var(--color-gray-800);
+      --color-text-muted:    var(--color-gray-500);
+      --color-bg:            var(--color-gray-50);
+      --color-surface:       #ffffff;
+      --color-border:        var(--color-gray-200);
+      --font-sans:    'Inter', 'Segoe UI', sans-serif;
+      --space-2:  0.5rem;
+      --space-3:  0.75rem;
+      --space-4:  1rem;
+      --space-6:  1.5rem;
+      --space-8:  2rem;
+      --radius-md:  0.5rem;
+      --radius-lg:  0.75rem;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:  0 4px 12px rgba(0,0,0,0.10);
+    }
+
+    /* === BASE RESET === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* === APP SHELL === */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* === SIDEBAR === */
+    .sidebar {
+      width: 240px;
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-4);
+      flex-shrink: 0;
+    }
+
+    .sidebar__logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      padding: var(--space-2) 0;
+      margin-bottom: var(--space-6);
+    }
+
+    .sidebar__nav { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .nav-item:hover { background: var(--color-gray-100); color: var(--color-text); text-decoration: none; }
+    .nav-item--active { background: var(--color-primary-light); color: var(--color-primary); }
+
+    .nav-item__icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* === MAIN AREA === */
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* === TOPBAR === */
+    .topbar {
+      height: 60px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-6);
+      gap: var(--space-4);
+      flex-shrink: 0;
+    }
+
+    .topbar__title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .topbar__actions { display: flex; align-items: center; gap: var(--space-3); }
+
+    /* === PAGE CONTENT === */
+    .page-content {
+      flex: 1;
+      padding: var(--space-6) var(--space-8);
+      overflow-y: auto;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-6);
+    }
+
+    .page-header__title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .page-header__subtitle {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* === CARD === */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-6);
+    }
+
+    .card__title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: var(--space-4);
+    }
+
+    /* === BUTTONS === */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1.4;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+      text-decoration: none;
+    }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-primary { background: var(--color-primary); color: #fff; }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+
+    .btn-secondary { background: transparent; border-color: var(--color-border); color: var(--color-text); }
+    .btn-secondary:hover { background: var(--color-gray-100); }
+
+    .btn-danger { background: var(--color-danger); color: #fff; }
+
+    /* === BADGE === */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.15em 0.6em;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-success { background: hsl(145, 65%, 92%); color: hsl(145, 65%, 28%); }
+    .badge-warning { background: hsl(38, 92%, 92%); color: hsl(38, 70%, 30%); }
+    .badge-danger  { background: hsl(0, 78%, 94%); color: hsl(0, 68%, 40%); }
+    .badge-primary { background: var(--color-primary-light); color: var(--color-primary-dark); }
+
+    /* === AVATAR === */
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 9999px;
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    /* === ALERT === */
+    .alert {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      border: 1px solid currentColor;
+    }
+    .alert-success { background: hsl(145, 65%, 96%); color: hsl(145, 55%, 32%); }
+    .alert-warning { background: hsl(38, 92%, 96%); color: hsl(38, 70%, 30%); }
+    .alert-danger  { background: hsl(0, 78%, 97%); color: hsl(0, 68%, 40%); }
+    .alert-info    { background: hsl(200, 80%, 96%); color: hsl(200, 80%, 30%); }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .page-content { padding: var(--space-4); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- APP SHELL LAYOUT -->
+  <div class="app-shell">
+
+    <!-- SIDEBAR (delete if not needed) -->
+    <aside class="sidebar" role="navigation" aria-label="Main navigation">
+      <div class="sidebar__logo">🚀 AppName</div>
+      <nav class="sidebar__nav">
+        <a href="#" class="nav-item nav-item--active" aria-current="page">
+          <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a href="#" class="nav-item">
+          <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Users
+        </a>
+        <a href="#" class="nav-item">
+          <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Reports
+        </a>
+        <a href="#" class="nav-item">
+          <svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          Settings
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN AREA -->
+    <div class="main-area">
+
+      <!-- TOPBAR -->
+      <header class="topbar" role="banner">
+        <h1 class="topbar__title">Page Title</h1>
+        <div class="topbar__actions">
+          <!-- Search, notifications, user menu go here -->
+          <button class="btn btn-primary" id="btn-primary-action">+ New Item</button>
+          <div class="avatar" title="User Name" aria-label="User Name">JD</div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTENT -->
+      <main class="page-content" id="main-content">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+          <div>
+            <h2 class="page-header__title">Section Title</h2>
+            <p class="page-header__subtitle">Brief description of this section</p>
+          </div>
+          <div style="display:flex; gap:0.75rem;">
+            <button class="btn btn-secondary" id="btn-filter">Filter</button>
+            <button class="btn btn-primary" id="btn-create">Create New</button>
+          </div>
+        </div>
+
+        <!-- ALERT EXAMPLE -->
+        <div class="alert alert-info" role="alert" style="margin-bottom: 1.5rem;">
+          ℹ️ This is an informational alert message.
+        </div>
+
+        <!-- CARD GRID -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+
+          <div class="card">
+            <p class="card__title">Metric 1</p>
+            <p style="font-size: 2rem; font-weight: 700;">1,842</p>
+            <p style="font-size: 0.875rem; color: var(--color-text-muted);">+12% from last month</p>
+          </div>
+
+          <div class="card">
+            <p class="card__title">Metric 2</p>
+            <p style="font-size: 2rem; font-weight: 700;">94.3%</p>
+            <p style="font-size: 0.875rem; color: var(--color-text-muted);">-2% from last month</p>
+          </div>
+
+          <div class="card">
+            <p class="card__title">Metric 3</p>
+            <p style="font-size: 2rem; font-weight: 700;">$12,450</p>
+            <p style="font-size: 0.875rem; color: var(--color-text-muted);">+5% from last month</p>
+          </div>
+
+        </div>
+
+        <!-- DATA TABLE CARD -->
+        <div class="card">
+          <p class="card__title">Item List</p>
+          <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--color-border);">
+                <th style="text-align:left; padding:0.75rem 0.5rem; color:var(--color-text-muted); font-weight:600;">Name</th>
+                <th style="text-align:left; padding:0.75rem 0.5rem; color:var(--color-text-muted); font-weight:600;">Status</th>
+                <th style="text-align:left; padding:0.75rem 0.5rem; color:var(--color-text-muted); font-weight:600;">Date</th>
+                <th style="text-align:right; padding:0.75rem 0.5rem; color:var(--color-text-muted); font-weight:600;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding:0.75rem 0.5rem; font-weight:500;">Item Name</td>
+                <td style="padding:0.75rem 0.5rem;"><span class="badge badge-success">Active</span></td>
+                <td style="padding:0.75rem 0.5rem; color:var(--color-text-muted);">2026-03-18</td>
+                <td style="padding:0.75rem 0.5rem; text-align:right;">
+                  <button class="btn btn-secondary" style="padding:0.25rem 0.75rem; font-size:0.75rem;">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem 0.5rem; font-weight:500;">Another Item</td>
+                <td style="padding:0.75rem 0.5rem;"><span class="badge badge-warning">Pending</span></td>
+                <td style="padding:0.75rem 0.5rem; color:var(--color-text-muted);">2026-03-17</td>
+                <td style="padding:0.75rem 0.5rem; text-align:right;">
+                  <button class="btn btn-secondary" style="padding:0.25rem 0.75rem; font-size:0.75rem;">Edit</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+</html>

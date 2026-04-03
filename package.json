@@ -1,0 +1,91 @@
+{
+  "name": "team-task-management-system",
+  "version": "1.0.0",
+  "description": "A collaborative task management system for engineering teams",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:api dev:web",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build": "npm-run-all build:api build:web",
+    "build:api": "npm run build --workspace=apps/api",
+    "build:web": "npm run build --workspace=apps/web",
+    "start": "npm-run-all --parallel start:api start:web",
+    "start:api": "npm run start --workspace=apps/api",
+    "start:web": "npm run start --workspace=apps/web",
+    "test": "npm-run-all test:api test:web",
+    "test:api": "npm run test --workspace=apps/api",
+    "test:web": "npm run test --workspace=apps/web",
+    "test:watch": "npm-run-all --parallel test:watch:api test:watch:web",
+    "test:watch:api": "npm run test:watch --workspace=apps/api",
+    "test:watch:web": "npm run test:watch --workspace=apps/web",
+    "lint": "npm-run-all lint:api lint:web",
+    "lint:api": "npm run lint --workspace=apps/api",
+    "lint:web": "npm run lint --workspace=apps/web",
+    "lint:fix": "npm-run-all lint:fix:api lint:fix:web",
+    "lint:fix:api": "npm run lint:fix --workspace=apps/api",
+    "lint:fix:web": "npm run lint:fix --workspace=apps/web",
+    "type-check": "npm-run-all type-check:api type-check:web",
+    "type-check:api": "npm run type-check --workspace=apps/api",
+    "type-check:web": "npm run type-check --workspace=apps/web",
+    "clean": "npm-run-all clean:api clean:web clean:root",
+    "clean:api": "npm run clean --workspace=apps/api --if-present",
+    "clean:web": "npm run clean --workspace=apps/web --if-present",
+    "clean:root": "rm -rf node_modules .turbo",
+    "db:migrate": "npm run db:migrate --workspace=apps/api",
+    "db:seed": "npm run db:seed --workspace=apps/api",
+    "db:reset": "npm run db:reset --workspace=apps/api",
+    "db:studio": "npm run db:studio --workspace=apps/api",
+    "db:generate": "npm run db:generate --workspace=apps/api",
+    "postinstall": "npm run db:generate --workspace=apps/api --if-present"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.2.5",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.4.3"
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "printWidth": 80,
+    "endOfLine": "auto"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "eslint:recommended",
+      "@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "@typescript-eslint",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": "error",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    }
+  }
+}

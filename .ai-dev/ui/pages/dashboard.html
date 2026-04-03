@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Team Task Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 240px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .nav {
+            flex: 1;
+            padding: 1rem 0.5rem;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.15s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #334155;
+            color: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.85;
+        }
+
+        .user-section {
+            padding: 1rem;
+            border-top: 1px solid #334155;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .user-profile:hover {
+            background: #334155;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+
+        .main.expanded {
+            margin-left: 0;
+        }
+
+        .header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+        }
+
+        .stat-icon.blue {
+            background: rgba(99, 102, 241, 0.15);
+            color: #6366f1;
+        }
+
+        .stat-icon.violet {
+            background: rgba(139, 92, 246, 0.15);
+            color: #8b5cf6;
+        }
+
+        .stat-icon.green {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .stat-icon.amber {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-change {
+            font-size: 0.8125rem;
+            color: #22c55e;
+        }
+
+        .stat-change.negative {
+            color: #ef4444;
+        }
+
+        /* Section Headers */
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .section-link {
+            font-size: 0.875rem;
+            color: #8b5cf6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .section-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .project-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .project-card:hover {
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+        }
+
+        .project-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .project-color {
+            width: 4px;
+            height: 40px;
+            border-radius: 2px;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .project-info {
+            flex: 1;
+        }
+
+        .project-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.25rem;
+        }
+
+        .project-desc {
+            font-size: 0.875rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .project-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #334155;
+        }
+
+        .project-stat {
+            text-align: center;
+        }
+
+        .project-stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .project-stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        .project-members {
+            display: flex;
+            align-items: center;
+        }
+
+        .member-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #1e293b;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+            margin-left: -8px;
+        }
+
+        .member-avatar:first-child {
+            margin-left: 0;
+        }
+
+        .member-more {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-left: 0.5rem;
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+        }
+
+        .activity-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-text strong {
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .activity-time {
+            font-size: 0.8125rem;
+            color: #64748b;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-todo {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+        }
+
+        .badge-in-progress {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .badge-completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-desc {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Loading State */
+        .loading-skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+            border-radius: 6px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-stat {
+            height: 120px;
+        }
+
+        .skeleton-card {
+            height: 200px;
+        }
+
+        .skeleton-text {
+            height: 16px;
+            margin-bottom: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.visible {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-icon">TM</div>
+            <div class="logo-text">TaskFlow</div>
+        </div>
+
+        <nav class="nav">
+            <div class="nav-section">
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="project-list.html" class="nav-item">
+                    <span class="nav-icon">📁</span>
+                    <span>Projects</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span>My Tasks</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">🔔</span>
+                    <span>Notifications</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Workspace</div>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">👥</span>
+                    <span>Team Members</span>
+                </a>
+                <a href="kanban-board.html" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Kanban Board</span>
+                </a>
+                <a href="reports.html" class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="user-section">
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <div class="user-info">
+                    <div class="user-name">John Doe</div>
+                    <div class="user-role">Admin</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main" id="main">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="toggleView()">
+                        <span>⚡</span>
+                        Toggle View
+                    </button>
+                    <button class="btn btn-primary">
+                        <span>+</span>
+                        New Project
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="content" id="content">
+            <!-- Stats Cards (Populated State) -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Total Tasks</span>
+                        <div class="stat-icon blue">📋</div>
+                    </div>
+                    <div class="stat-value">127</div>
+                    <div class="stat-change">+12% from last week</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">In Progress</span>
+                        <div class="stat-icon violet">🔄</div>
+                    </div>
+                    <div class="stat-value">43</div>
+                    <div class="stat-change">+8% from last week</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Completed</span>
+                        <div class="stat-icon green">✓</div>
+                    </div>
+                    <div class="stat-value">68</div>
+                    <div class="stat-change">+15% from last week</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Overdue</span>
+                        <div class="stat-icon amber">⚠️</div>
+                    </div>
+                    <div class="stat-value">7</div>
+                    <div class="stat-change negative">+2 since yesterday</div>
+                </div>
+            </div>
+
+            <!-- Active Projects -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Active Projects</h2>
+                    <a href="project-list.html" class="section-link">View all →</a>
+                </div>
+
+                <div class="projects-grid" id="projectsGrid">
+                    <div class="project-card" onclick="window.location.href='project-detail.html'">
+                        <div class="project-header">
+                            <div class="project-color" style="background: #8b5cf6;"></div>
+                            <div class="project-info">
+                                <div class="project-name">Website Redesign</div>
+                                <div class="project-desc">Modernize company website with new branding and improved UX</div>
+                            </div>
+                        </div>
+                        <div class="project-stats">
+                            <div class="project-stat">
+                                <div class="project-stat-value">24</div>
+                                <div class="project-stat-label">Tasks</div>
+                            </div>
+                            <div class="project-stat">
+                                <div class="project-stat-value">62%</div>
+                                <div class="project-stat-label">Progress</div>
+                            </div>
+                            <div class="project-stat">
+                                <div class="project-stat-value">5</div>
+                                <div class="project-stat-label">Members</div>
+                            </div>
+                        </div>
+                        <div class="project-members">
+                            <div class="member-avatar">JD</div>
+                            <div class="member-avatar">SM</div>
+                            <div class="member-avatar">AK</div>
+                            <div class="member-avatar">RW</div>
+                            <span class="member-more">+1</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-color" style="background: #22c55e;"></div>
+                            <div class="project-info">
+                                <div class="project-name">Mobile App v2.0</div>
+                                <div class="project-desc">Major update with new features and performance improvements</div>
+                            </div>
+                        </div>
+                        <div class="project-stats">
+                            <div class="project-stat">
+                                <div class="project-stat-value">38</div>
+                                <div class="project-stat-label">Tasks</div>
+                            </div>
+                            <div class="project-stat">
+                                <div class="project-stat-value">45%</div>
+                                <div class="project-stat-label">Progress</div>
+                            </div>
+                            <div class="project-stat">
+                                <div class="project-stat-value">7</div>
+                                <div class="project-stat-label">Members</div>
+                            </div>
+                        </div>
+                        <div class="project-members">
+                            <div class="member-avatar">TL</div>
+                            <div class="member-avatar">MC</div>
+                            <div class="member-avatar">KP</div>
+                            <span class="member-more">+4</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-color" style="background: #3b82f6;"></div>
+                            <div class="project-info">
+                                <div class="project-name">API Integration</div>
+                                <div class="project-desc">Integrate third-party services and build internal API endpoints</div>
+                            </div>
+                        </div>
+                        <div class="project-stats">
+                            <div class="project-stat">
+                                <div class="project-stat-value">15</div>
+                                <div class="project-stat-label">Tasks</div>
+                            </div>
+                            <div class="project-stat">
+                                <div class="project-stat-value">80%</div>
+                                <div class="project-stat-label">Progress</div>
+                            </div>
+                            <div class="project-stat">
+                                <div class="project-stat-value">3</div>
+                                <div class="project-stat-label">Members</div>
+                            </div>
+                        </div>
+                        <div class="project-members">
+                            <div class="member-avatar">JD</div>
+                            <div class="member-avatar">BR</div>
+                            <div class="member-avatar">LS</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Activity</h2>
+                    <a href="#" class="section-link">View all →</a>
+                </div>
+
+                <div class="activity-feed" id="activityFeed">
+                    <div class="activity-item">
+                        <div class="activity-icon">✓</div>
+                        <div class="activity-content">
+                            <div class="activity-text">
+                                <strong>Sarah Miller</strong> completed task <strong>"Design homepage mockups"</strong> in Website Redesign
+                            </div>
+                            <div class="activity-time">2 minutes ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">💬</div>
+                        <div class="activity-content">
+                            <div class="activity-text">
+                                <strong>Alex Kim</strong> commented on <strong>"API endpoint documentation"</strong>
+                            </div>
+                            <div class="activity-time">15 minutes ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">📋</div>
+                        <div class="activity-content">
+                            <div class="activity-text">
+                                <strong>You</strong> created task <strong>"Setup CI/CD pipeline"</strong> in API Integration
+                            </div>
+                            <div class="activity-time">1 hour ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">👤</div>
+                        <div class="activity-content">
+                            <div class="activity-text">
+                                <strong>Rachel Wong</strong> was assigned to <strong>"User authentication flow"</strong>
+                            </div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">⚠️</div>
+                        <div class="activity-content">
+                            <div class="activity-text">
+                                Task <strong>"Database migration"</strong> is now <span class="badge badge-todo">overdue</span>
+                            </div>
+                            <div class="activity-time">3 hours ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon">✓</div>
+                        <div class="activity-content">
+                            <div class="activity-text">
+                                <strong>Tom Lee</strong> completed task <strong>"Fix login bug"</strong> in Mobile App v2.0
+                            </div>
+                            <div class="activity-time">5 hours ago</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        let currentView = 'populated'; // 'populated', 'empty', 'loading'
+
+        function toggleView() {
+            const views = ['populated', 'loading', 'empty'];
+            const currentIndex = views.indexOf(currentView);
+            const nextIndex = (currentIndex + 1) % views.length;
+            currentView = views[nextIndex];
+
+            renderView(currentView);
+        }
+
+        function renderView(view) {
+            const content = document.getElementById('content');
+
+            if (view === 'loading') {
+                renderLoadingState();
+            } else if (view === 'empty') {
+                renderEmptyState();
+            } else {
+                // Reload page to show populated state
+                location.reload();
+            }
+        }
+
+        function renderLoadingState() {
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card loading-skeleton skeleton-stat"></div>
+                <div class="stat-card loading-skeleton skeleton-stat"></div>
+                <div class="stat-card loading-skeleton skeleton-stat"></div>
+                <div class="stat-card loading-skeleton skeleton-stat"></div>
+            `;
+
+            document.getElementById('projectsGrid').innerHTML = `
+                <div class="project-card loading-skeleton skeleton-card"></div>
+                <div class="project-card loading-skeleton skeleton-card"></div>
+                <div class="project-card loading-skeleton skeleton-card"></div>
+            `;
+
+            document.getElementById('activityFeed').innerHTML = `
+                <div class="activity-item">
+                    <div class="loading-skeleton" style="width: 36px; height: 36px; border-radius: 50%;"></div>
+                    <div style="flex: 1;">
+                        <div class="loading-skeleton skeleton-text" style="width: 80%;"></div>
+                        <div class="loading-skeleton skeleton-text" style="width: 40%;"></div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="loading-skeleton" style="width: 36px; height: 36px; border-radius: 50%;"></div>
+                    <div style="flex: 1;">
+                        <div class="loading-skeleton skeleton-text" style="width: 70%;"></div>
+                        <div class="loading-skeleton skeleton-text" style="width: 35%;"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEmptyState() {
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Total Tasks</span>
+                        <div class="stat-icon blue">📋</div>
+                    </div>
+                    <div class="stat-value">0</div>
+                    <div class="stat-change">No tasks yet</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">In Progress</span>
+                        <div class="stat-icon violet">🔄</div>
+                    </div>
+                    <div class="stat-value">0</div>
+                    <div class="stat-change">No active tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Completed</span>
+                        <div class="stat-icon green">✓</div>
+                    </div>
+                    <div class="stat-value">0</div>
+                    <div class="stat-change">Nothing completed yet</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Overdue</span>
+                        <div class="stat-icon amber">⚠️</div>
+                    </div>
+                    <div class="stat-value">0</div>
+                    <div class="stat-change">All caught up!</div>
+                </div>
+            `;
+
+            document.getElementById('projectsGrid').innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <div class="empty-state-icon">📁</div>
+                    <div class="empty-state-title">No projects yet</div>
+                    <div class="empty-state-desc">Get started by creating your first project</div>
+                    <button class="btn btn-primary">
+                        <span>+</span>
+                        Create Project
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('activityFeed').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔔</div>
+                    <div class="empty-state-title">No activity yet</div>
+                    <div class="empty-state-desc">Activity will appear here as your team works on tasks</div>
+                </div>
+            `;
+        }
+
+        // Mobile menu toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('visible');
+        }
+    </script>
+</body>
+</html>

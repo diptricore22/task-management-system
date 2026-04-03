@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board - Team Task Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 240px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .nav {
+            flex: 1;
+            padding: 1rem 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.15s;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover {
+            background: #334155;
+        }
+
+        .nav-item.active {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb a {
+            color: #8b5cf6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 0.5rem 0.875rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        /* Kanban Board */
+        .content {
+            padding: 2rem;
+            overflow-x: auto;
+        }
+
+        .board {
+            display: flex;
+            gap: 1.5rem;
+            min-width: max-content;
+            padding-bottom: 2rem;
+        }
+
+        .column {
+            flex: 0 0 320px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            max-height: calc(100vh - 240px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .column-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .column-count {
+            background: #334155;
+            color: #94a3b8;
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .column-add {
+            color: #8b5cf6;
+            font-size: 1.25rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .column-add:hover {
+            color: #a78bfa;
+        }
+
+        .column-body {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* Task Card */
+        .task-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 1rem;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .task-card:hover {
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .task-card:active {
+            cursor: grabbing;
+        }
+
+        .task-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .task-card-title {
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: #f1f5f9;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .task-card-menu {
+            color: #64748b;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .task-card-menu:hover {
+            color: #f1f5f9;
+        }
+
+        .task-labels {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .label {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .label-feature {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+        }
+
+        .label-bug {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .label-enhancement {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .priority-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .priority-urgent {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .priority-high {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .priority-medium {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+
+        .priority-low {
+            background: rgba(100, 116, 139, 0.15);
+            color: #94a3b8;
+        }
+
+        .task-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #334155;
+        }
+
+        .task-assignee {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .assignee-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .task-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .due-date {
+            color: #94a3b8;
+        }
+
+        .due-date.overdue {
+            color: #ef4444;
+        }
+
+        .due-date.due-soon {
+            color: #f59e0b;
+        }
+
+        /* Empty Column */
+        .column-empty {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .column-empty-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .board {
+                flex-direction: column;
+            }
+
+            .column {
+                flex: 1 1 auto;
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">TM</div>
+            <div class="logo-text">TaskFlow</div>
+        </div>
+
+        <nav class="nav">
+            <a href="dashboard.html" class="nav-item">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="project-list.html" class="nav-item">
+                <span>📁</span>
+                <span>Projects</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>✓</span>
+                <span>My Tasks</span>
+            </a>
+            <a href="#" class="nav-item active">
+                <span>📋</span>
+                <span>Kanban Board</span>
+            </a>
+            <a href="reports.html" class="nav-item">
+                <span>📈</span>
+                <span>Reports</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <header class="header">
+            <nav class="breadcrumb">
+                <a href="dashboard.html">Dashboard</a>
+                <span>›</span>
+                <a href="project-list.html">Projects</a>
+                <span>›</span>
+                <a href="project-detail.html">Website Redesign</a>
+                <span>›</span>
+                <span>Board</span>
+            </nav>
+
+            <div class="header-top">
+                <h1 class="page-title">Kanban Board</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="window.location.href='project-detail.html'">
+                        <span>📋</span>
+                        List View
+                    </button>
+                    <button class="btn btn-primary">
+                        <span>+</span>
+                        New Task
+                    </button>
+                </div>
+            </div>
+
+            <div class="filters">
+                <select class="filter-select">
+                    <option>All Projects</option>
+                    <option selected>Website Redesign</option>
+                    <option>Mobile App v2.0</option>
+                    <option>API Integration</option>
+                </select>
+                <select class="filter-select">
+                    <option>All Assignees</option>
+                    <option>Assigned to me</option>
+                    <option>Unassigned</option>
+                </select>
+                <select class="filter-select">
+                    <option>All Priorities</option>
+                    <option>Urgent</option>
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Low</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="board">
+                <!-- To Do Column -->
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            To Do
+                            <span class="column-count">3</span>
+                        </div>
+                        <div class="column-add" onclick="alert('Add task to To Do')">+</div>
+                    </div>
+                    <div class="column-body">
+                        <div class="task-card" onclick="alert('Task detail slide-over would open')">
+                            <div class="task-card-header">
+                                <div class="task-card-title">Write documentation for new API endpoints</div>
+                                <div class="task-card-menu">⋮</div>
+                            </div>
+                            <div class="task-labels">
+                                <span class="label label-feature">Feature</span>
+                                <span class="priority-badge priority-medium">Medium</span>
+                            </div>
+                            <div class="task-card-footer">
+                                <div class="task-assignee">
+                                    <div class="assignee-avatar">BR</div>
+                                </div>
+                                <div class="task-meta">
+                                    <div class="task-meta-item">
+                                        <span>📅</span>
+                                        <span class="due-date">Mar 18</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="task-card">
+                            <div class="task-card-header">
+                                <div class="task-card-title">Conduct accessibility audit</div>
+                                <div class="task-card-menu">⋮</div>
+                            </div>
+                            <div class="task-labels">
+                                <span class="label label-enhancement">Enhancement</span>
+                                <span class="priority-badge priority-high">High</span>
+                            </div>
+                            <div class="task-card-footer">
+                                <div class="task-assignee">
+                                    <div class="assignee-avatar">TL</div>
+                                </div>
+                                <div class="task-meta">
+                                    <div class="task-meta-item">
+                                        <span>📅</span>
+                                        <span class="due-date">Mar 22</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="task-card">
+                            <div class="task-card-header">
+                                <div class="task-card-title">Set up analytics tracking</div>
+                                <div class="task-card-menu">⋮</div>
+                            </div>
+                            <div class="task-labels">
+                                <span class="label label-feature">Feature</span>
+                                <span class="priority-badge priority-medium">Medium</span>
+                            </div>
+                            <div class="task-card-footer">
+                                <div class="task-assignee">
+                                    <div class="assignee-avatar">JD</div>
+                                </div>
+                                <div class="task-meta">
+                                    <div class="task-meta-item">
+                                        <span>📅</span>
+                                        <span class="due-date">Mar 25</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Progress Column -->
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            In Progress
+                            <span class="column-count">2</span>
+                        </div>
+                        <div class="column-add" onclick="alert('Add task to In Progress')">+</div>
+                    </div>
+                    <div class="column-body">
+                        <div class="task-card">
+                            <div class="task-card-header">
+                                <div class="task-card-title">Implement responsive navigation</div>
+                                <div class="task-card-menu">⋮</div>
+                            </div>
+                            <div class="task-labels">
+                                <span class="label label-feature">Feature</span>
+                                <span class="priority-badge priority-high">High</span>
+                            </div>
+                            <div class="task-card-footer">
+                                <div class="task-assignee">
+                                    <div class="assignee-avatar">AK</div>
+                                </div>
+                                <div class="task-meta">
+                                    <div class="task-meta-item">
+                                        <span>📅</span>
+                                        <span class="due-date due-soon">Mar 12</span>
+                                    </div>
+                                    <div class="task-meta-item">
+                                        <span>💬</span>
+                                        <span>3</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="task-card">
+                            <div class="task-card-header">
+                                <div class="task-card-title">Optimize image assets for web</div>
+                                <div class="task-card-menu">⋮</div>
+                            </div>
+                            <div class="task-labels">
+                                <span class="label label-enhancement">Enhancement</span>
+                                <span class="priority-badge priority-low">Low</span>
+                            </div>
+                            <div class="task-card-footer">
+                                <div class="task-assignee">
+                                    <div class="assignee-avatar">SM</div>
+                                </div>
+                                <div class="task-meta">
+                                    <div class="task-meta-item">
+                                        <span>📅</span>
+                                        <span class="due-date">Mar 20</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Review Column -->
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            In Review
+                            <span class="column-count">1</span>
+                        </div>
+                        <div class="column-add" onclick="alert('Add task to In Review')">+</div>
+                    </div>
+                    <div class="column-body">
+                        <div class="task-card">
+                            <div class="task-card-header">
+                                <div class="task-card-title">Setup CI/CD pipeline for deployments</div>
+                                <div class="task-card-menu">⋮</div>
+                            </div>
+                            <div class="task-labels">
+                                <span class="label label-feature">Feature</span>
+                                <span class="priority-badge priority-medium">Medium</span>
+                            </div>
+                            <div class="task-card-footer">
+                                <div class="task-assignee">
+                                    <div class="assignee-avatar">JD</div>
+                                </div>
+                                <div class="task-meta">
+                                    <div class="task-meta-item">
+                                        <span>📅</span>
+                                        <span class="due-date">Mar 15</span>
+                                    </div>
+                                    <div class="task-meta-item">
+                                        <span>💬</span>
+                                        <span>5</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Done Column -->
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            Done
+                            <span class="column-count">1</span>
+                        </div>
+                        <div class="column-add" onclick="alert('Add task to Done')">+</div>
+                    </div>
+                    <div class="column-body">
+                        <div class="task-card" style="opacity: 0.8;">
+                            <div class="task-card-header">
+                                <div class="task-card-title">Design homepage mockups</div>
+                                <div class="task-card-menu">⋮</div>
+                            </div>
+                            <div class="task-labels">
+                                <span class="label label-feature">Feature</span>
+                                <span class="priority-badge priority-urgent">Urgent</span>
+                            </div>
+                            <div class="task-card-footer">
+                                <div class="task-assignee">
+                                    <div class="assignee-avatar">SM</div>
+                                </div>
+                                <div class="task-meta">
+                                    <div class="task-meta-item">
+                                        <span>✓</span>
+                                        <span>Completed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blocked Column -->
+                <div class="column">
+                    <div class="column-header">
+                        <div class="column-title">
+                            Blocked
+                            <span class="column-count">1</span>
+                        </div>
+                        <div class="column-add" onclick="alert('Add task to Blocked')">+</div>
+                    </div>
+                    <div class="column-body">
+                        <div class="task-card" style="border-color: rgba(239, 68, 68, 0.5);">
+                            <div class="task-card-header">
+                                <div class="task-card-title">Fix mobile layout issues on checkout page</div>
+                                <div class="task-card-menu">⋮</div>
+                            </div>
+                            <div class="task-labels">
+                                <span class="label label-bug">Bug</span>
+                                <span class="priority-badge priority-urgent">Urgent</span>
+                            </div>
+                            <div class="task-card-footer">
+                                <div class="task-assignee">
+                                    <div class="assignee-avatar">RW</div>
+                                </div>
+                                <div class="task-meta">
+                                    <div class="task-meta-item">
+                                        <span>📅</span>
+                                        <span class="due-date overdue">Mar 5</span>
+                                    </div>
+                                    <div class="task-meta-item">
+                                        <span>💬</span>
+                                        <span>8</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Drag and drop functionality
+        let draggedCard = null;
+
+        document.querySelectorAll('.task-card').forEach(card => {
+            card.addEventListener('dragstart', function(e) {
+                draggedCard = this;
+                this.style.opacity = '0.4';
+            });
+
+            card.addEventListener('dragend', function(e) {
+                this.style.opacity = '1';
+                draggedCard = null;
+            });
+
+            card.setAttribute('draggable', 'true');
+        });
+
+        // Allow dropping in columns
+        document.querySelectorAll('.column-body').forEach(column => {
+            column.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.background = '#0a1120';
+            });
+
+            column.addEventListener('dragleave', function(e) {
+                this.style.background = '';
+            });
+
+            column.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.background = '';
+
+                if (draggedCard && draggedCard.parentElement !== this) {
+                    this.appendChild(draggedCard);
+
+                    // Update column counts
+                    document.querySelectorAll('.column').forEach(col => {
+                        const count = col.querySelectorAll('.task-card').length;
+                        col.querySelector('.column-count').textContent = count;
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

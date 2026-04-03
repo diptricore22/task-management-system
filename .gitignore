@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Build outputs
+/dist
+/build
+/.next
+/out
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Prisma
+.prisma/
+
+# Testing
+coverage/
+.nyc_output/
+
+# OS
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Turbo
+.turbo/
+
+# Development
+.claude/
+*.tmp

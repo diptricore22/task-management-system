@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Detail - TaskFlow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 240px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .nav {
+            flex: 1;
+            padding: 1rem 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.15s;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover {
+            background: #334155;
+        }
+
+        .nav-item.active {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .user-section {
+            padding: 1rem;
+            border-top: 1px solid #334155;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .demo-note {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-note h3 {
+            color: #8b5cf6;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        .demo-note p {
+            color: #94a3b8;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+            margin-right: 0.75rem;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        /* Slide-over Overlay */
+        .slideover-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .slideover-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Slide-over Panel */
+        .slideover-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            max-width: 640px;
+            background: #1e293b;
+            border-left: 1px solid #334155;
+            z-index: 201;
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slideover-overlay.active .slideover-panel {
+            transform: translateX(0);
+        }
+
+        /* Panel Header */
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .panel-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.15s;
+        }
+
+        .close-btn:hover {
+            background: #334155;
+            color: #f1f5f9;
+        }
+
+        /* Panel Content */
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .task-title-section {
+            margin-bottom: 2rem;
+        }
+
+        .task-title-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            color: #f1f5f9;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .task-title-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            background: #0f172a;
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .status-in-progress {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .priority-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .priority-high {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-field {
+            margin-bottom: 1.25rem;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+        }
+
+        .field-select {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .field-select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .field-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .field-textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .assignee-select {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .assignee-select:hover {
+            border-color: #8b5cf6;
+        }
+
+        .assignee-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .assignee-info {
+            flex: 1;
+        }
+
+        .assignee-name {
+            font-size: 0.875rem;
+            color: #f1f5f9;
+            font-weight: 500;
+        }
+
+        .assignee-role {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .date-field {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+        }
+
+        .date-field:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #334155;
+        }
+
+        .comment-input-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .comment {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-author {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .comment-time {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .comment-text {
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .comment-actions-menu {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .comment-action {
+            font-size: 0.75rem;
+            color: #8b5cf6;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .comment-action:hover {
+            text-decoration: underline;
+        }
+
+        /* Activity Log */
+        .activity-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #334155;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.875rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-text strong {
+            color: #f1f5f9;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Panel Footer */
+        .panel-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .slideover-panel {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">T</div>
+            <div class="logo-text">TaskFlow</div>
+        </div>
+
+        <nav class="nav">
+            <a href="dashboard.html" class="nav-item">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="project-list.html" class="nav-item active">
+                <span>📁</span>
+                <span>Projects</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>✓</span>
+                <span>My Tasks</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>🔔</span>
+                <span>Notifications</span>
+            </a>
+        </nav>
+
+        <div class="user-section">
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <div>
+                    <div class="user-name">John Doe</div>
+                    <div class="user-role">Admin</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="demo-note">
+            <h3>🎨 Task Detail Slide-over Demo</h3>
+            <p>This mockup demonstrates the slide-over panel that appears when clicking on a task. It shows all task details, activity log, and comments in a side panel.</p>
+            <button class="btn btn-secondary" onclick="closeSlideOver()">Show List View</button>
+            <button class="btn btn-primary" onclick="openSlideOver()">Open Task Detail</button>
+        </div>
+    </main>
+
+    <!-- Slide-over Overlay -->
+    <div class="slideover-overlay" id="slideoverOverlay" onclick="closeSlideOver()">
+        <div class="slideover-panel" onclick="event.stopPropagation()">
+            <!-- Panel Header -->
+            <div class="panel-header">
+                <div class="panel-title">Task Details</div>
+                <button class="close-btn" onclick="closeSlideOver()">✕</button>
+            </div>
+
+            <!-- Panel Content -->
+            <div class="panel-content">
+                <!-- Task Title -->
+                <div class="task-title-section">
+                    <input 
+                        type="text" 
+                        class="task-title-input" 
+                        value="Implement responsive navigation"
+                        placeholder="Task title..."
+                    />
+                    <div class="task-meta">
+                        <span class="status-badge status-in-progress">In Progress</span>
+                        <span class="priority-badge priority-high">🟠 High Priority</span>
+                    </div>
+                </div>
+
+                <!-- Task Details -->
+                <div class="section">
+                    <h3 class="section-title">Details</h3>
+
+                    <div class="form-field">
+                        <label class="field-label">Description</label>
+                        <textarea class="field-textarea" placeholder="Add a description...">Build a responsive navigation component that works across all device sizes. Should include mobile hamburger menu, dropdown support, and accessibility features.</textarea>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">Status</label>
+                        <select class="field-select">
+                            <option>To Do</option>
+                            <option selected>In Progress</option>
+                            <option>In Review</option>
+                            <option>Completed</option>
+                            <option>Blocked</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">Priority</label>
+                        <select class="field-select">
+                            <option>Urgent</option>
+                            <option selected>High</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">Assignee</label>
+                        <div class="assignee-select">
+                            <div class="assignee-avatar">AK</div>
+                            <div class="assignee-info">
+                                <div class="assignee-name">Alex Kim</div>
+                                <div class="assignee-role">Frontend Developer</div>
+                            </div>
+                            <span style="color: #64748b;">▼</span>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">Due Date</label>
+                        <input type="date" class="date-field" value="2026-03-12" />
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">Labels</label>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <span style="padding: 0.375rem 0.75rem; background: rgba(139, 92, 246, 0.2); color: #a78bfa; border-radius: 4px; font-size: 0.75rem;">Frontend</span>
+                            <span style="padding: 0.375rem 0.75rem; background: rgba(34, 197, 94, 0.2); color: #22c55e; border-radius: 4px; font-size: 0.75rem;">UI</span>
+                            <button class="btn-secondary" style="padding: 0.25rem 0.625rem; font-size: 0.75rem;">+ Add Label</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity & Comments -->
+                <div class="comments-section">
+                    <h3 class="section-title">Activity & Comments</h3>
+
+                    <!-- Comment Input -->
+                    <div class="comment-input-container">
+                        <textarea 
+                            class="comment-input" 
+                            placeholder="Add a comment..."
+                            id="commentInput"
+                        ></textarea>
+                        <div class="comment-actions">
+                            <button class="btn btn-secondary" style="padding: 0.5rem 1rem;">Cancel</button>
+                            <button class="btn btn-primary" style="padding: 0.5rem 1rem;" onclick="addComment()">Comment</button>
+                        </div>
+                    </div>
+
+                    <!-- Comment List -->
+                    <div class="comment-list" id="commentList">
+                        <!-- Recent Comment -->
+                        <div class="comment">
+                            <div class="comment-avatar">SM</div>
+                            <div class="comment-content">
+                                <div class="comment-header">
+                                    <span class="comment-author">Sarah Miller</span>
+                                    <span class="comment-time">2 hours ago</span>
+                                </div>
+                                <div class="comment-text">
+                                    I've reviewed the mockups and they look great! Let me know if you need any design assets.
+                                </div>
+                                <div class="comment-actions-menu">
+                                    <button class="comment-action">Reply</button>
+                                    <button class="comment-action">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Item -->
+                        <div class="activity-item">
+                            <div class="activity-icon">✏️</div>
+                            <div class="activity-content">
+                                <div class="activity-text">
+                                    <strong>Alex Kim</strong> changed status from <strong>To Do</strong> to <strong>In Progress</strong>
+                                </div>
+                                <div class="activity-time">5 hours ago</div>
+                            </div>
+                        </div>
+
+                        <!-- Older Comment -->
+                        <div class="comment">
+                            <div class="comment-avatar">JD</div>
+                            <div class="comment-content">
+                                <div class="comment-header">
+                                    <span class="comment-author">John Doe</span>
+                                    <span class="comment-time">1 day ago</span>
+                                </div>
+                                <div class="comment-text">
+                                    Make sure to test on mobile devices. We had issues with the hamburger menu on iOS Safari before.
+                                </div>
+                                <div class="comment-actions-menu">
+                                    <button class="comment-action">Reply</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Item -->
+                        <div class="activity-item">
+                            <div class="activity-icon">👤</div>
+                            <div class="activity-content">
+                                <div class="activity-text">
+                                    <strong>John Doe</strong> assigned this task to <strong>Alex Kim</strong>
+                                </div>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Item -->
+                        <div class="activity-item">
+                            <div class="activity-icon">📋</div>
+                            <div class="activity-content">
+                                <div class="activity-text">
+                                    <strong>John Doe</strong> created this task
+                                </div>
+                                <div class="activity-time">3 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Footer -->
+            <div class="panel-footer">
+                <button class="btn btn-danger">Delete Task</button>
+                <button class="btn btn-primary" onclick="closeSlideOver()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openSlideOver() {
+            document.getElementById('slideoverOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSlideOver() {
+            document.getElementById('slideoverOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function addComment() {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            
+            if (!text) return;
+
+            const commentList = document.getElementById('commentList');
+            const newComment = document.createElement('div');
+            newComment.className = 'comment';
+            newComment.innerHTML = `
+                <div class="comment-avatar">JD</div>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author">John Doe (You)</span>
+                        <span class="comment-time">Just now</span>
+                    </div>
+                    <div class="comment-text">${text}</div>
+                    <div class="comment-actions-menu">
+                        <button class="comment-action">Edit</button>
+                        <button class="comment-action">Delete</button>
+                    </div>
+                </div>
+            `;
+            
+            commentList.insertBefore(newComment, commentList.firstChild);
+            input.value = '';
+        }
+
+        // Auto-open on page load for demo purposes
+        setTimeout(() => {
+            openSlideOver();
+        }, 500);
+    </script>
+</body>
+</html>

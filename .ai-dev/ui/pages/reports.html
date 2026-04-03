@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Team Task Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 240px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .nav {
+            flex: 1;
+            padding: 1rem 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.15s;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover {
+            background: #334155;
+        }
+
+        .nav-item.active {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .filters {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.625rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .summary-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-change {
+            font-size: 0.8125rem;
+            color: #22c55e;
+        }
+
+        .summary-change.negative {
+            color: #ef4444;
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .chart-menu {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-menu:hover {
+            background: #334155;
+        }
+
+        /* Simple Bar Chart */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            height: 240px;
+            padding: 1rem 0;
+        }
+
+        .bar-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bar {
+            width: 100%;
+            background: linear-gradient(180deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+        }
+
+        .bar-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* Donut Chart */
+        .donut-chart {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .donut-visual {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .donut-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #3b82f6 0deg 144deg,
+                #8b5cf6 144deg 216deg,
+                #22c55e 216deg 288deg,
+                #94a3b8 288deg 324deg,
+                #ef4444 324deg 360deg
+            );
+            position: relative;
+        }
+
+        .donut-hole {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 60%;
+            background: #1e293b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .donut-total {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .donut-label {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .donut-legend {
+            flex: 1;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #334155;
+        }
+
+        .legend-item:last-child {
+            border-bottom: none;
+        }
+
+        .legend-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .legend-name {
+            font-size: 0.875rem;
+            color: #cbd5e1;
+        }
+
+        .legend-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        /* Workload Table */
+        .table-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .table-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background: #0f172a;
+        }
+
+        .data-table th {
+            padding: 0.875rem 1.5rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #334155;
+        }
+
+        .data-table tbody tr {
+            border-bottom: 1px solid #334155;
+            transition: background 0.15s;
+        }
+
+        .data-table tbody tr:hover {
+            background: #0f172a;
+        }
+
+        .data-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .data-table td {
+            padding: 1rem 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .member-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .member-name {
+            color: #f1f5f9;
+            font-weight: 500;
+        }
+
+        .member-role {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            max-width: 120px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.25rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%);
+            border-radius: 3px;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .task-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .donut-chart {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">TM</div>
+            <div class="logo-text">TaskFlow</div>
+        </div>
+
+        <nav class="nav">
+            <a href="dashboard.html" class="nav-item">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="project-list.html" class="nav-item">
+                <span>📁</span>
+                <span>Projects</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>✓</span>
+                <span>My Tasks</span>
+            </a>
+            <a href="kanban-board.html" class="nav-item">
+                <span>📋</span>
+                <span>Kanban Board</span>
+            </a>
+            <a href="#" class="nav-item active">
+                <span>📈</span>
+                <span>Reports</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <header class="header">
+            <div class="header-content">
+                <div class="header-top">
+                    <h1 class="page-title">Reports & Analytics</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary">
+                            <span>📊</span>
+                            Schedule Report
+                        </button>
+                        <button class="btn btn-primary">
+                            <span>📥</span>
+                            Export Data
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <select class="filter-select">
+                        <option>All Projects</option>
+                        <option>Website Redesign</option>
+                        <option>Mobile App v2.0</option>
+                        <option>API Integration</option>
+                    </select>
+
+                    <select class="filter-select">
+                        <option selected>Last 30 Days</option>
+                        <option>Last 7 Days</option>
+                        <option>Last 90 Days</option>
+                        <option>This Year</option>
+                        <option>Custom Range</option>
+                    </select>
+
+                    <select class="filter-select">
+                        <option>All Members</option>
+                        <option>My Activity</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- Summary Cards -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Total Tasks</div>
+                    <div class="summary-value">127</div>
+                    <div class="summary-change">+12% from last period</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Completion Rate</div>
+                    <div class="summary-value">68%</div>
+                    <div class="summary-change">+5% from last period</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Avg. Completion Time</div>
+                    <div class="summary-value">3.2d</div>
+                    <div class="summary-change negative">+0.4d from last period</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Team Velocity</div>
+                    <div class="summary-value">42</div>
+                    <div class="summary-change">+8 tasks/week</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <!-- Completion Trends -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Task Completion Trends</h2>
+                        <button class="chart-menu">⋮</button>
+                    </div>
+                    <div class="bar-chart">
+                        <div class="bar-column">
+                            <div class="bar" style="height: 45%;"></div>
+                            <div class="bar-label">Week 1</div>
+                        </div>
+                        <div class="bar-column">
+                            <div class="bar" style="height: 62%;"></div>
+                            <div class="bar-label">Week 2</div>
+                        </div>
+                        <div class="bar-column">
+                            <div class="bar" style="height: 58%;"></div>
+                            <div class="bar-label">Week 3</div>
+                        </div>
+                        <div class="bar-column">
+                            <div class="bar" style="height: 75%;"></div>
+                            <div class="bar-label">Week 4</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Distribution -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Task Status Distribution</h2>
+                        <button class="chart-menu">⋮</button>
+                    </div>
+                    <div class="donut-chart">
+                        <div class="donut-visual">
+                            <div class="donut-ring">
+                                <div class="donut-hole">
+                                    <div class="donut-total">127</div>
+                                    <div class="donut-label">Total Tasks</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="donut-legend">
+                            <div class="legend-item">
+                                <div class="legend-info">
+                                    <div class="legend-color" style="background: #3b82f6;"></div>
+                                    <div class="legend-name">In Progress</div>
+                                </div>
+                                <div class="legend-value">43</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-info">
+                                    <div class="legend-color" style="background: #8b5cf6;"></div>
+                                    <div class="legend-name">In Review</div>
+                                </div>
+                                <div class="legend-value">16</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-info">
+                                    <div class="legend-color" style="background: #22c55e;"></div>
+                                    <div class="legend-name">Completed</div>
+                                </div>
+                                <div class="legend-value">52</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-info">
+                                    <div class="legend-color" style="background: #94a3b8;"></div>
+                                    <div class="legend-name">To Do</div>
+                                </div>
+                                <div class="legend-value">9</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-info">
+                                    <div class="legend-color" style="background: #ef4444;"></div>
+                                    <div class="legend-name">Blocked</div>
+                                </div>
+                                <div class="legend-value">7</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workload Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h2 class="table-title">Team Workload</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Team Member</th>
+                            <th>Active Tasks</th>
+                            <th>This Week</th>
+                            <th>Completion Rate</th>
+                            <th>Avg. Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="member-cell">
+                                    <div class="member-avatar">AK</div>
+                                    <div>
+                                        <div class="member-name">Alex Kim</div>
+                                        <div class="member-role">Frontend Developer</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="task-count">12</span>
+                            </td>
+                            <td style="color: #22c55e; font-weight: 600;">+5 completed</td>
+                            <td>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 78%;"></div>
+                                    </div>
+                                    <div class="progress-text">78%</div>
+                                </div>
+                            </td>
+                            <td style="color: #cbd5e1;">2.8 days</td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="member-cell">
+                                    <div class="member-avatar">SM</div>
+                                    <div>
+                                        <div class="member-name">Sarah Miller</div>
+                                        <div class="member-role">UI/UX Designer</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="task-count">8</span>
+                            </td>
+                            <td style="color: #22c55e; font-weight: 600;">+4 completed</td>
+                            <td>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%;"></div>
+                                    </div>
+                                    <div class="progress-text">85%</div>
+                                </div>
+                            </td>
+                            <td style="color: #cbd5e1;">2.1 days</td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="member-cell">
+                                    <div class="member-avatar">BR</div>
+                                    <div>
+                                        <div class="member-name">Ben Rodriguez</div>
+                                        <div class="member-role">Backend Developer</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="task-count">15</span>
+                            </td>
+                            <td style="color: #22c55e; font-weight: 600;">+3 completed</td>
+                            <td>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 65%;"></div>
+                                    </div>
+                                    <div class="progress-text">65%</div>
+                                </div>
+                            </td>
+                            <td style="color: #cbd5e1;">3.5 days</td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="member-cell">
+                                    <div class="member-avatar">RW</div>
+                                    <div>
+                                        <div class="member-name">Rachel Wong</div>
+                                        <div class="member-role">Full Stack Developer</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="task-count">10</span>
+                            </td>
+                            <td style="color: #22c55e; font-weight: 600;">+6 completed</td>
+                            <td>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 92%;"></div>
+                                    </div>
+                                    <div class="progress-text">92%</div>
+                                </div>
+                            </td>
+                            <td style="color: #cbd5e1;">1.9 days</td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="member-cell">
+                                    <div class="member-avatar">TL</div>
+                                    <div>
+                                        <div class="member-name">Tom Lee</div>
+                                        <div class="member-role">QA Engineer</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="task-count">7</span>
+                            </td>
+                            <td style="color: #22c55e; font-weight: 600;">+2 completed</td>
+                            <td>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 71%;"></div>
+                                    </div>
+                                    <div class="progress-text">71%</div>
+                                </div>
+                            </td>
+                            <td style="color: #cbd5e1;">3.2 days</td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="member-cell">
+                                    <div class="member-avatar">JD</div>
+                                    <div>
+                                        <div class="member-name">John Doe</div>
+                                        <div class="member-role">Project Manager</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="task-count">9</span>
+                            </td>
+                            <td style="color: #22c55e; font-weight: 600;">+4 completed</td>
+                            <td>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 88%;"></div>
+                                    </div>
+                                    <div class="progress-text">88%</div>
+                                </div>
+                            </td>
+                            <td style="color: #cbd5e1;">2.4 days</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

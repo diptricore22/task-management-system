@@ -1,0 +1,339 @@
+// Team Task Management System - Prisma Schema
+// Database: PostgreSQL
+// Reference: .ai-dev/docs/SPECS/DATABASE_SPEC.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================================
+// AUTHENTICATION & USER MANAGEMENT
+// ============================================================================
+
+/// User accounts with global roles and authentication credentials
+model User {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String   @map("name")
+  email      String   @unique @map("email")
+  password_hash String @map("password_hash")
+  role       UserRole @default(MEMBER) @map("role")
+  created_at DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updated_at DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at DateTime? @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  refresh_tokens         RefreshToken[]
+  created_projects       Project[]           @relation("ProjectCreator")
+  project_memberships    ProjectMember[]
+  assigned_tasks         Task[]              @relation("TaskAssignee")
+  created_tasks          Task[]              @relation("TaskCreator")
+  comments               Comment[]
+  notifications          Notification[]
+  activity_logs          ActivityLog[]
+  notification_preferences NotificationPreference?
+
+  @@map("users")
+  @@index([email])
+  @@index([role])
+  @@index([deleted_at])
+}
+
+/// Hashed JWT refresh tokens for session management
+model RefreshToken {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String   @map("user_id") @db.Uuid
+  token_hash String   @map("token_hash")
+  expires_at DateTime @map("expires_at") @db.Timestamptz
+  created_at DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updated_at DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at DateTime? @map("deleted_at") @db.Timestamptz
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+  @@index([user_id])
+  @@index([token_hash])
+  @@index([expires_at])
+  @@index([deleted_at])
+}
+
+/// Admin-generated user invitation tokens with expiry
+model InviteToken {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email      String    @map("email")
+  role       UserRole  @map("role")
+  token_hash String    @unique @map("token_hash")
+  expires_at DateTime  @map("expires_at") @db.Timestamptz
+  accepted_at DateTime? @map("accepted_at") @db.Timestamptz
+  created_at DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updated_at DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at DateTime? @map("deleted_at") @db.Timestamptz
+
+  @@map("invite_tokens")
+  @@index([email])
+  @@index([token_hash])
+  @@index([expires_at])
+  @@index([deleted_at])
+}
+
+// ============================================================================
+// PROJECT MANAGEMENT
+// ============================================================================
+
+/// Project containers that group related tasks
+model Project {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String        @map("name")
+  description String?       @map("description")
+  color       String        @map("color") // 7-char hex string #RRGGBB
+  status      ProjectStatus @default(ACTIVE) @map("status")
+  created_by  String        @map("created_by") @db.Uuid
+  created_at  DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updated_at  DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at  DateTime?     @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  creator     User            @relation("ProjectCreator", fields: [created_by], references: [id])
+  members     ProjectMember[]
+  tasks       Task[]
+  labels      Label[]
+  activity_logs ActivityLog[]
+
+  @@map("projects")
+  @@index([created_by])
+  @@index([status])
+  @@index([deleted_at])
+}
+
+/// Project membership with role-based access control
+model ProjectMember {
+  id         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  project_id String          @map("project_id") @db.Uuid
+  user_id    String          @map("user_id") @db.Uuid
+  role       ProjectRole     @default(MEMBER) @map("role")
+  joined_at  DateTime        @default(now()) @map("joined_at") @db.Timestamptz
+  created_at DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updated_at DateTime        @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at DateTime?       @map("deleted_at") @db.Timestamptz
+
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([project_id, user_id])
+  @@map("project_members")
+  @@index([project_id])
+  @@index([user_id])
+  @@index([deleted_at])
+}
+
+// ============================================================================
+// TASK MANAGEMENT
+// ============================================================================
+
+/// Individual work items within projects
+model Task {
+  id                    String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  project_id            String        @map("project_id") @db.Uuid
+  title                 String        @map("title")
+  description           String?       @map("description")
+  status                TaskStatus    @default(TODO) @map("status")
+  priority              TaskPriority  @default(MEDIUM) @map("priority")
+  due_date              DateTime?     @map("due_date") @db.Date
+  assignee_id           String?       @map("assignee_id") @db.Uuid
+  created_by            String        @map("created_by") @db.Uuid
+  last_due_notified_at  DateTime?     @map("last_due_notified_at") @db.Timestamptz
+  created_at            DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updated_at            DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at            DateTime?     @map("deleted_at") @db.Timestamptz
+
+  // Relations
+  project     Project       @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  assignee    User?         @relation("TaskAssignee", fields: [assignee_id], references: [id])
+  creator     User          @relation("TaskCreator", fields: [created_by], references: [id])
+  comments    Comment[]
+  labels      TaskLabel[]
+  activity_logs ActivityLog[]
+  notifications Notification[]
+
+  @@map("tasks")
+  @@index([project_id])
+  @@index([assignee_id])
+  @@index([status])
+  @@index([priority])
+  @@index([due_date])
+  @@index([created_by])
+  @@index([deleted_at])
+}
+
+/// User comments on tasks for collaboration
+model Comment {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  task_id   String    @map("task_id") @db.Uuid
+  author_id String    @map("author_id") @db.Uuid
+  body      String    @map("body") // Max 5000 chars enforced at app layer
+  edited_at DateTime? @map("edited_at") @db.Timestamptz
+  created_at DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updated_at DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at DateTime? @map("deleted_at") @db.Timestamptz
+
+  task   Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
+  author User @relation(fields: [author_id], references: [id])
+
+  @@map("comments")
+  @@index([task_id])
+  @@index([author_id])
+  @@index([deleted_at])
+}
+
+// ============================================================================
+// LABELS & CATEGORIZATION
+// ============================================================================
+
+/// Custom project-specific labels for task categorization
+model Label {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  project_id String      @map("project_id") @db.Uuid
+  name       String      @map("name")
+  color      String      @map("color") // 7-char hex string #RRGGBB
+  created_at DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  updated_at DateTime    @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at DateTime?   @map("deleted_at") @db.Timestamptz
+
+  project Project     @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  tasks   TaskLabel[]
+
+  @@unique([project_id, name], name: "unique_project_label_name")
+  @@map("labels")
+  @@index([project_id])
+  @@index([deleted_at])
+}
+
+/// Many-to-many relationship between tasks and labels
+model TaskLabel {
+  task_id  String @map("task_id") @db.Uuid
+  label_id String @map("label_id") @db.Uuid
+
+  task  Task  @relation(fields: [task_id], references: [id], onDelete: Cascade)
+  label Label @relation(fields: [label_id], references: [id], onDelete: Cascade)
+
+  @@id([task_id, label_id])
+  @@map("task_labels")
+  @@index([task_id])
+  @@index([label_id])
+}
+
+// ============================================================================
+// ACTIVITY & NOTIFICATIONS
+// ============================================================================
+
+/// Immutable log of all significant system events for audit and activity feed
+model ActivityLog {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  project_id String?  @map("project_id") @db.Uuid
+  task_id    String?  @map("task_id") @db.Uuid
+  actor_id   String   @map("actor_id") @db.Uuid
+  action     String   @map("action") // e.g., task_created, status_changed, member_added
+  payload    Json?    @map("payload") @db.JsonB
+  created_at DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updated_at DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at DateTime? @map("deleted_at") @db.Timestamptz
+
+  project Project? @relation(fields: [project_id], references: [id])
+  task    Task?    @relation(fields: [task_id], references: [id])
+  actor   User     @relation(fields: [actor_id], references: [id])
+
+  @@map("activity_logs")
+  @@index([project_id])
+  @@index([task_id])
+  @@index([actor_id])
+  @@index([created_at(sort: Desc)])
+  @@index([deleted_at])
+}
+
+/// In-app notifications for user actions and events
+model Notification {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String   @map("user_id") @db.Uuid
+  task_id    String?  @map("task_id") @db.Uuid
+  type       String   @map("type") // e.g., task_assigned, task_commented
+  payload    Json     @map("payload") @db.JsonB
+  read_at    DateTime? @map("read_at") @db.Timestamptz
+  created_at DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updated_at DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  deleted_at DateTime? @map("deleted_at") @db.Timestamptz
+
+  user User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  task Task? @relation(fields: [task_id], references: [id])
+
+  @@map("notifications")
+  @@index([user_id])
+  @@index([task_id])
+  @@index([read_at])
+  @@index([deleted_at])
+}
+
+/// User preferences for email notification delivery
+model NotificationPreference {
+  user_id            String   @id @map("user_id") @db.Uuid
+  email_due_tomorrow Boolean  @default(true) @map("email_due_tomorrow")
+  email_overdue      Boolean  @default(true) @map("email_overdue")
+  email_assigned     Boolean  @default(true) @map("email_assigned")
+  email_commented    Boolean  @default(false) @map("email_commented")
+  updated_at         DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  ADMIN
+  MEMBER
+  VIEWER
+
+  @@map("user_role")
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ARCHIVED
+
+  @@map("project_status")
+}
+
+enum ProjectRole {
+  ADMIN
+  MEMBER
+  VIEWER
+
+  @@map("project_role")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  BLOCKED
+  DONE
+
+  @@map("task_status")
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+
+  @@map("task_priority")
+}
