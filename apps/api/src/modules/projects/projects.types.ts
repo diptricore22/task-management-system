@@ -1,4 +1,5 @@
-// Projects types and interfaces
+// Projects types and interfaces - aligned with DATABASE_SPEC.md and API_SPEC.md
+
 export interface CreateProjectRequest {
   name: string;
   description?: string;
@@ -9,11 +10,14 @@ export interface UpdateProjectRequest {
   name?: string;
   description?: string;
   color?: string;
-  isActive?: boolean;
+}
+
+export interface ArchiveProjectRequest {
+  archived: boolean;
 }
 
 export interface AddMemberRequest {
-  userId: string;
+  user_id: string;
   role: 'ADMIN' | 'MEMBER' | 'VIEWER';
 }
 
@@ -26,32 +30,34 @@ export interface ProjectResponse {
   name: string;
   description?: string;
   color: string;
-  isActive: boolean;
-  ownerId: string;
-  owner: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
+  status: 'ACTIVE' | 'ARCHIVED';
+  created_by: string;
+  member_count: number;
+  task_stats: {
+    total: number;
+    todo: number;
+    in_progress: number;
+    in_review: number;
+    blocked: number;
+    done: number;
   };
-  memberCount: number;
-  taskCount: number;
-  completedTaskCount: number;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectDetailResponse extends ProjectResponse {
+  members: ProjectMemberResponse[];
 }
 
 export interface ProjectMemberResponse {
   id: string;
-  userId: string;
-  projectId: string;
-  role: string;
-  joinedAt: string;
-  user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    avatar?: string;
-  };
+  user_id: string;
+  project_id: string;
+  role: 'ADMIN' | 'MEMBER' | 'VIEWER';
+  name: string;
+  email: string;
+  joined_at: string;
 }
+
+export type ProjectRole = 'ADMIN' | 'MEMBER' | 'VIEWER';
+export type ProjectStatus = 'ACTIVE' | 'ARCHIVED';
