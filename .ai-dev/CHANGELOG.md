@@ -113,6 +113,45 @@
   - Keyboard shortcuts: Ctrl+Enter / Cmd+Enter to submit comment
   - Mobile-responsive design for comment section within side panel
 
+- **FEAT-007: Labels, Priorities & Filtering (Frontend Phase 1)** - Label management UI and advanced task filtering with URL persistence
+  - 2 TypeScript types files:
+    - labels.types.ts: Label, CreateLabelRequest, UpdateLabelRequest, ProjectLabelsResponse interfaces
+    - filters.types.ts: FilterState, TaskStatus, TaskPriority, SortOption enums with DEFAULT_FILTER_STATE constant
+  - 1 validation schema file: labels.schema.ts with createLabelSchema, updateLabelSchema Zod validators
+  - 3 React hooks for label and filter management:
+    - `useProjectLabels` - Fetches all project labels from backend, auto-refetch on mount
+    - `useLabelManagement` - Handles create/update/delete with form state and validation
+    - `useTaskFiltering` - Central filter management with URL query param persistence, debounced (500ms)
+  - 5 label-related components:
+    - `LabelChip` - Reusable label display with optional remove button, colored background
+    - `LabelBadge` - Compact label variant for task cards with tooltip
+    - `ColorPicker` - Hex color input (#RRGGBB) with live preview and validation
+    - `LabelForm` - Create/edit form with name input, color picker, validation errors
+    - `LabelManagementModal` - Admin-only modal for full CRUD label operations with list display
+  - 4 filter UI components:
+    - `StatusFilter` - Multi-select dropdown for status (TODO, IN_PROGRESS, IN_REVIEW, BLOCKED, DONE)
+    - `PriorityFilter` - Multi-select dropdown for priority (LOW, MEDIUM, HIGH, CRITICAL) with icons
+    - `LabelFilter` - Dynamic multi-select for project labels with color indicators
+    - `FilterBar` - Main filter interface combining status, priority, labels, sort controls
+  - Advanced filtering features:
+    - Multi-criteria filtering: status (OR), priority (OR), labels (OR), combined with AND logic
+    - URL state persistence: filters sync to query params automatically, survives page refresh
+    - Filter sharing: users can bookmark/share URLs with pre-applied filters
+    - Clear all button: one-click to reset all filters to defaults
+    - Sort options: created_at_desc, due_date_asc, priority_desc, title_asc
+    - Active filter count badge showing number of applied filters
+  - Label management features:
+    - Admin-only access: role-based checks enforce admin-only label CRUD
+    - Create labels: form with name (1-50 chars) and hex color validation
+    - Edit labels: inline editing within modal with update validation
+    - Delete labels: confirmation dialog prevents accidental deletion
+    - Optimistic updates: immediate local removal with error recovery
+  - Dark mode styling throughout all components
+  - Responsive design: filter dropdowns collapse on mobile, FilterBar adapts to screen size
+  - Keyboard accessible: checkboxes for multi-select, proper ARIA attributes
+  - Empty states: "No labels yet", "Loading labels..." messaging
+  - Error handling: inline validation errors, API error display in modal
+
 - **FEAT-008: Due Dates, Reminders & Notifications** - User-controlled notification preferences and scheduled email reminders
   - 2 REST endpoints: GET/PATCH /api/users/me/notification-preferences for per-user notification setting management
   - Notification preferences: 4 independent toggles (email_due_tomorrow, email_overdue, email_assigned, email_commented)
