@@ -12,6 +12,7 @@ function SettingsNav() {
   const navItems = [
     { label: 'Profile', href: '/settings' },
     { label: 'Account', href: '/settings/account' },
+    { label: 'Notifications', href: '/settings/notifications' },
   ];
 
   return (

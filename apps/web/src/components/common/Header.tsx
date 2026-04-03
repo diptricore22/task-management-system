@@ -4,7 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { User } from '@/types/shared';
 import { useLogout } from '@/modules/auth/hooks/useLogout';
-import { Menu, LogOut, Settings, Bell } from 'lucide-react';
+import { Menu, LogOut, Settings } from 'lucide-react';
+import { NotificationBell } from '@/modules/notifications/components/NotificationBell';
+import { NotificationDropdown } from '@/modules/notifications/components/NotificationDropdown';
+import { useNotificationPolling } from '@/modules/notifications/hooks/useNotificationPolling';
+import { useNotifications } from '@/modules/notifications/hooks/useNotifications';
+import { useMarkNotificationAsRead } from '@/modules/notifications/hooks/useMarkNotificationAsRead';
 
 interface HeaderProps {
   user: User | null;
@@ -18,7 +23,11 @@ interface HeaderProps {
  */
 export function Header({ user, onMenuToggle }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const { handleLogout } = useLogout();
+  const { unread_count } = useNotificationPolling();
+  const { notifications, loading: notificationsLoading, refetch: refetchNotifications } = useNotifications();
+  const { markAsRead } = useMarkNotificationAsRead();
 
   const initials =
     user && user.firstName && user.lastName
@@ -52,13 +61,24 @@ export function Header({ user, onMenuToggle }: HeaderProps) {
         {/* Right: Notifications + User Menu */}
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Notifications */}
-          <button
-            className="p-2 hover:bg-slate-800 rounded-lg transition text-slate-400 hover:text-slate-200 relative"
-            aria-label="Notifications"
-          >
-            <Bell size={20} />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-violet-500 rounded-full"></span>
-          </button>
+          <div className="relative">
+            <NotificationBell
+              unread_count={unread_count}
+              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+              isOpen={isNotificationOpen}
+            />
+            <NotificationDropdown
+              isOpen={isNotificationOpen}
+              onClose={() => setIsNotificationOpen(false)}
+              notifications={notifications}
+              unread_count={unread_count}
+              loading={notificationsLoading}
+              onMarkAsRead={(notificationId) => {
+                markAsRead(notificationId);
+                refetchNotifications();
+              }}
+            />
+          </div>
 
           {/* User Menu Dropdown */}
           <div className="relative">

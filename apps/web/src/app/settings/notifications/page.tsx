@@ -4,6 +4,8 @@ import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute';
 import { AppLayout } from '@/components/layouts/AppLayout';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { NotificationPreferencesForm } from '@/modules/notifications/components/NotificationPreferencesForm';
+import { useNotificationPreferences } from '@/modules/notifications/hooks/useNotificationPreferences';
 
 function SettingsNav() {
   const pathname = usePathname();
@@ -33,35 +35,40 @@ function SettingsNav() {
   );
 }
 
-function AccountContent() {
+function NotificationSettingsContent() {
+  const { preferences, loading, error, updatePreferences } = useNotificationPreferences();
+
   return (
     <div className="w-full">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Settings</h1>
         <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Manage your account settings
+          Control how you receive notifications
         </p>
       </div>
 
       <SettingsNav />
 
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-          Account Settings
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">
+          Notification Preferences
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 text-center py-8">
-          Account form (password change, email preferences) will be implemented here
-        </p>
+        <NotificationPreferencesForm
+          preferences={preferences}
+          loading={loading}
+          error={error}
+          onUpdate={updatePreferences}
+        />
       </div>
     </div>
   );
 }
 
-export default function AccountPage() {
+export default function NotificationSettingsPage() {
   return (
     <ProtectedRoute>
       <AppLayout>
-        <AccountContent />
+        <NotificationSettingsContent />
       </AppLayout>
     </ProtectedRoute>
   );

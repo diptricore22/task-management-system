@@ -152,21 +152,57 @@
   - Empty states: "No labels yet", "Loading labels..." messaging
   - Error handling: inline validation errors, API error display in modal
 
-- **FEAT-008: Due Dates, Reminders & Notifications** - User-controlled notification preferences and scheduled email reminders
-  - 2 REST endpoints: GET/PATCH /api/users/me/notification-preferences for per-user notification setting management
-  - Notification preferences: 4 independent toggles (email_due_tomorrow, email_overdue, email_assigned, email_commented)
-  - Default preferences: due_tomorrow=true, overdue=true, assigned=true, commented=false
-  - Daily scheduler service: runs at 08:00 AM to process due date reminders with batch processing
-  - Due tomorrow reminders: finds tasks due next day (status != DONE, has assignee), creates in-app + email notifications
-  - Overdue task reminders: finds overdue incomplete tasks with 24-hour debounce via last_due_notified_at timestamp
-  - Email service with templates: 4 notification types (due_tomorrow, overdue, assigned, commented) with branded HTML
-  - Email template features: responsive design, inline styles, brand colors, CTA buttons, unsubscribe links, task deep links
-  - Graceful job failure handling: per-task try/catch, continues processing on failures, logs summary with success/error counts
-  - Email provider integration points: TODO comments for Resend, SendGrid, Nodemailer setup
-  - Scheduler integration points: TODO comments for node-cron and Bull queue setup
-  - Authorization: users can only manage own preferences, no cross-user data access
-  - In-app notifications always enabled: only email channel can be toggled off
-  - Comprehensive test coverage: 132 tests covering all user stories and integration scenarios (NOTIF-U001..U004, NOTIF-I001..I012)
+- **FEAT-008: Due Dates, Reminders & Notifications (Backend)** - User-controlled notification preferences and scheduled email reminders
+  - Backend components:
+    - 2 REST endpoints: GET/PATCH /api/users/me/notification-preferences for per-user notification setting management
+    - 5 REST endpoints: GET /api/notifications, PATCH /api/notifications/:id/read, PATCH /api/notifications/read-all, Notification CRUD operations
+    - Notification preferences: 4 independent toggles (email_due_tomorrow, email_overdue, email_assigned, email_commented)
+    - Default preferences: due_tomorrow=true, overdue=true, assigned=true, commented=false
+    - Daily scheduler service: runs at 08:00 AM to process due date reminders with batch processing
+    - Due tomorrow reminders: finds tasks due next day (status != DONE, has assignee), creates in-app + email notifications
+    - Overdue task reminders: finds overdue incomplete tasks with 24-hour debounce via last_due_notified_at timestamp
+    - Email service with templates: 4 notification types (due_tomorrow, overdue, assigned, commented) with branded HTML
+    - Email template features: responsive design, inline styles, brand colors, CTA buttons, unsubscribe links, task deep links
+    - Graceful job failure handling: per-task try/catch, continues processing on failures, logs summary with success/error counts
+    - Email provider integration points: TODO comments for Resend, SendGrid, Nodemailer setup
+    - Scheduler integration points: TODO comments for node-cron and Bull queue setup
+    - Authorization: users can only manage own preferences, no cross-user data access
+    - In-app notifications always enabled: only email channel can be toggled off
+    - Comprehensive test coverage: 132 tests covering all user stories and integration scenarios (NOTIF-U001..U004, NOTIF-I001..I012)
+
+- **FEAT-008: Due Dates, Reminders & Notifications (Frontend)** - Notification bell with dropdown list, preferences page, and full notifications history view
+  - 2 TypeScript types files:
+    - notifications.types.ts: NotificationType, NotificationPayload, Notification, NotificationResponse, NotificationPreferences, NotificationPreferencesResponse interfaces
+    - 4 notification types: task_assigned, task_commented, task_due_tomorrow, task_overdue
+  - 1 validation schema file: notifications.schema.ts with updatePreferencesSchema Zod validator for preference toggles
+  - 4 React hooks for notification management:
+    - `useNotifications` - Fetches paginated notifications (page/limit), supports append-style "load more" pagination, returns unread_count
+    - `useNotificationPreferences` - Fetches and updates user notification email preferences (email_assigned, email_commented, etc.)
+    - `useNotificationPolling` - Auto-polling (30-second interval) for real-time unread badge updates with visibility-aware pause/resume
+    - `useMarkNotificationAsRead` - Marks single or all notifications as read with PATCH operations
+  - 5 React components for notifications UI:
+    - `NotificationBell` - Header notification icon with unread count badge (red circle), pulse animation when unread exists
+    - `NotificationDropdown` - Dropdown menu showing top 5 recent notifications, "View all" link, click-outside to close, Escape key handling
+    - `NotificationItem` - Single notification display with avatar (initials), action text, relative timestamp, unread indicator dot
+    - `NotificationList` - Paginated notification list container with "Load More" button, loading skeleton, error retry, empty state messaging
+    - `NotificationPreferencesForm` - Toggle switches for 4 email notification types with descriptions, save/cancel buttons, success/error messages
+  - Notification features:
+    - Real-time bell badge: Updates via 30-second polling, pauses when page/tab is hidden, resumes on focus
+    - Dropdown notification list: Shows most recent notifications with actor names, task titles, timestamps
+    - Click to mark read: Clicking notification marks it as read and navigates to task detail
+    - Full notification history: /notifications page with pagination, "Mark all as read" button
+    - Email preferences: /settings/notifications page with toggle switches for each email notification type
+  - Integration with existing UI:
+    - Header.tsx updated: Replaced Bell placeholder with NotificationBell component + NotificationDropdown
+    - Settings navigation: Added "Notifications" tab to /settings, /settings/account, and /settings/notifications pages
+  - Dark mode styling throughout all components with Tailwind CSS
+  - Responsive design: Dropdown adjusts on mobile, notification list scrollable with max-height
+  - Error handling: Inline error messages with retry buttons, API failure graceful fallback
+  - Loading states: Skeleton loaders during initial fetch, pulse animation on bell badge
+  - Empty states: "No notifications yet" on empty list, "No new notifications" in dropdown
+  - Accessibility: ARIA labels on bell button, proper semantic HTML for toggle switches, keyboard navigation support
+
+
 
 - **FEAT-007: Labels, Priorities & Filtering** - Advanced label management and powerful multi-criteria filtering
   - 7 REST endpoints: GET/POST /api/projects/:id/labels, PATCH/DELETE /api/labels/:id, POST/DELETE /api/tasks/:id/labels, GET /api/tasks/:id/labels

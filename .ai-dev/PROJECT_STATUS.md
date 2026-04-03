@@ -24,24 +24,39 @@
 | FEAT-010 | Kanban Board View | P2 | Not Started | |
 | FEAT-011 | Admin Reports & Analytics | P2 | Not Started | |
 | FRONTEND-005 | Frontend Labels & Filtering | P1 | 🔄 IN PROGRESS | Phase 1 complete: label modal, filter hooks, UI components, URL persistence. Phase 2: TaskList integration, TaskCard labels |
-| FRONTEND-006 | Frontend Due-Date Reminders & Notifications UX | P1 | not started | NotificationBell, notification preferences, /notifications page, real-time updates |
+| FRONTEND-006 | Frontend Due-Date Reminders & Notifications UX | P1 | ✅ COMPLETE | NotificationBell, notification preferences, /notifications page, real-time updates with polling |
 
 ## Progress Overview
 ```
 P0 Features: 4 / 4 complete (100%)
-P1 Features: 11 / 13 complete (85%)
+P1 Features: 12 / 13 complete (92%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [==================================================>] 82%
+Overall:     [===================================================>  ] 85%
 ```
 
 ## Current Sprint Focus
-- **Completed:** FEAT-007 Labels & Filtering (Frontend Phase 1) - 15 files with label management and advanced filtering
-- **Next:** Phase 2 integration (TaskList, ProjectSettingsPage, TaskCard) or FRONTEND-008 (Due Dates & Notifications UX)
+- **Completed:** FEAT-008 Notifications (Frontend) - Real-time notifications with 30-sec polling, preferences UI, notification history page
+- **Next:** FRONTEND-005 Phase 2 (TaskList integration, project settings labels tab) or additional features
 
 ## Blockers
 _None_
 
 ## Recent Changes
+- **2026-04-03:** FEAT-008 Notifications (Frontend) completed
+  - 2 types files: notifications.types.ts (Notification, NotificationPayload, preferences interfaces), validations schema
+  - 4 hooks: useNotifications (paginated fetch), useNotificationPreferences (GET/PATCH), useNotificationPolling (30-sec polling with visibility awareness), useMarkNotificationAsRead (single/all)
+  - 5 components: NotificationBell (header icon with badge), NotificationDropdown (recent list), NotificationItem (single item), NotificationList (paginated container), NotificationPreferencesForm (email toggles)
+  - Header.tsx updated: Integrated bell component with real-time polling for unread count
+  - Settings navigation: Added "Notifications" tab to /settings, /settings/account, /settings/notifications pages
+  - 3 new pages: /notifications (full history with pagination), /settings/notifications (email preferences)
+  - Features: 30-second auto-polling, pause on page hide/resume on focus, click notification to mark read + navigate to task
+  - Error handling: Inline errors with retry buttons, API failure graceful fallback
+  - Styling: Dark mode support, responsive dropdown, loading skeleton, empty states
+  - 11 new files created + 3 existing files modified
+  - Build successful: npm run build verified TypeScript and Next.js compilation
+  - P1 features now 92% complete (12/13)
+  - Overall progress: 85%
+
 - **2026-04-03:** FEAT-007 Labels & Filtering (Frontend Phase 1) completed
   - 2 type files: labels.types.ts (Label interface), filters.types.ts (FilterState, TaskStatus, TaskPriority enums)
   - 1 schema file: labels.schema.ts with createLabelSchema, updateLabelSchema Zod validators
