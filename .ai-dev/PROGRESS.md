@@ -46,6 +46,42 @@ Next task:
 
 ---
 
+### Session - 2026-04-06 (Session 5)
+**Duration:** ~15 minutes
+**Feature(s) worked on:** Repository test run, docs update
+
+**Completed this session:**
+- ✅ Executed `npm run test` from `task_management_system` (ran API + web test suites)
+- ✅ Updated `.ai-dev/CHANGELOG.md` with test-run notes
+- ✅ Updated `.ai-dev/PROJECT_STATUS.md` with test-run summary and `Last Updated` timestamp
+- ✅ Appended this session entry to `.ai-dev/PROGRESS.md`
+
+**In Progress:**
+- Investigate failing tests and module resolution issue (see 'Blocked on')
+
+**Blocked on:**
+- Jest/TypeScript path alias resolution: tests reported `Cannot find module '@/lib/prisma'` — likely `moduleNameMapper`/`tsconfig.paths` mismatch
+
+**Next Session - Start With:**
+> Fix Jest path aliases: verify `tsconfig.json` `paths`, update `jest.config.*` `moduleNameMapper` to map `^@/(.*)$` to `<rootDir>/src/$1`, run `npm run test` again.
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- task_management_system/tsconfig.json
+- task_management_system/jest.config.ts (or jest.config.js)
+- .ai-dev/PROGRESS.md (this file)
+
+Last session summary:
+Ran `npm run test` — tests executed but some failed due to module resolution (`@/lib/prisma`). Updated changelog and project status with results.
+
+Next task:
+Fix Jest moduleNameMapper for `@` path alias to point to `src/`, then rerun tests.
+```
+
+
 ### Session - 2026-04-03 (Session 4)
 **Duration:** ~2 hours
 **Feature(s) worked on:** FEAT-009 Frontend Base Layout Shell

@@ -325,3 +325,7 @@ TEMPLATE FOR NEW ENTRY:
 ### Removed
 -
 -->
+
+### Changed
+- Ran test suite: `npm run test` — executed 2026-04-06. Integration and unit tests executed; some tests failed. Key failure: `Cannot find module '@/lib/prisma'` in `tests/auth.service.spec.ts`. Likely cause: Jest/tsconfig path alias mismatch. Action: investigate `tsconfig.json` `paths` and `jest` configuration (`moduleNameMapper`) and fix module resolution before marking features as fully passing.
+
