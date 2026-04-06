@@ -54,7 +54,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
 
         // Then verify with backend
-        const user = await api.get<User>('/users/me');
+        const response = await api.get<{ user: User }>('/users/me');
+        const user = response.user;
         setState((prev) => ({
           ...prev,
           user,
@@ -180,7 +181,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await api.post('/auth/refresh');
       // Re-fetch user data to ensure it's fresh
-      const user = await api.get<User>('/users/me');
+      const response = await api.get<{ user: User }>('/users/me');
+      const user = response.user;
       setState((prev) => ({
         ...prev,
         user,
