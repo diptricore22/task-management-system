@@ -1,28 +1,59 @@
-import { useState } from 'react';
+'use client';
 
-interface UseTaskDeleteOptions {
-  onSuccess?: (taskId: string) => void;
-  onError?: (error: Error) => void;
+import { useCallback, useState } from 'react';
+import { api, ApiError } from '@/lib/api-client';
+
+interface UseTaskDeleteReturn {
+  isDeleting: boolean;
+  error: string | null;
+  handleDelete: (taskId: string) => Promise<void>;
+  clearError: () => void;
 }
 
-export function useTaskDelete(options?: UseTaskDeleteOptions) {
-  const [loading, setLoading] = useState(false);
+/**
+ * useTaskDelete Hook
+ * Handles task soft-deletion via DELETE /api/tasks/:id
+ * Called after delete confirmation modal confirms intent
+ */
+export function useTaskDelete(
+  options?: {
+    onSuccess?: (taskId: string) => void;
+    onError?: (error: Error) => void;
+  }
+): UseTaskDeleteReturn {
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const deleteTask = async (taskId: string) => {
-    setLoading(true);
+  const handleDelete = useCallback(async (taskId: string): Promise<void> => {
+    setIsDeleting(true);
     setError(null);
+
     try {
-      // TODO: Implement task deletion logic
+      await api.delete(`/tasks/${taskId}`);
       options?.onSuccess?.(taskId);
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to delete task';
-      setError(errorMsg);
-      options?.onError?.(err instanceof Error ? err : new Error(errorMsg));
+      const errorMessage =
+        err instanceof ApiError
+          ? err.message
+          : err instanceof Error
+          ? err.message
+          : 'Failed to delete task';
+      setError(errorMessage);
+      options?.onError?.(err instanceof Error ? err : new Error(errorMessage));
+      throw err;
     } finally {
-      setLoading(false);
+      setIsDeleting(false);
     }
-  };
+  }, [options]);
 
-  return { deleteTask, loading, error };
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return {
+    isDeleting,
+    error,
+    handleDelete,
+    clearError,
+  };
 }

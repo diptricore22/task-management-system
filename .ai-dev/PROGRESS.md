@@ -46,6 +46,66 @@ Next task:
 
 ---
 
+### Session - 2026-04-06 (Session 6)
+**Duration:** ~1 hour
+**Feature(s) worked on:** FEAT-003 Task Management (CRUD + Statuses) — Frontend Completion
+
+**Completed this session:**
+- ✅ Implemented `useTaskDelete` hook — full DELETE /api/tasks/:id with ApiError handling, onSuccess/onError callbacks, loading + error state
+- ✅ Implemented `useTaskUpdate` hook — PATCH /api/tasks/:id with:
+  - Field hydration from `initialTask` via `useEffect`
+  - `isChanged` computed diff tracking (prevents no-op requests)
+  - Zod validation per field via `validateField`
+  - Diff-based PATCH payload (only sends changed fields)
+  - `onSuccess` / `onError` callback options
+- ✅ Implemented `TaskStatusSelect` — all 5 statuses, Tailwind dark-mode, accessible label, exported `TaskStatusBadge` helper
+- ✅ Implemented `TaskPrioritySelect` — all 4 priorities with icon indicators (⚪🟡🟠🔴), exported `TaskPriorityBadge` helper
+- ✅ Implemented `DeleteConfirmModal` — backdrop, Escape key dismiss, spinner button, dark-mode styling
+- ✅ Implemented `TaskForm` — create/edit mode, local state, Zod-backed field validation display, assignee dropdown from members list, Tailwind styling
+- ✅ Implemented `TaskCard` — status badge, priority badge, overdue date warning, hover-reveal delete button, keyboard accessible
+- ✅ Implemented `TaskDetailPanel` — backdrop overlay, tab navigation (Details/Comments), metadata display, inline edit mode (TaskForm), delete trigger, CommentSection integration
+- ✅ Implemented `TaskList` — full orchestration: status-filter tabs, inline create form, paginated list, TaskCard rows, detail panel, delete modal
+- ✅ Fixed TypeScript errors:
+  - `due_date: null` vs `string | undefined` conflict — widened `TaskForm.onSubmit` to `Record<string, unknown>`
+  - Removed unused `updateHook` from TaskList (panel manages own edit state)
+  - Removed unused `CreateTaskFormData` import
+- ✅ Ran `npm run build:web` — **all 15 routes compiled, exit 0, no TypeScript errors**
+
+**In Progress:**
+- None — all FEAT-003 frontend components complete
+
+**Blocked on:**
+- Pre-existing Jest module resolution issue (`Cannot find module '@/lib/prisma'`) in API tests — separate from frontend work
+
+**Next Session - Start With:**
+> Git commit all FEAT-003 frontend changes with message `[FEAT-003] Complete Task Management Frontend (hooks + all components)`.
+> Then verify FEAT-007 Phase 2 integration (FilterBar in TaskList, label badges on TaskCard) or start FEAT-008 Frontend (Due Dates, Reminders, Notifications).
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/PROJECT_STATUS.md
+- .ai-dev/PROGRESS.md
+
+Last session summary:
+FEAT-003 Task Management Frontend is now 100% COMPLETE:
+- All 9 remaining items delivered: useTaskDelete, useTaskUpdate, TaskStatusSelect, TaskPrioritySelect,
+  DeleteConfirmModal, TaskForm, TaskCard, TaskDetailPanel, TaskList
+- npm build: ✓ exit 0 — no TypeScript errors, all 15 routes
+- Pattern: Projects module pattern replicated exactly
+
+Next task:
+1. Git commit FEAT-003 frontend
+2. FEAT-007 Phase 2: integrate FilterBar into TaskList, label badges on TaskCard
+3. OR start FEAT-008 Frontend: notification bell, preferences settings page
+```
+
+---
+
 ### Session - 2026-04-06 (Session 5)
 **Duration:** ~15 minutes
 **Feature(s) worked on:** Repository test run, docs update
