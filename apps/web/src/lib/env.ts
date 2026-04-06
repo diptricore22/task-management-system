@@ -6,7 +6,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_API_URL: z
     .string()
     .url('NEXT_PUBLIC_API_URL must be a valid URL')
-    .default('http://localhost:3003'),
+    .default('http://localhost:3003/api'),
 
   // Frontend Configuration
   NEXT_PUBLIC_WEB_URL: z

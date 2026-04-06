@@ -21,8 +21,20 @@ export function useDashboardProjects(): UseDashboardProjectsReturn {
     setError(null);
 
     try {
-      const response = await api.get<ProjectHealthCard[]>('/dashboard/projects');
-      setProjects(response);
+      // The backend may return either an array or an object like { projects: [...] }
+      const response = await api.get<
+        | ProjectHealthCard[]
+        | { projects: ProjectHealthCard[] }
+      >('/dashboard/projects');
+
+      if (Array.isArray(response)) {
+        setProjects(response);
+      } else if (response && typeof response === 'object' && 'projects' in response) {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        setProjects((response as { projects: ProjectHealthCard[] }).projects ?? []);
+      } else {
+        setProjects([]);
+      }
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
