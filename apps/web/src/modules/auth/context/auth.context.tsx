@@ -104,7 +104,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = useCallback(async (credentials: LoginForm) => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
-      const user = await api.post<User>('/auth/login', credentials);
+      const response = await api.post<{ user: User }>('/auth/login', credentials);
+      const user = response.user;
       setState((prev) => ({
         ...prev,
         user,
@@ -128,12 +129,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const register = useCallback(async (data: RegisterForm) => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
-      const user = await api.post<User>('/auth/register', {
+      const response = await api.post<{ user: User }>('/auth/register', {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         password: data.password,
       });
+      const user = response.user;
       setState((prev) => ({
         ...prev,
         user,
