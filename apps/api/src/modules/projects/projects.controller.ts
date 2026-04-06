@@ -23,9 +23,7 @@ export class ProjectsController {
     res.status(201).json({
       success: true,
       message: 'Project created successfully',
-      data: {
-        project: result,
-      },
+      data: result,
     });
   });
 
@@ -60,9 +58,7 @@ export class ProjectsController {
 
     res.json({
       success: true,
-      data: {
-        project: result,
-      },
+      data: result,
     });
   });
 
@@ -78,9 +74,7 @@ export class ProjectsController {
     res.json({
       success: true,
       message: 'Project updated successfully',
-      data: {
-        project: result,
-      },
+      data: result,
     });
   });
 
@@ -97,9 +91,7 @@ export class ProjectsController {
     res.json({
       success: true,
       message: `Project ${action} successfully`,
-      data: {
-        project: result,
-      },
+      data: result,
     });
   });
 
@@ -131,9 +123,7 @@ export class ProjectsController {
 
     res.json({
       success: true,
-      data: {
-        members,
-      },
+      data: members,
     });
   });
 
@@ -149,9 +139,7 @@ export class ProjectsController {
     res.status(201).json({
       success: true,
       message: 'Member added successfully',
-      data: {
-        member,
-      },
+      data: member,
     });
   });
 
@@ -168,9 +156,7 @@ export class ProjectsController {
     res.json({
       success: true,
       message: 'Member role updated successfully',
-      data: {
-        member,
-      },
+      data: member,
     });
   });
 
