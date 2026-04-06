@@ -51,7 +51,7 @@ export const APP_CONFIG = {
   },
 
   // User roles
-  roles: ['admin', 'member', 'viewer'] as const,
+  roles: ['ADMIN', 'MEMBER', 'VIEWER'] as const,
 
   // File upload limits (future feature)
   upload: {

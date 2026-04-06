@@ -34,7 +34,7 @@ function UsersContent() {
 
 export default function UsersPage() {
   return (
-    <ProtectedRoute requiredRole="admin">
+    <ProtectedRoute requiredRole="ADMIN">
       <AppLayout>
         <UsersContent />
       </AppLayout>

@@ -24,8 +24,8 @@ function PageContent() {
     refetch,
     clearError,
   } = useProjectList();
-
-  const isAdmin = user?.role === 'admin';
+  
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <div className="w-full">

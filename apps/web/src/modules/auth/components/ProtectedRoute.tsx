@@ -18,8 +18,8 @@ interface ProtectedRouteProps {
  *
  * Usage:
  * - Requires auth: <ProtectedRoute>{children}</ProtectedRoute>
- * - Requires specific role: <ProtectedRoute requiredRole="admin">{children}</ProtectedRoute>
- * - Requires one of multiple roles: <ProtectedRoute requiredRole={['admin', 'member']}>{children}</ProtectedRoute>
+ * - Requires specific role: <ProtectedRoute requiredRole="ADMIN">{children}</ProtectedRoute>
+ * - Requires one of multiple roles: <ProtectedRoute requiredRole={['ADMIN', 'MEMBER']}>{children}</ProtectedRoute>
  */
 export function ProtectedRoute({
   children,

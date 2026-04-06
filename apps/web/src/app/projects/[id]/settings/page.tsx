@@ -25,7 +25,7 @@ function PageContent() {
 
 export default function ProjectSettingsPageRoute() {
   return (
-    <ProtectedRoute requiredRole="admin">
+    <ProtectedRoute requiredRole="ADMIN">
       <AppLayout>
         <PageContent />
       </AppLayout>

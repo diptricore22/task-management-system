@@ -20,8 +20,27 @@ export class ProjectsService {
    */
   static async create(
     data: CreateProjectRequest,
-    userId: string
+    userId: string,
+    isAdmin: boolean
   ): Promise<ProjectDetailResponse> {
+    // Only Admins can create projects (implied by specs, enforcing in service)
+    if (!isAdmin) {
+      throw new AppError(
+        'Only administrators can create projects',
+        403,
+        'INSUFFICIENT_PERMISSIONS'
+      );
+    }
+
+    // Validate project name
+    if (data.name.length > 100) {
+      throw new AppError(
+        'Project name must be 100 characters or fewer',
+        400,
+        'INVALID_INPUT'
+      );
+    }
+
     // Create project
     const project = await prisma.project.create({
       data: {
@@ -199,7 +218,19 @@ export class ProjectsService {
 
     // Update project
     const updateData: any = {};
-    if (data.name !== undefined) updateData.name = data.name.trim();
+    if (data.name !== undefined) {
+      if (data.name.trim().length === 0) {
+        throw new AppError('Project name cannot be empty', 400, 'INVALID_INPUT');
+      }
+      if (data.name.length > 100) {
+        throw new AppError(
+          'Project name must be 100 characters or fewer',
+          400,
+          'INVALID_INPUT'
+        );
+      }
+      updateData.name = data.name.trim();
+    }
     if (data.description !== undefined)
       updateData.description = data.description?.trim() || null;
     if (data.color !== undefined) updateData.color = data.color;
@@ -266,15 +297,25 @@ export class ProjectsService {
    * - Returns count of tasks in project (for warning)
    * - Admin only
    */
-  static async delete(projectId: string, userId: string): Promise<void> {
+  static async delete(
+    projectId: string,
+    userId: string
+  ): Promise<{ task_count: number }> {
     // Verify project exists
     const project = await prisma.project.findFirst({
       where: { id: projectId, deleted_at: null },
+      include: {
+        _count: {
+          select: { tasks: { where: { deleted_at: null } } },
+        },
+      },
     });
 
     if (!project) {
       throw new AppError('Project not found', 404, 'PROJECT_NOT_FOUND');
     }
+
+    const taskCount = project._count.tasks;
 
     // Soft-delete project
     await prisma.project.update({
@@ -288,8 +329,11 @@ export class ProjectsService {
         project_id: projectId,
         actor_id: userId,
         action: 'project_deleted',
+        payload: { task_count: taskCount },
       },
     });
+
+    return { task_count: taskCount };
   }
 
   /**

@@ -47,7 +47,7 @@ function ReportsContent() {
 
 export default function ReportsPage() {
   return (
-    <ProtectedRoute requiredRole="admin">
+    <ProtectedRoute requiredRole="ADMIN">
       <AppLayout>
         <ReportsContent />
       </AppLayout>

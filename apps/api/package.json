@@ -71,6 +71,9 @@
     "testEnvironment": "node",
     "rootDir": "src",
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1"
+    },
     "collectCoverageFrom": [
       "**/*.{ts,js}",
       "!**/*.d.ts",

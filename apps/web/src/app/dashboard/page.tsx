@@ -14,7 +14,7 @@ import { ProjectHealthTable } from '@/modules/dashboard/components/ProjectHealth
 
 function DashboardContent() {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'ADMIN';
 
   // Fetch all dashboard data
   const { summary, loading: summaryLoading } = useDashboardSummary();

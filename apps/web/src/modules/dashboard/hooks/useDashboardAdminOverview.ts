@@ -14,7 +14,7 @@ export interface UseDashboardAdminOverviewReturn {
 
 export function useDashboardAdminOverview(): UseDashboardAdminOverviewReturn {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'ADMIN';
 
   const [projects, setProjects] = useState<ProjectAdminOverview[]>([]);
   const [loading, setLoading] = useState(false);

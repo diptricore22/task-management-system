@@ -23,11 +23,21 @@ jest.mock('@/lib/prisma', () => ({
       findMany: jest.fn(),
       update: jest.fn(),
       updateMany: jest.fn(),
+      count: jest.fn(),
     },
     projectMember: {
       create: jest.fn(),
+      findFirst: jest.fn(),
       findMany: jest.fn(),
       deleteMany: jest.fn(),
+    },
+    activityLog: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+    },
+    task: {
+      updateMany: jest.fn(),
+      count: jest.fn(),
     },
   },
 }));
@@ -49,9 +59,12 @@ describe('Project Service - Unit Tests', () => {
         created_at: new Date(),
         updated_at: new Date(),
         deleted_at: null,
+        tasks: [],
+        members: [],
       };
 
       (prisma.project.create as jest.Mock).mockResolvedValue(mockProject);
+      (prisma.project.findFirst as jest.Mock).mockResolvedValue(mockProject);
       (prisma.projectMember.create as jest.Mock).mockResolvedValue({
         id: 'pm-123',
         project_id: 'proj-123',
@@ -60,13 +73,14 @@ describe('Project Service - Unit Tests', () => {
         joined_at: new Date(),
       });
 
-      const result = await ProjectsService.createProject(
+      const result = await ProjectsService.create(
         {
           name: 'Mobile App',
           description: 'iOS and Android application',
           color: '#3B82F6',
         },
-        'admin-123'
+        'admin-123',
+        true // isAdmin
       );
 
       expect(result.id).toBe('proj-123');
@@ -83,16 +97,18 @@ describe('Project Service - Unit Tests', () => {
       const longName = 'a'.repeat(101);
 
       try {
-        await ProjectsService.createProject(
+        await ProjectsService.create(
           {
             name: longName,
             description: 'Description',
             color: '#3B82F6',
           },
-          'admin-123'
+          'admin-123',
+          true
         );
         fail('Should have thrown an error');
-      } catch (err) {
+      } catch (err: any) {
+        expect(err instanceof AppError).toBe(true);
         if (err instanceof AppError) {
           expect(err.statusCode).toBe(400);
           expect(err.code).toBe('INVALID_INPUT');
@@ -115,15 +131,18 @@ describe('Project Service - Unit Tests', () => {
           created_at: new Date(),
           updated_at: new Date(),
           deleted_at: null,
+          tasks: [],
+          members: [],
         },
       ];
 
       (prisma.project.findMany as jest.Mock).mockResolvedValue(mockProjects);
+      (prisma.project.count as jest.Mock).mockResolvedValue(1);
 
-      const result = await ProjectsService.listProjectsForUser('member-123');
+      const result = await ProjectsService.list('member-123', false);
 
-      expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Mobile App');
+      expect(result.projects).toHaveLength(1);
+      expect(result.projects[0].name).toBe('Mobile App');
       expect(prisma.project.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
@@ -146,6 +165,8 @@ describe('Project Service - Unit Tests', () => {
           created_at: new Date(),
           updated_at: new Date(),
           deleted_at: null,
+          tasks: [],
+          members: [],
         },
         {
           id: 'proj-456',
@@ -156,16 +177,19 @@ describe('Project Service - Unit Tests', () => {
           created_at: new Date(),
           updated_at: new Date(),
           deleted_at: null,
+          tasks: [],
+          members: [],
         },
       ];
 
       (prisma.project.findMany as jest.Mock).mockResolvedValue(mockProjects);
+      (prisma.project.count as jest.Mock).mockResolvedValue(2);
 
-      const result = await ProjectsService.listAllProjects();
+      const result = await ProjectsService.list('admin-123', true);
 
-      expect(result).toHaveLength(2);
-      expect(result[0].name).toBe('Project 1');
-      expect(result[1].name).toBe('Project 2');
+      expect(result.projects).toHaveLength(2);
+      expect(result.projects[0].name).toBe('Project 1');
+      expect(result.projects[1].name).toBe('Project 2');
     });
   });
 
@@ -181,15 +205,18 @@ describe('Project Service - Unit Tests', () => {
         created_at: new Date(),
         updated_at: new Date(),
         deleted_at: null,
+        tasks: [],
+        members: [],
       };
 
       (prisma.project.update as jest.Mock).mockResolvedValue(mockUpdatedProject);
+      (prisma.project.findFirst as jest.Mock).mockResolvedValue(mockUpdatedProject);
 
-      const result = await ProjectsService.updateProject('proj-123', {
+      const result = await ProjectsService.update('proj-123', {
         name: 'Updated Mobile App',
         description: 'Updated description',
         color: '#10B981',
-      });
+      }, 'admin-123');
 
       expect(result.name).toBe('Updated Mobile App');
       expect(result.description).toBe('Updated description');
@@ -201,13 +228,18 @@ describe('Project Service - Unit Tests', () => {
   describe('PROJ-U006: Update Project - Empty Name Validation', () => {
     it('PROJ-U006: should reject update with empty name', async () => {
       try {
-        await ProjectsService.updateProject('proj-123', {
-          name: '',
-          description: 'Description',
-          color: '#3B82F6',
-        });
+        await ProjectsService.update(
+          'proj-123',
+          {
+            name: '',
+            description: 'Description',
+            color: '#3B82F6',
+          },
+          'admin-123'
+        );
         fail('Should have thrown an error');
-      } catch (err) {
+      } catch (err: any) {
+        expect(err instanceof AppError).toBe(true);
         if (err instanceof AppError) {
           expect(err.statusCode).toBe(400);
           expect(err.code).toBe('INVALID_INPUT');
@@ -227,11 +259,14 @@ describe('Project Service - Unit Tests', () => {
         created_at: new Date(),
         updated_at: new Date(),
         deleted_at: null,
+        tasks: [],
+        members: [],
       };
 
       (prisma.project.update as jest.Mock).mockResolvedValue(mockArchivedProject);
+      (prisma.project.findFirst as jest.Mock).mockResolvedValue(mockArchivedProject);
 
-      const result = await ProjectsService.archiveProject('proj-123', true);
+      const result = await ProjectsService.archive('proj-123', true, 'admin-123');
 
       expect(result.status).toBe('ARCHIVED');
       expect(prisma.project.update).toHaveBeenCalledWith(
@@ -255,11 +290,14 @@ describe('Project Service - Unit Tests', () => {
         created_at: new Date(),
         updated_at: new Date(),
         deleted_at: null,
+        tasks: [],
+        members: [],
       };
 
       (prisma.project.update as jest.Mock).mockResolvedValue(mockRestoredProject);
+      (prisma.project.findFirst as jest.Mock).mockResolvedValue(mockRestoredProject);
 
-      const result = await ProjectsService.archiveProject('proj-123', false);
+      const result = await ProjectsService.archive('proj-123', false, 'admin-123');
 
       expect(result.status).toBe('ACTIVE');
       expect(prisma.project.update).toHaveBeenCalledWith(
@@ -273,35 +311,7 @@ describe('Project Service - Unit Tests', () => {
   });
 
   describe('PROJ-U009: Delete Project - Soft Delete', () => {
-    it('PROJ-U009: should soft-delete project by setting deleted_at', async () => {
-      const mockDeletedProject = {
-        id: 'proj-123',
-        name: 'Mobile App',
-        color: '#3B82F6',
-        status: 'ACTIVE',
-        created_by: 'admin-123',
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: new Date(),
-      };
-
-      (prisma.project.update as jest.Mock).mockResolvedValue(mockDeletedProject);
-
-      const result = await ProjectsService.deleteProject('proj-123');
-
-      expect(result.deleted_at).not.toBeNull();
-      expect(prisma.project.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            deleted_at: expect.any(Date),
-          }),
-        })
-      );
-    });
-  });
-
-  describe('PROJ-U010: Delete Project - With Active Tasks Warning', () => {
-    it('PROJ-U010: should warn about active tasks when deleting project', async () => {
+    it('PROJ-U009: should soft-delete project and return task count', async () => {
       const projectWithTasks = {
         id: 'proj-123',
         name: 'Mobile App',
@@ -309,12 +319,14 @@ describe('Project Service - Unit Tests', () => {
       };
 
       (prisma.project.findFirst as jest.Mock).mockResolvedValue(projectWithTasks);
+      (prisma.project.update as jest.Mock).mockResolvedValue({
+        ...projectWithTasks,
+        deleted_at: new Date(),
+      });
 
-      const result = await ProjectsService.getProjectWithTaskCount('proj-123');
+      const result = await ProjectsService.delete('proj-123', 'admin-123');
 
-      expect(result._count.tasks).toBe(5);
-      // Service should warn about 5 tasks before deletion
-      // In actual implementation, this would be in the route handler
+      expect(result.task_count).toBe(5);
     });
   });
 

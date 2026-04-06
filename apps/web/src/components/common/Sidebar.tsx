@@ -58,13 +58,13 @@ export function Sidebar({ user, isOpen, onClose }: SidebarProps) {
       label: 'Reports',
       href: '/admin/reports',
       icon: BarChart3,
-      roles: ['admin'],
+      roles: ['ADMIN'],
     },
     {
       label: 'User Management',
       href: '/admin/users',
       icon: LayoutDashboard,
-      roles: ['admin'],
+      roles: ['ADMIN'],
     },
   ];
 
@@ -157,7 +157,7 @@ export function Sidebar({ user, isOpen, onClose }: SidebarProps) {
             </div>
 
             {/* Admin Section (only for admins) */}
-            {user?.role === 'admin' && (
+            {user?.role === 'ADMIN' && (
               <div>
                 <p className="text-xs uppercase font-semibold text-slate-500 px-4 mb-3 mt-6">
                   Admin

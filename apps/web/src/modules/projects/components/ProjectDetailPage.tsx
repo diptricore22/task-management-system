@@ -25,7 +25,7 @@ export function ProjectDetailPage({
   children,
 }: ProjectDetailPageProps) {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'ADMIN';
 
   if (loading) {
     return (

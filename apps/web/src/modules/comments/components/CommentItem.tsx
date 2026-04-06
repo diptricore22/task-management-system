@@ -32,7 +32,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   const { isDeleting, handleDelete } = useDeleteComment();
 
   const isAuthor = user?.id === comment.author.id;
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'ADMIN';
   const canDelete = isAuthor || isAdmin;
 
   // Check if within 15-minute edit window

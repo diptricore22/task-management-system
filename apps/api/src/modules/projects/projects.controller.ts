@@ -14,7 +14,11 @@ export class ProjectsController {
   // POST /api/projects - Create project
   static create = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = createProjectSchema.parse(req.body);
-    const result = await ProjectsService.create(validatedData, req.user!.id);
+    const result = await ProjectsService.create(
+      validatedData,
+      req.user!.id,
+      req.user!.role === 'ADMIN'
+    );
 
     res.status(201).json({
       success: true,
@@ -101,11 +105,19 @@ export class ProjectsController {
 
   // DELETE /api/projects/:id - Delete project
   static delete = asyncHandler(async (req: Request, res: Response) => {
-    await ProjectsService.delete(req.params.id, req.user!.id);
+    const result = await ProjectsService.delete(req.params.id, req.user!.id);
+    const taskCount = result.task_count;
 
     res.json({
       success: true,
       message: 'Project deleted successfully',
+      data: {
+        task_count: taskCount,
+        warning:
+          taskCount > 0
+            ? `This project had ${taskCount} tasks. They have been archived.`
+            : undefined,
+      },
     });
   });
 

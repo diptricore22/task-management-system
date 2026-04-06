@@ -50,7 +50,7 @@ export const LabelManagementModal: React.FC<LabelManagementModalProps> = ({
     handleDelete,
   } = useLabelManagement();
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'ADMIN';
 
   if (!isOpen) return null;
 
