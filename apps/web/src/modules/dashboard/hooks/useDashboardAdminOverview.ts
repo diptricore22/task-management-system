@@ -30,8 +30,8 @@ export function useDashboardAdminOverview(): UseDashboardAdminOverviewReturn {
     setError(null);
 
     try {
-      const response = await api.get<ProjectAdminOverview[]>('/dashboard/admin/overview');
-      setProjects(response);
+      const response = await api.get<{ projects: ProjectAdminOverview[] }>('/dashboard/admin/overview');
+      setProjects(response.projects);
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
