@@ -23,7 +23,7 @@ export const createTaskSchema = z.object({
   due_date: z
     .string()
     .refine(
-      (date) => !isNaN(Date.parse(date)),
+      (date) => /^\d{4}-\d{2}-\d{2}/.test(date) && !isNaN(Date.parse(date)),
       'Due date must be a valid ISO date'
     )
     .optional(),
@@ -60,7 +60,7 @@ export const updateTaskSchema = z.object({
   due_date: z
     .string()
     .refine(
-      (date) => !isNaN(Date.parse(date)),
+      (date) => /^\d{4}-\d{2}-\d{2}/.test(date) && !isNaN(Date.parse(date)),
       'Due date must be a valid ISO date'
     )
     .optional()

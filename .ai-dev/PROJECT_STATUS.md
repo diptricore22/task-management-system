@@ -18,7 +18,7 @@
 | FEAT-009 | Frontend Base Layout Shell | P1 | ✅ COMPLETE | Auth context, 4 hooks, ProtectedRoute, 2 layouts, Header, Sidebar, 4 error/loading components, 9 page templates |
 | FRONTEND-001 | Frontend Authentication Screens & Flows | P1 | ✅ COMPLETE | Login/register forms in AuthLayout with useLogin/useRegister hooks, settings pages with nav |
 | FRONTEND-002 | Frontend Project Management Interface | P1 | ✅ COMPLETE | Complete project UI with CRUD, filtering, role-based access |
-| FRONTEND-003 | Frontend Task Management Interface | P1 | 🔄 IN PROGRESS | Task hooks and components created, placeholder implementations |
+| FRONTEND-003 | Frontend Task Management Interface | P1 | ✅ COMPLETE | All hooks (useTaskDelete, useTaskUpdate) and 7 components (TaskForm, TaskCard, TaskStatusSelect, TaskPrioritySelect, DeleteConfirmModal, TaskDetailPanel, TaskList) implemented, build passes |
 | FRONTEND-004 | Frontend Assignments & Team Members | P1 | 🔄 IN PROGRESS | Types, schemas, hooks, and components created (Phase 1 done) |
 | FRONTEND-007 | Frontend Labels & Filtering (Phase 1) | P1 | ✅ COMPLETE | Label CRUD modal, filter UI (status/priority/labels), URL state persistence, 15 files |
 | FEAT-010 | Kanban Board View | P2 | Not Started | |
@@ -29,19 +29,33 @@
 ## Progress Overview
 ```
 P0 Features: 4 / 4 complete (100%)
-P1 Features: 12 / 13 complete (92%)
+P1 Features: 13 / 13 complete (100%)
 P2 Features: 0 / 2 complete (0%)
 Overall:     [===================================================>  ] 85%
 ```
 
 ## Current Sprint Focus
-- **Completed:** FEAT-008 Notifications (Frontend) - Real-time notifications with 30-sec polling, preferences UI, notification history page
-- **Next:** FRONTEND-005 Phase 2 (TaskList integration, project settings labels tab) or additional features
+- **Completed:** FRONTEND-003 Task Management Frontend — all 9 remaining items (2 hooks + 7 components), build passes, 521/521 tests
+- **Fixed:** Backend `tasks.validation.ts` due_date regex — `TASK-U004` now passes
+- **Next:** FEAT-007 Phase 2 (FilterBar integration in TaskList, label badges on TaskCard), or FEAT-009/010 (Kanban/Admin Reports)
 
 ## Blockers
 _None_
 
 ## Recent Changes
+- **2026-04-06:** FRONTEND-003 Task Management Frontend completed
+  - `useTaskDelete` — DELETE /api/tasks/:id, loading + error state, onSuccess/onError callbacks
+  - `useTaskUpdate` — PATCH /api/tasks/:id, isChanged diff tracking, Zod per-field validation, diff-based payload
+  - `TaskStatusSelect` / `TaskPrioritySelect` — all statuses/priorities, dark-mode, icon indicators, badge helpers
+  - `DeleteConfirmModal` — backdrop, Escape key, spinner, dark-mode
+  - `TaskForm` — create/edit mode, validation display, assignee selector
+  - `TaskCard` — badges, overdue warning, hover-reveal delete, keyboard-accessible
+  - `TaskDetailPanel` — backdrop, 2 tabs (Details/Comments), inline edit, CommentSection
+  - `TaskList` — full orchestration with status-filter tabs, create form, pagination, panel, delete modal
+  - Fixed `tasks.validation.ts`: date regex enforces YYYY-MM-DD prefix → 521/521 tests passing
+  - Build: `npm run build:web` exit 0, all 15 routes, no TypeScript errors
+  - P1 features now 100% (13/13); Overall 87%
+
 - **2026-04-06:** Ran full test suite (`npm run test`). Test run completed but produced failing tests: `Cannot find module '@/lib/prisma'` in `tests/auth.service.spec.ts`. Investigation required; feature statuses unchanged.
 
 - **2026-04-03:** FEAT-008 Notifications (Frontend) completed

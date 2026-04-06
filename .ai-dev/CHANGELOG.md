@@ -201,7 +201,23 @@
   - Loading states: Skeleton loaders during initial fetch, pulse animation on bell badge
   - Empty states: "No notifications yet" on empty list, "No new notifications" in dropdown
   - Accessibility: ARIA labels on bell button, proper semantic HTML for toggle switches, keyboard navigation support
+- **FEAT-003: Task Management — Frontend Completion (2026-04-06)** - All remaining frontend hooks and UI components implemented
+  - 2 hooks fully implemented:
+    - `useTaskDelete` — DELETE /api/tasks/:id with ApiError handling, `isDeleting` state, `onSuccess`/`onError` callbacks
+    - `useTaskUpdate` — PATCH /api/tasks/:id with `useEffect` field hydration, `isChanged` diff tracking, Zod field validation, diff-based PATCH payload (only sends changed fields)
+  - 7 UI components replaced or rewritten:
+    - `TaskStatusSelect` — all 5 statuses, Tailwind dark-mode, accessible label/id, exported `TaskStatusBadge` helper
+    - `TaskPrioritySelect` — all 4 priorities with icon indicators including CRITICAL, exported `TaskPriorityBadge` helper
+    - `DeleteConfirmModal` — backdrop click-to-dismiss, Escape key, loading spinner, dark-mode
+    - `TaskCard` — status badge, priority indicator, overdue date warning, hover-reveal delete, keyboard accessible
+    - `TaskForm` — create/edit mode, Zod-backed validation display, assignee dropdown from members list
+    - `TaskDetailPanel` — backdrop overlay, Details/Comments tabs, inline edit mode, CommentSection integration
+    - `TaskList` — full orchestration: status-filter tabs, inline create form, paginated list, detail panel, delete modal, empty state
+  - Build: `npm run build:web` exit 0, all 15 routes, zero TypeScript errors
 
+### Fixed
+- **tasks.validation.ts** — `due_date` used permissive `Date.parse()` which accepted non-ISO formats like `MM/DD/YYYY`. Fixed to enforce `YYYY-MM-DD` prefix with regex, while still accepting full ISO datetime strings (e.g. `2026-06-30T14:30:00Z`). Applied to both `createTaskSchema` and `updateTaskSchema`. Fixes `TASK-U004: should reject invalid date format`.
+- **API tests** — All 521 tests now passing (previously 520). 5 suites fail to load due to pre-existing Jest path alias issue (`Cannot find module '../src/modules/auth/auth.service'`) — tracked separately, no new test failures introduced.
 
 
 - **FEAT-007: Labels, Priorities & Filtering** - Advanced label management and powerful multi-criteria filtering
