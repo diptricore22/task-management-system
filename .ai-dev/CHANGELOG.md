@@ -38,7 +38,7 @@
   - Session management: Automatic session initialization on app startup via GET /api/users/me, token rotation every 13 minutes
   - Protected routes: ProtectedRoute wrapper component with auth checks and role-based access control (admin, member, viewer)
   - Layout components: AppLayout (sidebar + header for protected routes), AuthLayout (minimal layout for login/register)
-  - Header component: Top navigation bar with user menu, notifications, mobile toggle button, responsive design
+  - Header component: Top navigation bar with user menu, mobile toggle button, responsive design
   - Sidebar component: Role-aware navigation sidebar with sections (Main, Workspace, Admin), active route highlighting, user profile footer
   - Error handling: ErrorBoundary React component for graceful error handling, LoadingSpinner during auth checks
   - Loading states: SkeletonLoader component for placeholder content while data loads (card, list, table, inline variants)
@@ -48,6 +48,9 @@
   - Session persistence: LocalStorage-backed persistence for fast recovery on page reload, automatic cleanup on logout
   - Type safety: Full TypeScript support with interfaces for AuthState, AuthContextType, NavItem, and component props
   - API integration: Uses existing api-client proxy pattern, handles auth response through httpOnly cookies
+
+### Changed
+- Verified full test suite on 2026-04-07 after current updates; all tests passed.
 
 - **FEAT-005: Dashboard & Activity Feed (Frontend)** - Complete dashboard with personal task summary, project health cards, and real-time activity feed
   - 1 TypeScript types file: DashboardSummary, ProjectHealthCard, ActivityFeedItem, ActivityFeedResponse, ProjectAdminOverview interfaces
@@ -214,6 +217,37 @@
     - `TaskDetailPanel` — backdrop overlay, Details/Comments tabs, inline edit mode, CommentSection integration
     - `TaskList` — full orchestration: status-filter tabs, inline create form, paginated list, detail panel, delete modal, empty state
   - Build: `npm run build:web` exit 0, all 15 routes, zero TypeScript errors
+
+- **FEAT-004: Task Assignment & Team Members — Frontend Complete (2026-04-06)** - Member management and My Tasks cross-project view
+  - 1 types file: members.types.ts with ProjectMember, MemberRole, AddMemberPayload, UpdateMemberRolePayload interfaces
+  - 1 validation schema: members.schema.ts with addMemberSchema, updateMemberRoleSchema Zod validators
+  - 5 React hooks for member operations:
+    - `useProjectMembers` — GET /api/projects/:id/members with auto-fetch on mount, loading/error states, refetch support
+    - `useAddMember` — POST /api/projects/:id/members with validation, onSuccess callback, form state management
+    - `useRemoveMember` — DELETE /api/projects/:id/members/:userId with onSuccess callback
+    - `useUpdateMemberRole` — PATCH /api/projects/:id/members/:userId to change role (ADMIN/MEMBER/VIEWER)
+    - `useUserSearch` — GET /api/users?search= with debounced search (300ms), filters existing members from results
+  - 3 React components for member management:
+    - `AddMemberModal` — searchable user picker modal with role selection (Admin/Member/Viewer), role descriptions, validation
+    - `MemberList` — table view with inline role editing, remove button, "You" indicator for current user, joined date display
+    - `RemoveMemberModal` — confirmation dialog for member removal with warning about task reassignment
+  - 1 React hook for My Tasks:
+    - `useMyTasks` — GET /api/users/me/tasks with cross-project aggregation, grouping by project, sorting by due date + priority
+  - Project members settings page:
+    - Route: /projects/[id]/settings/members (admin-only protected route)
+    - Add Member button triggering searchable modal
+    - MemberList component with live updates after add/remove/role change
+    - Integration with useAuth for current user detection
+  - My Tasks page implementation:
+    - Route: /tasks/my-tasks (member+ protected route)
+    - Statistics dashboard: Total, To Do, In Progress, Done, Overdue counts
+    - Task grouping by project with project color indicators and task counts
+    - Smart sorting within groups: due date ASC (nulls last), then priority DESC
+    - TaskCard integration for task display
+    - TaskDetailPanel integration for viewing/editing tasks
+    - Delete confirmation modal integration
+    - Empty state: "No tasks assigned to you yet"
+  - Build: `npm run build:web` exit 0, all 18 routes (added 2 new), zero TypeScript errors
 
 ### Fixed
 - **tasks.validation.ts** — `due_date` used permissive `Date.parse()` which accepted non-ISO formats like `MM/DD/YYYY`. Fixed to enforce `YYYY-MM-DD` prefix with regex, while still accepting full ISO datetime strings (e.g. `2026-06-30T14:30:00Z`). Applied to both `createTaskSchema` and `updateTaskSchema`. Fixes `TASK-U004: should reject invalid date format`.

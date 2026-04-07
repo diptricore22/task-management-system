@@ -1,7 +1,7 @@
 # Team Task Management System - Project Status
 
 **Phase:** 1 - Development In Progress
-**Last Updated:** 2026-04-06
+**Last Updated:** 2026-04-07
 
 ## Feature Tracker
 | Feature ID | Feature Name | Priority | Status | Notes |
@@ -19,7 +19,7 @@
 | FRONTEND-001 | Frontend Authentication Screens & Flows | P1 | ✅ COMPLETE | Login/register forms in AuthLayout with useLogin/useRegister hooks, settings pages with nav |
 | FRONTEND-002 | Frontend Project Management Interface | P1 | ✅ COMPLETE | Complete project UI with CRUD, filtering, role-based access |
 | FRONTEND-003 | Frontend Task Management Interface | P1 | ✅ COMPLETE | All hooks (useTaskDelete, useTaskUpdate) and 7 components (TaskForm, TaskCard, TaskStatusSelect, TaskPrioritySelect, DeleteConfirmModal, TaskDetailPanel, TaskList) implemented, build passes |
-| FRONTEND-004 | Frontend Assignments & Team Members | P1 | 🔄 IN PROGRESS | Types, schemas, hooks, and components created (Phase 1 done) |
+| FRONTEND-004 | Frontend Assignments & Team Members | P1 | ✅ COMPLETE | Member management UI, My Tasks page, 5 hooks + 3 components, project settings/members route |
 | FRONTEND-007 | Frontend Labels & Filtering (Phase 1) | P1 | ✅ COMPLETE | Label CRUD modal, filter UI (status/priority/labels), URL state persistence, 15 files |
 | FEAT-010 | Kanban Board View | P2 | Not Started | |
 | FEAT-011 | Admin Reports & Analytics | P2 | Not Started | |
@@ -29,20 +29,31 @@
 ## Progress Overview
 ```
 P0 Features: 4 / 4 complete (100%)
-P1 Features: 13 / 13 complete (100%)
+P1 Features: 14 / 14 complete (100%)
 P2 Features: 0 / 2 complete (0%)
-Overall:     [===================================================>  ] 85%
+Overall:     [=====================================================>   ] 88%
 ```
 
 ## Current Sprint Focus
-- **Completed:** FRONTEND-003 Task Management Frontend — all 9 remaining items (2 hooks + 7 components), build passes, 521/521 tests
-- **Fixed:** Backend `tasks.validation.ts` due_date regex — `TASK-U004` now passes
-- **Next:** FEAT-007 Phase 2 (FilterBar integration in TaskList, label badges on TaskCard), or FEAT-009/010 (Kanban/Admin Reports)
+- **Completed:** FRONTEND-004 Task Assignment & Team Members — member management UI, My Tasks page, all hooks and components, build passes
+- **All P1 features now complete:** 100% (14/14)
+- **Next:** FEAT-010 (Kanban Board View) or FEAT-011 (Admin Reports & Analytics)
 
 ## Blockers
 _None_
 
 ## Recent Changes
+- **2026-04-06:** FRONTEND-004 Task Assignment & Team Members completed
+  - 1 types file: members.types.ts (ProjectMember, MemberRole enums, AddMemberPayload, UpdateMemberRolePayload)
+  - 1 validation schema: members.schema.ts (addMemberSchema, updateMemberRoleSchema Zod validators)
+  - 5 hooks: useProjectMembers (GET members), useAddMember (POST with role), useRemoveMember (DELETE), useUpdateMemberRole (PATCH role), useUserSearch (debounced user search)
+  - 3 components: AddMemberModal (searchable user picker with roles), MemberList (table with inline role editing), RemoveMemberModal (confirmation)
+  - 1 hook: useMyTasks (cross-project task aggregation with grouping by project, sorting by due date + priority)
+  - Project Members Settings page: /projects/[id]/settings/members (admin-only, add/remove/update members)
+  - My Tasks page: /tasks/my-tasks (cross-project view with stats dashboard, grouped by project with color indicators)
+  - Build: `npm run build:web` exit 0, all 18 routes (added 2 new), no TypeScript errors
+  - P1 features now 100% (14/14); Overall 88%
+
 - **2026-04-06:** FRONTEND-003 Task Management Frontend completed
   - `useTaskDelete` — DELETE /api/tasks/:id, loading + error state, onSuccess/onError callbacks
   - `useTaskUpdate` — PATCH /api/tasks/:id, isChanged diff tracking, Zod per-field validation, diff-based payload

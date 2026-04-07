@@ -46,6 +46,89 @@ Next task:
 
 ---
 
+### Session - 2026-04-06 (Session 7)
+**Duration:** ~2 hours
+**Feature(s) worked on:** FEAT-003 & FEAT-004 Task Management and Team Members — Frontend Complete
+
+**Completed this session:**
+- ✅ Verified FEAT-003 Task Management Frontend was already complete from previous session
+- ✅ Implemented FEAT-004 Frontend Task Assignment & Team Members:
+  - Created members module types: members.types.ts (ProjectMember, MemberRole, AddMemberPayload, UpdateMemberRolePayload)
+  - Created validation schemas: members.schema.ts (addMemberSchema, updateMemberRoleSchema)
+  - Implemented 5 member management hooks:
+    - `useProjectMembers` — GET /api/projects/:id/members with auto-fetch and refetch support
+    - `useAddMember` — POST /api/projects/:id/members with role selection and validation
+    - `useRemoveMember` — DELETE /api/projects/:id/members/:userId with confirmation
+    - `useUpdateMemberRole` — PATCH /api/projects/:id/members/:userId for role changes
+    - `useUserSearch` — GET /api/users?search= with 300ms debounce, filters existing members
+  - Implemented 3 member UI components:
+    - `AddMemberModal` — Searchable modal with user picker and role selection (ADMIN/MEMBER/VIEWER)
+    - `MemberList` — Table view with inline role editing, remove button, "You" indicator
+    - `RemoveMemberModal` — Confirmation dialog for member removal
+  - Implemented My Tasks feature:
+    - `useMyTasks` hook — GET /api/users/me/tasks with cross-project aggregation, grouping by project
+    - Updated /tasks/my-tasks page with full implementation (replaced stub)
+    - Statistics dashboard: Total, To Do, In Progress, Done, Overdue task counts
+    - Task grouping by project with project color indicators
+    - Smart sorting within groups: due date ASC (nulls last), then priority DESC
+  - Created project members settings page at /projects/[id]/settings/members (admin-only)
+  - Fixed TypeScript type issues: TaskDetail now includes optional project.color field
+- ✅ Build verified: `npm run build` — all 18 routes (added 2 new), exit 0, no TypeScript errors
+- ✅ Updated documentation:
+  - Updated `.ai-dev/CHANGELOG.md` with FEAT-003 and FEAT-004 frontend entries
+  - Updated `.ai-dev/PROJECT_STATUS.md` — marked FRONTEND-004 complete, P1 features now 100% (14/14)
+  - Created implementation log: `.ai-dev/logs/2026-04-06_FEAT-003-004_implementation.md`
+  - Updated this `.ai-dev/PROGRESS.md` with session diary
+
+**In Progress:**
+- None — FEAT-003 and FEAT-004 frontend now complete
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Create git commit for FEAT-003 & FEAT-004 frontend with message:
+> `[FEAT-003][FEAT-004] Complete frontend for Task Management and Team Members`
+> Then consider starting FEAT-010 (Kanban Board View) or FEAT-011 (Admin Reports & Analytics)
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/PROJECT_STATUS.md
+- .ai-dev/PROGRESS.md
+
+Last session summary:
+FEAT-003 and FEAT-004 frontend implementations are now COMPLETE:
+- FEAT-003: Task Management UI verified complete (all hooks and components)
+- FEAT-004: Member management UI (5 hooks + 3 components) + My Tasks page implemented
+- Build: ✓ all 18 routes, no TypeScript errors
+- Documentation: CHANGELOG, PROJECT_STATUS, and implementation log updated
+- P1 features: 100% complete (14/14)
+- Overall progress: 88%
+
+Files created (14 new):
+1. apps/web/src/modules/members/validations/members.schema.ts
+2-6. apps/web/src/modules/members/hooks/* (5 hooks)
+7-9. apps/web/src/modules/members/components/* (3 components)
+10. apps/web/src/app/projects/[id]/settings/members/page.tsx
+11. apps/web/src/modules/tasks/hooks/useMyTasks.ts
+12. .ai-dev/logs/2026-04-06_FEAT-003-004_implementation.md
+
+Files modified (2):
+- apps/web/src/app/tasks/my-tasks/page.tsx (replaced stub with full implementation)
+- apps/web/src/modules/tasks/types/tasks.types.ts (added color to TaskDetail.project)
+
+Next task:
+1. Git commit FEAT-003 & FEAT-004 frontend work
+2. Start FEAT-010 (Kanban Board View) or FEAT-011 (Admin Reports & Analytics) — both P2 features
+```
+
+---
+
 ### Session - 2026-04-06 (Session 6)
 **Duration:** ~1 hour
 **Feature(s) worked on:** FEAT-003 Task Management (CRUD + Statuses) — Frontend Completion
@@ -310,6 +393,46 @@ Last session summary:
 Next task:
 Commit all FEAT-007 changes to git and push.
 ```
+
+---
+
+### Session - 2026-04-07
+**Duration:** ~15 minutes
+**Feature(s) worked on:** Repository verification and tracking updates
+
+**Completed this session:**
+- ✅ Ran `npm run test` across the repository and confirmed all tests passed
+- ✅ Updated `.ai-dev/CHANGELOG.md` with current verification details
+- ✅ Updated `.ai-dev/PROJECT_STATUS.md` last updated date to 2026-04-07
+- ✅ Appended this session diary entry to `.ai-dev/PROGRESS.md`
+
+**In Progress:**
+- None
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Commit current tracking updates and continue feature work on FEAT-010 (Kanban Board View) or FEAT-011 (Admin Reports & Analytics)
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/PROJECT_STATUS.md
+- .ai-dev/PROGRESS.md
+
+Last session summary:
+- Verified full repo test suite passed on 2026-04-07
+- Updated changelog and project status for current progress
+
+Next task:
+Commit current tracking updates and continue feature work on FEAT-010 or FEAT-011.
+```
+
 ---
 
 ### Session - 2026-04-03 (Session 2)
