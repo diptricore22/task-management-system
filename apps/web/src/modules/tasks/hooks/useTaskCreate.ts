@@ -36,7 +36,7 @@ export interface UseTaskCreateReturn {
   validateField: (field: keyof CreateTaskFormData, value: unknown) => boolean;
   clearError: (field: keyof CreateTaskFormData) => void;
   clearAllErrors: () => void;
-  handleCreate: (projectId: string) => Promise<Task | null>;
+  handleCreate: (projectId: string, data: CreateTaskFormData) => Promise<Task | null>;
   reset: () => void;
 }
 
@@ -143,20 +143,12 @@ export function useTaskCreate(): UseTaskCreateReturn {
   }, [clearAllErrors]);
 
   const handleCreate = useCallback(
-    async (projectId: string): Promise<Task | null> => {
+    async (projectId: string, taskData: CreateTaskFormData): Promise<Task | null> => {
       clearAllErrors();
       setLoading(true);
 
       try {
-        const formData: CreateTaskFormData = {
-          title: titleValue,
-          description: descriptionValue || undefined,
-          priority: (priorityValue as any) || 'MEDIUM',
-          due_date: dueDateValue || undefined,
-          assignee_id: assigneeIdValue || undefined,
-        };
-
-        const validatedData = createTaskSchema.parse(formData);
+        const validatedData = createTaskSchema.parse(taskData);
 
         const newTask = await api.post<Task>(
           `/projects/${projectId}/tasks`,

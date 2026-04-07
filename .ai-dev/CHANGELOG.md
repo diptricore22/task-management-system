@@ -50,7 +50,25 @@
   - API integration: Uses existing api-client proxy pattern, handles auth response through httpOnly cookies
 
 ### Changed
-- Verified full test suite on 2026-04-07 after current updates; all tests passed.
+- **Fixed all failing unit tests (2026-04-07)** - Corrected 13 failing unit tests in auth and tasks services
+  - Fixed auth.service.spec.ts: Updated JWTUtils mocking strategy
+    - AUTH-U006 & AUTH-U007: Fixed spy on `JWTUtils.verifyRefreshToken` (was incorrectly spying on AuthService)
+    - AUTH-U008: Added mock for `JWTUtils.verifyRefreshToken` before logout call
+    - AUTH-U010: Added mock for `JWTUtils.verifyHashedToken` to return true for valid invites
+    - AUTH-U011: Fixed mock to return null for expired invites (query filters them out)
+  - Fixed tasks.service.spec.ts: Updated to match actual service method signatures
+    - Renamed methods: `createTask` → `create`, `listTasks` → `list`, `getTaskDetail` → `getById`, `updateTask` → `update`, `deleteTask` → `delete`
+    - Fixed parameter order for `create` method: now (data, projectId, userId) instead of (projectId, data, userId)
+    - Added required parameters: `userId` and `isAdmin` to all method calls
+    - Added missing mocks: prisma.project, prisma.user, prisma.projectMember, prisma.activityLog, prisma.notification, prisma.notificationPreference
+    - Fixed mock data: added `created_at`, `updated_at`, `created_by` fields to all task mocks
+    - Fixed `getById` test: added `project`, `assignee`, `creator` relations to task mock
+    - Fixed `update` test: added mock for `prisma.task.findFirst` with matching `created_by` for permission check
+    - Fixed `delete` tests: updated to not expect return value (method returns void)
+    - Fixed date assertion: changed `result.due_date.toDateString()` to string comparison (due_date is 'YYYY-MM-DD' string)
+  - Added placeholder test script to web app package.json (no tests configured yet)
+  - Test results: **547/547 tests passing** (0 failures)
+
 
 - **FEAT-005: Dashboard & Activity Feed (Frontend)** - Complete dashboard with personal task summary, project health cards, and real-time activity feed
   - 1 TypeScript types file: DashboardSummary, ProjectHealthCard, ActivityFeedItem, ActivityFeedResponse, ProjectAdminOverview interfaces

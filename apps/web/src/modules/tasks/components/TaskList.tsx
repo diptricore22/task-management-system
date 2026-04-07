@@ -8,6 +8,7 @@ import { TaskCard } from './TaskCard';
 import { TaskDetailPanel } from './TaskDetailPanel';
 import { TaskForm } from './TaskForm';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
+import type { CreateTaskFormData } from '../validations/tasks.schema';
 import type { Task } from '../types/tasks.types';
 import type { TaskStatus } from '../types/tasks.types';
 
@@ -68,8 +69,11 @@ export const TaskList: React.FC<TaskListProps> = ({ projectId, projectMembers = 
   // ── Handlers ──────────────────────────────────────────────────────
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCreateSubmit = useCallback(
-    async (_data: Record<string, unknown>) => {
-      const created = await createHook.handleCreate(projectId);
+    async (data: Record<string, unknown>) => {
+      const created = await createHook.handleCreate(
+        projectId,
+        data as CreateTaskFormData
+      );
       if (created) {
         setShowCreateForm(false);
         refetch();

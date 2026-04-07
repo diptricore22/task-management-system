@@ -36,11 +36,24 @@ import { webEnv } from '@/lib/env';
 
 const API_BASE_URL = webEnv.api.baseUrl;
 
+function normalizeApiData<T>(data: unknown): T {
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    const keys = Object.keys(data);
+    if (keys.length === 1 && (keys[0] === 'project' || keys[0] === 'member')) {
+      return (data as any)[keys[0]] as T;
+    }
+  }
+
+  return data as T;
+}
+
 async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+  const base = API_BASE_URL.replace(/\/$/, '');
+  const path = endpoint.replace(/^\//, '');
+  const url = `${base}/${path}`;
 
   const defaultHeaders = {
     'Content-Type': 'application/json',
@@ -88,7 +101,7 @@ async function fetchApi<T>(
       );
     }
 
-    return (data as ApiResponse<T>).data;
+    return normalizeApiData((data as ApiResponse<T>).data);
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;

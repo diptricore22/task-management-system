@@ -46,6 +46,80 @@ Next task:
 
 ---
 
+### Session - 2026-04-07 (Session 8)
+**Duration:** ~1 hour
+**Feature(s) worked on:** Test Suite Maintenance & Bug Fixes
+
+**Completed this session:**
+- ✅ Fixed 13 failing unit tests in auth and tasks service test suites
+  - **auth.service.spec.ts fixes:**
+    - AUTH-U006 & AUTH-U007: Fixed incorrect spy on `AuthService.verifyRefreshToken` → should be `JWTUtils.verifyRefreshToken`
+    - AUTH-U008: Added mock for `JWTUtils.verifyRefreshToken` before logout call
+    - AUTH-U010: Added mock for `JWTUtils.verifyHashedToken` to return true for valid invite acceptance
+    - AUTH-U011: Fixed mock to return null for expired invites (query filters them out with `expires_at > now()`)
+  - **tasks.service.spec.ts fixes:**
+    - Renamed all method calls to match actual service: `createTask` → `create`, `listTasks` → `list`, `getTaskDetail` → `getById`, `updateTask` → `update`, `deleteTask` → `delete`
+    - Fixed parameter order for `create`: changed from (projectId, data, userId) to (data, projectId, userId)
+    - Added required parameters `userId` and `isAdmin` to all service method calls
+    - Added missing prisma mocks: project, user, projectMember, activityLog, notification, notificationPreference
+    - Fixed mock data: added `created_at`, `updated_at`, `created_by`, `project`, `assignee`, `creator` fields
+    - Fixed `update` test: added mock for `prisma.task.findFirst` with matching `created_by` for permission check
+    - Fixed `delete` tests: removed expectation of return value (method returns void)
+    - Fixed date assertion: changed from `result.due_date.toDateString()` to string comparison (service returns 'YYYY-MM-DD' format)
+  - Added placeholder test script to `apps/web/package.json` (no tests configured yet)
+- ✅ Verified full test suite: **547/547 tests passing** (previously 534/547)
+- ✅ Updated documentation:
+  - Updated `.ai-dev/CHANGELOG.md` with detailed list of all test fixes
+  - Updated `.ai-dev/PROJECT_STATUS.md` Recent Changes section with test fix summary
+  - Updated this `.ai-dev/PROGRESS.md` with session diary
+
+**In Progress:**
+- None
+
+**Blocked on:**
+- None
+
+**Next Session - Start With:**
+> Create git commit for test fixes and FEAT-003/FEAT-004 frontend work:
+> ```
+> git add .
+> git commit -m "[TEST] Fix all failing unit tests (13 fixes) + FEAT-003/004 Frontend
+>
+> - Fixed auth.service.spec.ts: JWTUtils mocking strategy
+> - Fixed tasks.service.spec.ts: method signatures and parameter order
+> - All 547/547 tests now passing
+>
+> Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
+> ```
+> Then push and create PR for review
+
+**AI Resume Prompt for Next Session:**
+```
+We are continuing development on Team Task Management System.
+
+Context files to provide:
+- .ai-dev/ai/AI_RULES.md
+- .ai-dev/ai/PROJECT_CONTEXT.md
+- .ai-dev/PROJECT_STATUS.md
+- .ai-dev/PROGRESS.md
+
+Last session summary:
+Test suite maintenance completed on 2026-04-07:
+- Fixed 13 failing unit tests in auth.service.spec.ts and tasks.service.spec.ts
+- All 547/547 tests now passing (0 failures)
+- Documentation updated: CHANGELOG.md, PROJECT_STATUS.md, PROGRESS.md
+- Ready for git commit and PR creation
+
+Changes from Session 7 (FEAT-003/004 frontend) are still uncommitted and ready to be included in the commit.
+
+Next task:
+1. Create git commit with test fixes + FEAT-003/004 frontend work
+2. Push to remote and create PR for review
+3. After merge, consider starting FEAT-010 (Kanban Board View) or FEAT-011 (Admin Reports & Analytics)
+```
+
+---
+
 ### Session - 2026-04-06 (Session 7)
 **Duration:** ~2 hours
 **Feature(s) worked on:** FEAT-003 & FEAT-004 Task Management and Team Members — Frontend Complete

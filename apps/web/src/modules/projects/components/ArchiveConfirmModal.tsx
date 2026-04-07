@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 interface ArchiveConfirmModalProps {
   isOpen: boolean;
   projectName: string;
+  isRestore?: boolean;
   onConfirm: () => Promise<void>;
   onCancel: () => void;
   loading: boolean;
@@ -17,6 +18,7 @@ interface ArchiveConfirmModalProps {
 export function ArchiveConfirmModal({
   isOpen,
   projectName,
+  isRestore = false,
   onConfirm,
   onCancel,
   loading,
@@ -55,10 +57,12 @@ export function ArchiveConfirmModal({
           {/* Content */}
           <div className="p-6">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-              Archive this project?
+              {isRestore ? 'Restore this project?' : 'Archive this project?'}
             </h2>
             <p className="text-slate-600 dark:text-slate-400 mb-6">
-              The project "{projectName}" will be hidden from your active projects list. You can restore it later.
+              {isRestore
+                ? `The project "${projectName}" will be restored to active projects.`
+                : `The project "${projectName}" will be hidden from your active projects list. You can restore it later.`}
             </p>
 
             {/* Buttons */}
@@ -73,15 +77,15 @@ export function ArchiveConfirmModal({
               <button
                 onClick={onConfirm}
                 disabled={loading}
-                className="px-4 py-2 rounded-lg font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 min-w-[100px]"
+                className={`px-4 py-2 rounded-lg font-medium text-white ${isRestore ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-600 hover:bg-amber-700'} disabled:bg-slate-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 min-w-[100px]`}
               >
                 {loading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Archiving...</span>
+                    <span>{isRestore ? 'Restoring...' : 'Archiving...'}</span>
                   </>
                 ) : (
-                  'Archive'
+                  isRestore ? 'Restore' : 'Archive'
                 )}
               </button>
             </div>

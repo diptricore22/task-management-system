@@ -1,12 +1,14 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api-client';
 import { createProjectSchema } from '../validations/projects.schema';
 import type { CreateProjectFormData } from '../validations/projects.schema';
 import type { Project } from '../types/projects.types';
 import { ZodError } from 'zod';
+
+type ProjectApiResponse = Project | { project: Project };
 
 interface UseProjectCreateReturn {
   name: string;
@@ -20,7 +22,7 @@ interface UseProjectCreateReturn {
   setName: (name: string) => void;
   setDescription: (description: string) => void;
   setColor: (color: string) => void;
-  handleCreate: (e?: React.FormEvent) => Promise<void>;
+  handleCreate: (e?: React.FormEvent) => Promise<boolean>;
   clearError: () => void;
   validateField: (field: 'name' | 'description' | 'color') => boolean;
 }
@@ -44,11 +46,11 @@ export function useProjectCreate(): UseProjectCreateReturn {
     (field: 'name' | 'description' | 'color'): boolean => {
       try {
         if (field === 'name') {
-          createProjectSchema.pick({ name: true }).parse({ name });
+          createProjectSchema.pick({ name: true }).parse({ name: name.trim() });
           setNameError(null);
           return true;
         } else if (field === 'description') {
-          createProjectSchema.pick({ description: true }).parse({ description });
+          createProjectSchema.pick({ description: true }).parse({ description: description || undefined });
           setDescriptionError(null);
           return true;
         } else if (field === 'color') {
@@ -71,46 +73,78 @@ export function useProjectCreate(): UseProjectCreateReturn {
       }
       return true;
     },
-    []
+    [description, name]
   );
 
   const handleCreate = useCallback(
-    async (e?: React.FormEvent) => {
+    async (e?: React.FormEvent): Promise<boolean> => {
       if (e) {
         e.preventDefault();
       }
 
-      // Validate all fields
-      const nameValid = validateField('name');
-      const colorValid = validateField('color');
-
-      if (!nameValid || !colorValid) {
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
       const projectData: CreateProjectFormData = {
-        name,
+        name: name.trim(),
         description: description || undefined,
         color,
       };
 
       try {
-        const newProject = await api.post<Project>('/projects', projectData);
-        // Redirect to project detail page
+        createProjectSchema.parse(projectData);
+      } catch (err) {
+        if (err instanceof ZodError) {
+          const fieldError = err.errors[0];
+          if (fieldError?.path.includes('name')) {
+            setNameError(fieldError.message);
+          }
+          if (fieldError?.path.includes('description')) {
+            setDescriptionError(fieldError.message);
+          }
+          if (fieldError?.path.includes('color')) {
+            setColorError(fieldError.message);
+          }
+        }
+        return false;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const newProjectResult = await api.post<ProjectApiResponse>('/projects', projectData);
+        const newProject =
+          'project' in newProjectResult ? newProjectResult.project : newProjectResult;
+
         router.push(`/projects/${newProject.id}`);
+        return true;
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to create project';
         setError(errorMessage);
+        return false;
       } finally {
         setLoading(false);
       }
     },
-    [name, description, color, router, validateField]
+    [name, description, color, router]
   );
+
+  useEffect(() => {
+    if (nameError && name.trim().length > 0) {
+      setNameError(null);
+    }
+  }, [name, nameError]);
+
+  useEffect(() => {
+    if (descriptionError && description.length > 0) {
+      setDescriptionError(null);
+    }
+  }, [description, descriptionError]);
+
+  useEffect(() => {
+    if (colorError && color.length > 0) {
+      setColorError(null);
+    }
+  }, [color, colorError]);
 
   const clearError = useCallback(() => {
     setError(null);

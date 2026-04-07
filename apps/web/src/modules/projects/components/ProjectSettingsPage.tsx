@@ -51,19 +51,26 @@ export function ProjectSettingsPage({
 
   const { isDeleting, handleDelete } = useProjectDelete();
 
+  const isArchived = project?.status === 'ARCHIVED';
+
   const handleArchive = async () => {
     if (!project) return;
 
     setArchiveLoading(true);
     try {
       await api.patch(`/projects/${project.id}/archive`, {
-        archived: true,
+        archived: !isArchived,
       });
       setShowArchiveModal(false);
-      // Redirect back to project list after archiving
-      router.push('/projects?status=archived');
+      if (isArchived) {
+        // After restoring, return to the restored project detail page
+        router.push(`/projects/${project.id}`);
+      } else {
+        // After archiving, show archived projects list
+        router.push('/projects?status=archived');
+      }
     } catch (error) {
-      console.error('Failed to archive project:', error);
+      console.error(`Failed to ${isArchived ? 'restore' : 'archive'} project:`, error);
     } finally {
       setArchiveLoading(false);
     }
@@ -103,8 +110,6 @@ export function ProjectSettingsPage({
       </div>
     );
   }
-
-  const isArchived = project.status === 'ARCHIVED';
 
   return (
     <div className="space-y-8">
@@ -224,6 +229,7 @@ export function ProjectSettingsPage({
       <ArchiveConfirmModal
         isOpen={showArchiveModal}
         projectName={project.name}
+        isRestore={isArchived}
         onConfirm={handleArchive}
         onCancel={() => setShowArchiveModal(false)}
         loading={archiveLoading}

@@ -13,6 +13,7 @@
 import { AuthService } from '../modules/auth/auth.service';
 import { prisma } from '@/lib/prisma';
 import { AppError } from '@/middlewares/error.middleware';
+import { JWTUtils } from '@/utils/jwt.utils';
 
 // Mock Prisma client
 jest.mock('@/lib/prisma', () => ({
@@ -34,6 +35,17 @@ jest.mock('@/lib/prisma', () => ({
       update: jest.fn(),
     },
     $transaction: jest.fn(),
+  },
+}));
+
+// Mock JWTUtils
+jest.mock('@/utils/jwt.utils', () => ({
+  JWTUtils: {
+    verifyRefreshToken: jest.fn(),
+    verifyHashedToken: jest.fn(),
+    generateInviteToken: jest.fn(() => 'mock-invite-token'),
+    hashToken: jest.fn(() => Promise.resolve('hashed_token')),
+    getTokenExpiry: jest.fn(() => new Date(Date.now() + 72 * 60 * 60 * 1000)),
   },
 }));
 
@@ -190,7 +202,7 @@ describe('Authentication Service - Unit Tests', () => {
       );
 
       // Mock token verification
-      jest.spyOn(AuthService as any, 'verifyRefreshToken').mockReturnValue({
+      (JWTUtils.verifyRefreshToken as jest.Mock).mockReturnValue({
         sub: 'user-123',
         tokenId: 'token-123',
         iat: Math.floor(Date.now() / 1000),
@@ -217,7 +229,7 @@ describe('Authentication Service - Unit Tests', () => {
       );
 
       // Mock expired token error
-      jest.spyOn(AuthService as any, 'verifyRefreshToken').mockImplementation(() => {
+      (JWTUtils.verifyRefreshToken as jest.Mock).mockImplementation(() => {
         throw new AppError('Token expired', 401, 'INVALID_REFRESH_TOKEN');
       });
 
@@ -228,6 +240,12 @@ describe('Authentication Service - Unit Tests', () => {
   describe('AUTH-U008: User Logout - Valid Logout', () => {
     it('AUTH-U008: should invalidate refresh tokens on logout', async () => {
       const refreshToken = 'valid.refresh.token';
+
+      // Mock token verification
+      (JWTUtils.verifyRefreshToken as jest.Mock).mockReturnValue({
+        sub: 'user-123',
+        tokenId: 'token-123',
+      });
 
       (prisma.refreshToken.updateMany as jest.Mock).mockResolvedValue({
         count: 1,
@@ -297,6 +315,9 @@ describe('Authentication Service - Unit Tests', () => {
       (prisma.user.findFirst as jest.Mock).mockResolvedValue(null);
       (prisma.$transaction as jest.Mock).mockResolvedValue([mockNewUser, { id: 'invite-123' }]);
 
+      // Mock token verification to return true
+      (JWTUtils.verifyHashedToken as jest.Mock).mockResolvedValue(true);
+
       const result = await AuthService.acceptInvite({
         token: 'valid-invite-token',
         name: 'New User',
@@ -311,17 +332,8 @@ describe('Authentication Service - Unit Tests', () => {
 
   describe('AUTH-U011: Invite Acceptance - Expired Invite (>72 hours)', () => {
     it('AUTH-U011: should throw 410 error when invite token is expired', async () => {
-      const expiredInvite = {
-        id: 'invite-123',
-        email: 'newuser@example.com',
-        role: 'MEMBER',
-        token_hash: 'hashed_token',
-        expires_at: new Date(Date.now() - 1000), // Already expired
-        accepted_at: null,
-        deleted_at: null,
-      };
-
-      (prisma.inviteToken.findFirst as jest.Mock).mockResolvedValue(expiredInvite);
+      // Mock should return null since the query filters out expired invites
+      (prisma.inviteToken.findFirst as jest.Mock).mockResolvedValue(null);
 
       try {
         await AuthService.acceptInvite({

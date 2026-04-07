@@ -26,10 +26,8 @@ export function useProject(projectId: string): UseProjectReturn {
     setError(null);
 
     try {
-      const response = await api.get<{ project: ProjectDetail }>(
-        `/projects/${projectId}`
-      );
-      setProject(response.project);
+      const response = await api.get<ProjectDetail>(`/projects/${projectId}`);
+      setProject(response);
       setLoading(false);
     } catch (err) {
       const errorMessage =

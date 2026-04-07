@@ -43,6 +43,16 @@ Overall:     [=====================================================>   ] 88%
 _None_
 
 ## Recent Changes
+- **2026-04-07:** Test Suite Fixes — All Tests Passing
+  - Fixed 13 failing unit tests in auth.service.spec.ts and tasks.service.spec.ts
+  - Auth tests: Updated JWTUtils mocking (AUTH-U006, U007, U008, U010, U011)
+  - Tasks tests: Fixed method names and signatures to match actual service (create, list, getById, update, delete)
+  - Added missing prisma mocks: project, user, projectMember, activityLog, notification, notificationPreference
+  - Fixed test data: added timestamps, relations, and corrected parameter orders
+  - Added placeholder test script to web app package.json
+  - **Result: 547/547 tests passing** (previously 534/547)
+  - No feature status changes; test infrastructure corrected
+
 - **2026-04-06:** FRONTEND-004 Task Assignment & Team Members completed
   - 1 types file: members.types.ts (ProjectMember, MemberRole enums, AddMemberPayload, UpdateMemberRolePayload)
   - 1 validation schema: members.schema.ts (addMemberSchema, updateMemberRoleSchema Zod validators)

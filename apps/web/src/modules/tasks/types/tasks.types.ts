@@ -32,6 +32,7 @@ export interface TaskDetail extends Task {
   project?: {
     id: string;
     name: string;
+    color?: string;
   };
   labels?: Array<{
     id: string;

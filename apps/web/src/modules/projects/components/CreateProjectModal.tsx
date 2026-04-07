@@ -38,9 +38,11 @@ export function CreateProjectModal({
 
   const handleSubmitAndClose = async () => {
     try {
-      await handleCreate();
-      onSuccess?.();
-      onClose();
+      const success = await handleCreate();
+      if (success) {
+        onSuccess?.();
+        onClose();
+      }
     } catch {
       // Error is handled by the hook
     }
